@@ -1,0 +1,4 @@
+frameX=560
+frameY=240
+frameWidth=800
+frameHeight=600
