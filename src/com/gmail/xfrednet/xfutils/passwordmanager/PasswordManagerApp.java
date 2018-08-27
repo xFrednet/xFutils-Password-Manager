@@ -34,10 +34,10 @@ package com.gmail.xfrednet.xfutils.passwordmanager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static javafx.application.Platform.exit;
@@ -59,19 +59,26 @@ public class PasswordManagerApp {
 	private static final int     DELETE_MODE         = 2;
 	private static final int     MODE_COUNT          = 3;
 
-	byte[] key;
 	private Settings settings;
 	private final Language language = new Language();
+
+	byte[] key;
 	private int currentMode;
+	ArrayList<DataTab> dataTabs;
 
 	//
 	// Base GUI
 	//
 	private JFrame window;
+	// info
 	private JPanel guiDataInfoPanel;
 	private JLabel guiModeInfoLabel;
 	private JPanel guiModeInfoColor;
 	private JButton[] guiModeButtons;
+	//data tabs
+	private JTabbedPane guiDataTabs;
+	private JTextField guiNewTabNameField;
+	private JSpinner guiNewTabIndexSelector;
 
 	public static void main(String[] args) {
 
@@ -92,16 +99,16 @@ public class PasswordManagerApp {
 
 	public PasswordManagerApp(byte[] key) {
 		this.key = key;
+		this.dataTabs = new ArrayList<DataTab>();
 
 		if (!initSettings()) {
 			System.err.println("initSettings failed!");
 			exit();
 		}
-		initBaseGUI();
 		System.out.println("Let'se got");
 
 		//TODO load data
-		//TODO create JFRAME
+		initBaseGUI();
 		//TODO create data GUI
 		//TODO update data GUI
 		setMode(RETRIEVE_MODE);
@@ -136,12 +143,48 @@ public class PasswordManagerApp {
 		//
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		//window.setLayout(new BoxLayout(window, BoxLayout.Y_AXIS));
+		mainPanel.setLayout(new BorderLayout());
+
+		//
+		// Menu
+		//
+		if (true) { //for folding
+			JMenuBar menuBar = new JMenuBar();
+
+			// file
+			JMenu fileMenu = new JMenu(this.language.FILE_MENU_NAME);
+			fileMenu.setMnemonic(KeyEvent.VK_F);
+
+			fileMenu.add(new JMenuItem("TODO Change Password"));
+			fileMenu.add(new JPopupMenu.Separator());
+			fileMenu.add(new JMenuItem("TODO Add Data"));
+			fileMenu.add(new JPopupMenu.Separator());
+			fileMenu.add(new JMenuItem("TODO Copy Salt"));
+			fileMenu.add(new JMenuItem("TODO Make Backup"));
+			fileMenu.add(new JPopupMenu.Separator());
+			fileMenu.add(new JMenuItem("TODO Open Settings"));
+			menuBar.add(fileMenu);
+
+			// add Data
+			JMenu addDataMenu = new JMenu("TODO Add Data");
+			menuBar.add(addDataMenu);
+
+			// extra
+			JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
+			extrasMenu.add(new JMenuItem("TODO export to unencrypted txt file"));
+			extrasMenu.add(new JMenuItem("TODO import txt file"));
+			extrasMenu.add(new JPopupMenu.Separator());
+			extrasMenu.add(new JMenuItem("TODO encrypt file"));
+			extrasMenu.add(new JMenuItem("TODO decrypt file"));
+			menuBar.add(extrasMenu);
+
+			this.window.setJMenuBar(menuBar);
+		}
 
 		//
 		// Info/Option panel
 		//
-		if (true) {
+		if (true) { // for folding
 			JPanel infoPanel = new JPanel();
 			infoPanel.setMinimumSize(new Dimension(0, 100) );
 			infoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100) );
@@ -176,9 +219,7 @@ public class PasswordManagerApp {
 			this.guiModeButtons = new JButton[3];
 			for (int modeButtonNo = 0; modeButtonNo < MODE_COUNT; modeButtonNo++) {
 				this.guiModeButtons[modeButtonNo] = new JButton(this.language.MODE_BUTTON_LABELS[modeButtonNo]);
-				this.guiModeButtons[modeButtonNo].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
+				this.guiModeButtons[modeButtonNo].addActionListener(e -> {
 						JButton button = (JButton)e.getSource();
 
 						for (int modeNo = 0; modeNo < MODE_COUNT; modeNo++) {
@@ -188,24 +229,64 @@ public class PasswordManagerApp {
 								break;
 							}
 						}
-					}
-				});
+					});
 				modeButtonPanel.add(this.guiModeButtons[modeButtonNo]);
 			}
 
 			selectModePanel.add(modeButtonPanel);
 
 			infoPanel.add(selectModePanel);
-			mainPanel.add(infoPanel);
+			mainPanel.add(BorderLayout.NORTH, infoPanel);
 		}
 
 		//
 		// Content panel
 		//
-		JPanel contentPanel = new JPanel();
-		contentPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-		contentPanel.setBackground(Color.PINK);
-		mainPanel.add(contentPanel);
+		if (true) { // this is a folding line
+			JPanel contentPanel = new JPanel();
+
+			contentPanel.setBorder(BorderFactory.createLineBorder(GUI_BORDER_COLOR));
+			contentPanel.setLayout(new BorderLayout());
+			this.guiDataTabs = new JTabbedPane();
+
+			// add tab tab
+			JPanel addTabPanel = new JPanel();
+			addTabPanel.setLayout(new GridLayout(3, 1, 5, 5));
+
+			// name filed
+			this.guiNewTabNameField = new JTextField();
+			this.guiNewTabNameField.setText(this.language.ADD_TAB_NAME_FIELD_TEXT);
+			addTabPanel.add(this.guiNewTabNameField);
+
+			// index selecter
+			JPanel indexSelectPanel = new JPanel(new GridLayout(1, 2));
+			indexSelectPanel.add(new JLabel(this.language.ADD_TAB_INDEX_LABEL));
+			this.guiNewTabIndexSelector = new JSpinner(
+					new SpinnerNumberModel(this.dataTabs.size(), 0, this.dataTabs.size(), 1));
+			indexSelectPanel.add(this.guiNewTabIndexSelector);
+			addTabPanel.add(indexSelectPanel);
+
+			//add button
+			JButton addTabButton = new JButton(this.language.ADD_TAB_BUTTON_LABEL);
+			addTabButton.addActionListener(e -> {
+				String name = PasswordManagerApp.this.guiNewTabNameField.getText();
+				int index = (int) PasswordManagerApp.this.guiNewTabIndexSelector.getValue();
+				addTab(name, index);
+				System.out.println("Tab name: " + PasswordManagerApp.this.guiNewTabNameField.getText());
+			});
+			addTabPanel.add(addTabButton);
+			addTabPanel.setMaximumSize(new Dimension(250, 70));
+
+			//tab panel to center addTabPanel
+			JPanel tabPanel = new JPanel();
+			tabPanel.setLayout(new BoxLayout(tabPanel, BoxLayout.Y_AXIS));
+			tabPanel.add(addTabPanel);
+
+			this.guiDataTabs.addTab("+", tabPanel);
+
+			contentPanel.add(BorderLayout.CENTER, this.guiDataTabs);
+			mainPanel.add(BorderLayout.CENTER, contentPanel);
+		}
 
 		//
 		// Finish
@@ -229,6 +310,19 @@ public class PasswordManagerApp {
 		this.guiModeButtons[modeID].setEnabled(false);
 
 		System.out.println("A new Mode was selected! Mode: " + this.language.MODE_BUTTON_LABELS[modeID]);
+	}
+	private void addTab(String name, int index) {
+		if (IsStringSupported(name)) {
+			//TODO JOptionPane.showConfirmDialog(this.window, this.language.ERROR_STRING_NOT_SUPPORTED, JOptionPane.OK_OPTION);
+		}
+
+		DataTab tab = new DataTab(name);
+		this.dataTabs.add(index, tab);
+		//TODO get GUI -> add GUI to tabs
+
+		//update other gui
+		((SpinnerNumberModel)this.guiNewTabIndexSelector.getModel()).setMaximum(this.dataTabs.size()); // one line wonder or horror
+		this.guiNewTabIndexSelector.setValue(this.dataTabs.size());
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -364,13 +458,26 @@ public class PasswordManagerApp {
 			fileStream.close();
 
 			return true;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		return false; // The writing failed
+	}
+	private static boolean IsStringSupported(String testString) {
+		if (testString.isEmpty())
+			return false;
+
+		if (testString.contains(DataTab.FORMAT_TAB_SEPARATOR + ""))
+			return false;
+
+		if (testString.contains(DataTab.FORMAT_DATA_SEPARATOR + ""))
+			return false;
+
+		if (testString.contains(Data.FORMAT_UNIT_SEPARATOR + ""))
+			return false;
+
+		return true;
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */

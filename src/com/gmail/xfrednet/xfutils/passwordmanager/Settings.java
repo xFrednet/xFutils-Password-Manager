@@ -36,7 +36,6 @@ import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-import java.util.Set;
 
 public class Settings {
 
