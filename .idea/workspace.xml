@@ -17,7 +17,7 @@
             <file pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Language.java">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="733">
+                  <state relative-caret-position="700">
                     <caret line="62" column="93" selection-start-line="62" selection-start-column="93" selection-end-line="62" selection-end-column="93" />
                     <folding>
                       <element signature="n#!!doc" expanded="true" />
@@ -69,31 +69,32 @@
     <session id="-1634900122">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="3" />
+          <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.open.time.9" value="2" />
+          <entry key="project.opened" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="7076" />
+          <entry key="java" value="8490" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="7076" />
+          <entry key="JAVA" value="8490" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JAVA" value="4" />
+          <entry key="JAVA" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.spring.boot.run.usages" />
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="java" value="4" />
+          <entry key="java" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts" />
@@ -105,63 +106,33 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="166">
-              <caret line="315" column="19" selection-start-line="315" selection-start-column="19" selection-end-line="315" selection-end-column="19" />
+            <state relative-caret-position="270">
+              <caret line="676" column="22" lean-forward="true" selection-start-line="676" selection-start-column="22" selection-end-line="676" selection-end-column="22" />
               <folding>
+                <element signature="imports" expanded="true" />
                 <element signature="method#main#0;class#PasswordManagerApp#0" />
                 <element signature="method#PasswordManagerApp#0;class#PasswordManagerApp#0" />
-                <element signature="e#4634#4656#0" />
                 <element signature="method#initSettings#0;class#PasswordManagerApp#0" />
-                <element signature="e#2648#2650#0" />
-                <element signature="e#2924#2926#0" />
-                <element signature="e#5645#5647#0" />
-                <element signature="e#5676#5678#0" />
-                <element signature="e#3646#3648#0" />
-                <element signature="e#5182#5184#0" />
-                <element signature="e#10178#10330#0" expanded="true" />
-                <element signature="e#5409#5411#0" />
+                <element signature="method#initBaseGUI#0;class#PasswordManagerApp#0" />
                 <element signature="method#setMode#0;class#PasswordManagerApp#0" />
                 <element signature="method#GetDecryptionKey#0;class#PasswordManagerApp#0" />
-                <element signature="e#6543#6556#0" />
                 <element signature="method#AskForPassword#0;class#PasswordManagerApp#0" />
                 <element signature="method#LoadSalt#0;class#PasswordManagerApp#0" />
                 <element signature="method#CreateNewSalt#0;class#PasswordManagerApp#0" />
                 <element signature="method#SafeSalt#0;class#PasswordManagerApp#0" />
+                <element signature="method#IsStringSupported#0;class#PasswordManagerApp#0" />
                 <element signature="method#ArrayToHex#0;class#PasswordManagerApp#0" />
                 <element signature="method#HexToArray#0;class#PasswordManagerApp#0" />
-                <marker date="1535409572610" expanded="false" signature="5890:7011" ph="{...}" />
-                <marker date="1535409572610" expanded="false" signature="7058:9031" ph="{...}" />
-                <marker date="1535409572610" expanded="false" signature="8336:8900" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/DataTab.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="6" column="10" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
-              <caret line="7" column="10" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
-              <folding>
-                <element signature="e#1094#1103#0" expanded="true" />
-                <element signature="method#DataTab#1;class#DataTab#0" />
-                <element signature="e#2133#2134#0" expanded="true" />
-                <element signature="e#2149#2150#0" expanded="true" />
-                <element signature="method#getSaveString#0;class#DataTab#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Data.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" column="10" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
-              <folding>
-                <element signature="e#278#279#0" expanded="true" />
-                <element signature="e#320#321#0" expanded="true" />
+                <element signature="method#ShowInfoDialog#0;class#PasswordManagerApp#0" />
+                <element signature="class#18767:21043" expanded="true" />
+                <element signature="e#19878#19879#0" expanded="true" />
+                <element signature="e#19910#19911#0" expanded="true" />
+                <element signature="e#21142#21143#0" expanded="true" />
+                <element signature="e#21184#21185#0" expanded="true" />
+                <marker date="1535662548324" expanded="false" signature="5891:7012" ph="{...}" />
+                <marker date="1535662548324" expanded="false" signature="7059:9032" ph="{...}" />
+                <marker date="1535662548324" expanded="false" signature="8337:8901" ph="{...}" />
+                <marker date="1535662548324" expanded="false" signature="9075:10721" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -170,7 +141,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Settings.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
+            <state relative-caret-position="833">
               <caret line="83" column="43" selection-start-line="83" selection-start-column="8" selection-end-line="83" selection-end-column="43" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
@@ -183,7 +154,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Cipher.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
+            <state relative-caret-position="323">
               <caret line="54" column="6" selection-start-line="54" selection-start-column="6" selection-end-line="54" selection-end-column="6" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
@@ -216,9 +187,9 @@
         <option value="$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Options.java" />
         <option value="$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Cipher.java" />
         <option value="$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Settings.java" />
-        <option value="$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/DataTab.java" />
-        <option value="$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Data.java" />
         <option value="$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Language.java" />
+        <option value="$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Data.java" />
+        <option value="$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/DataTab.java" />
         <option value="$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java" />
       </list>
     </option>
@@ -241,22 +212,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="xFutils Password Manager" type="58d84e3e:PackageViewProjectNode" />
-              <item name="xFutils Password Manager" type="616d4139:PackageViewModuleNode" />
-            </path>
-            <path>
-              <item name="xFutils Password Manager" type="58d84e3e:PackageViewProjectNode" />
-              <item name="xFutils Password Manager" type="616d4139:PackageViewModuleNode" />
-              <item name="com.gmail.xfrednet.xfutils.passwordmanager" type="1f31426a:PackageElementNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -279,14 +234,30 @@
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="xFutils Password Manager" type="58d84e3e:PackageViewProjectNode" />
+              <item name="xFutils Password Manager" type="616d4139:PackageViewModuleNode" />
+            </path>
+            <path>
+              <item name="xFutils Password Manager" type="58d84e3e:PackageViewProjectNode" />
+              <item name="xFutils Password Manager" type="616d4139:PackageViewModuleNode" />
+              <item name="com.gmail.xfrednet.xfutils.passwordmanager" type="1f31426a:PackageElementNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="Scope" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1535409572728" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1535664100499" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -348,17 +319,19 @@
       <workItem from="1535355261400" duration="5007000" />
       <workItem from="1535369624806" duration="32000" />
       <workItem from="1535370247474" duration="25947000" />
+      <workItem from="1535441199967" duration="8166000" />
+      <workItem from="1535624367196" duration="8348000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="63197000" />
+    <option name="totallyTimeSpent" value="79711000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="22" width="1936" height="1066" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.45604396" visible="true" weight="0.19936034" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.45604396" visible="true" weight="0.20362474" />
       <window_info id="Image Layers" order="1" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
@@ -367,7 +340,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32967034" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32967034" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.30439562" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -385,7 +358,7 @@
       <window_info anchor="right" id="Theme Preview" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="7" />
       <window_info anchor="right" id="Maven Projects" order="8" />
-      <window_info anchor="right" id="Structure" order="9" sideWeight="0.54395604" visible="true" weight="0.13752665" />
+      <window_info anchor="right" id="Structure" order="9" sideWeight="0.54395604" visible="true" weight="0.23240939" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -455,20 +428,34 @@
     <entry file="file://$PROJECT_DIR$/xFutils Password Manager.iml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Cipher.java">
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_144/src.zip!/java/awt/BorderLayout.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="54" column="6" selection-start-line="54" selection-start-column="6" selection-end-line="54" selection-end-column="6" />
+        <state relative-caret-position="-1612">
+          <caret line="350" column="11" selection-start-line="350" selection-start-column="11" selection-end-line="350" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_144/src.zip!/javax/swing/JOptionPane.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="852" column="48" selection-start-line="852" selection-start-column="39" selection-end-line="852" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_144/src.zip!/javax/swing/JTabbedPane.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="287">
+          <caret line="698" column="16" selection-start-line="698" selection-start-column="16" selection-end-line="698" selection-end-column="16" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="imports" expanded="true" />
+            <element signature="e#27175#27176#0" expanded="true" />
+            <element signature="e#27244#27245#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Settings.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
+        <state relative-caret-position="833">
           <caret line="83" column="43" selection-start-line="83" selection-start-column="8" selection-end-line="83" selection-end-column="43" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
@@ -477,53 +464,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_144/src.zip!/javax/swing/JTabbedPane.java">
+    <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Cipher.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-9">
-          <caret line="108" column="13" selection-start-line="108" selection-start-column="13" selection-end-line="108" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_144/src.zip!/java/awt/BorderLayout.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1612">
-          <caret line="350" column="11" selection-start-line="350" selection-start-column="11" selection-end-line="350" selection-end-column="11" />
+        <state relative-caret-position="323">
+          <caret line="54" column="6" selection-start-line="54" selection-start-column="6" selection-end-line="54" selection-end-column="6" />
           <folding>
-            <element signature="e#11133#11134#0" expanded="true" />
-            <element signature="e#11159#11160#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/DataTab.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="6" column="10" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
-          <caret line="7" column="10" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
-          <folding>
-            <element signature="e#1094#1103#0" expanded="true" />
-            <element signature="method#DataTab#1;class#DataTab#0" />
-            <element signature="e#2133#2134#0" expanded="true" />
-            <element signature="e#2149#2150#0" expanded="true" />
-            <element signature="method#getSaveString#0;class#DataTab#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Data.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="10" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
-          <folding>
-            <element signature="e#278#279#0" expanded="true" />
-            <element signature="e#320#321#0" expanded="true" />
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Language.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="733">
+        <state relative-caret-position="700">
           <caret line="62" column="93" selection-start-line="62" selection-start-column="93" selection-end-line="62" selection-end-column="93" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
@@ -531,35 +485,57 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/DataTab.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" selection-start-line="5" selection-end-line="122" selection-end-column="1" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#GetGroupSaveString#0;class#DataTab#0" />
+            <element signature="method#LoadGroupFromSaveString#0;class#DataTab#0" />
+            <element signature="method#DataTab#1;class#DataTab#0" />
+            <element signature="method#LoadDataTab#0;class#DataTab#0" />
+            <element signature="method#loadSaveString#0;class#DataTab#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Data.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1309">
+          <caret line="79" column="1" lean-forward="true" selection-start-line="4" selection-end-line="79" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="166">
-          <caret line="315" column="19" selection-start-line="315" selection-start-column="19" selection-end-line="315" selection-end-column="19" />
+        <state relative-caret-position="270">
+          <caret line="676" column="22" lean-forward="true" selection-start-line="676" selection-start-column="22" selection-end-line="676" selection-end-column="22" />
           <folding>
+            <element signature="imports" expanded="true" />
             <element signature="method#main#0;class#PasswordManagerApp#0" />
             <element signature="method#PasswordManagerApp#0;class#PasswordManagerApp#0" />
-            <element signature="e#4634#4656#0" />
             <element signature="method#initSettings#0;class#PasswordManagerApp#0" />
-            <element signature="e#2648#2650#0" />
-            <element signature="e#2924#2926#0" />
-            <element signature="e#5645#5647#0" />
-            <element signature="e#5676#5678#0" />
-            <element signature="e#3646#3648#0" />
-            <element signature="e#5182#5184#0" />
-            <element signature="e#10178#10330#0" expanded="true" />
-            <element signature="e#5409#5411#0" />
+            <element signature="method#initBaseGUI#0;class#PasswordManagerApp#0" />
             <element signature="method#setMode#0;class#PasswordManagerApp#0" />
             <element signature="method#GetDecryptionKey#0;class#PasswordManagerApp#0" />
-            <element signature="e#6543#6556#0" />
             <element signature="method#AskForPassword#0;class#PasswordManagerApp#0" />
             <element signature="method#LoadSalt#0;class#PasswordManagerApp#0" />
             <element signature="method#CreateNewSalt#0;class#PasswordManagerApp#0" />
             <element signature="method#SafeSalt#0;class#PasswordManagerApp#0" />
+            <element signature="method#IsStringSupported#0;class#PasswordManagerApp#0" />
             <element signature="method#ArrayToHex#0;class#PasswordManagerApp#0" />
             <element signature="method#HexToArray#0;class#PasswordManagerApp#0" />
-            <marker date="1535409572610" expanded="false" signature="5890:7011" ph="{...}" />
-            <marker date="1535409572610" expanded="false" signature="7058:9031" ph="{...}" />
-            <marker date="1535409572610" expanded="false" signature="8336:8900" ph="{...}" />
+            <element signature="method#ShowInfoDialog#0;class#PasswordManagerApp#0" />
+            <element signature="class#18767:21043" expanded="true" />
+            <element signature="e#19878#19879#0" expanded="true" />
+            <element signature="e#19910#19911#0" expanded="true" />
+            <element signature="e#21142#21143#0" expanded="true" />
+            <element signature="e#21184#21185#0" expanded="true" />
+            <marker date="1535662548324" expanded="false" signature="5891:7012" ph="{...}" />
+            <marker date="1535662548324" expanded="false" signature="7059:9032" ph="{...}" />
+            <marker date="1535662548324" expanded="false" signature="8337:8901" ph="{...}" />
+            <marker date="1535662548324" expanded="false" signature="9075:10721" ph="{...}" />
           </folding>
         </state>
       </provider>

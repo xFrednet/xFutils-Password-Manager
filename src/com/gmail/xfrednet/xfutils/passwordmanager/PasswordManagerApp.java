@@ -54,6 +54,7 @@ public class PasswordManagerApp {
 
 	private static final Color[] GUI_MODE_INFO_COLORS = {Color.green, Color.blue, Color.red};
 	private static final Color   GUI_BORDER_COLOR     = new Color(0xacacac);
+
 	private static final int     RETRIEVE_MODE       = 0;
 	private static final int     CHANGE_MODE         = 1;
 	private static final int     DELETE_MODE         = 2;
@@ -258,7 +259,7 @@ public class PasswordManagerApp {
 			this.guiNewTabNameField.setText(this.language.ADD_TAB_NAME_FIELD_TEXT);
 			addTabPanel.add(this.guiNewTabNameField);
 
-			// index selecter
+			// index selector
 			JPanel indexSelectPanel = new JPanel(new GridLayout(1, 2));
 			indexSelectPanel.add(new JLabel(this.language.ADD_TAB_INDEX_LABEL));
 			this.guiNewTabIndexSelector = new JSpinner(
@@ -271,8 +272,8 @@ public class PasswordManagerApp {
 			addTabButton.addActionListener(e -> {
 				String name = PasswordManagerApp.this.guiNewTabNameField.getText();
 				int index = (int) PasswordManagerApp.this.guiNewTabIndexSelector.getValue();
-				addTab(name, index);
-				System.out.println("Tab name: " + PasswordManagerApp.this.guiNewTabNameField.getText());
+
+				createTab(name, index);
 			});
 			addTabPanel.add(addTabButton);
 			addTabPanel.setMaximumSize(new Dimension(250, 70));
@@ -311,18 +312,33 @@ public class PasswordManagerApp {
 
 		System.out.println("A new Mode was selected! Mode: " + this.language.MODE_BUTTON_LABELS[modeID]);
 	}
-	private void addTab(String name, int index) {
-		if (IsStringSupported(name)) {
-			//TODO JOptionPane.showConfirmDialog(this.window, this.language.ERROR_STRING_NOT_SUPPORTED, JOptionPane.OK_OPTION);
+	private void createTab(String name, int index) {
+		if (!IsStringSupported(name)) {
+			ShowInfoDialog(this.language.ERROR_STRING_NOT_SUPPORTED, this.window);
+			return;
 		}
 
 		DataTab tab = new DataTab(name);
 		this.dataTabs.add(index, tab);
-		//TODO get GUI -> add GUI to tabs
+		this.guiDataTabs.insertTab(tab.title, null, new JPanel(), null, index);
 
-		//update other gui
 		((SpinnerNumberModel)this.guiNewTabIndexSelector.getModel()).setMaximum(this.dataTabs.size()); // one line wonder or horror
 		this.guiNewTabIndexSelector.setValue(this.dataTabs.size());
+
+		//TODO save the new created tab
+	}
+
+	/* ********************************************************* */
+	// * GUI *
+	/* ********************************************************* */
+	private JPanel createTabPanel(DataTab tab) {
+		JPanel mainPanel = new JPanel();
+
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+
+
+		return mainPanel;
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -505,6 +521,216 @@ public class PasswordManagerApp {
 		}
 
 		return buffer;
+	}
+	private static void ShowInfoDialog(String infoString, Component parent) {
+		Object[] options = {"OK"};
+		JOptionPane.showOptionDialog(parent,
+				infoString,TITLE,
+				JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.QUESTION_MESSAGE,
+				null,
+				options,
+				options[0]);
+	}
+
+	private String getDataTabGroupSaveString(ArrayList<DataTab> tabs) {
+		StringBuilder sb = new StringBuilder();
+
+		for (int tabIndex = 0; tabIndex < tabs.size(); tabIndex++) {
+			sb.append(tabs.get(tabIndex).getSaveString());
+
+			// add divider
+			if (tabIndex != tabs.size() - 1) { // if not last
+				sb.append(DataTab.FORMAT_TAB_SEPARATOR);
+			}
+		}
+
+		return sb.toString();
+	}
+	private ArrayList<DataTab> loadDataTabGroupFromSaveString(String saveString) {
+		if (saveString.isEmpty()) {
+			return null;
+		}
+
+		String[] components = saveString.split(DataTab.FORMAT_TAB_SEPARATOR + "");
+
+		if (components.length == 0) {
+			return null; // well there is no dataList to load
+		}
+
+		ArrayList<DataTab> tabs = new ArrayList<DataTab>();
+		for (int componentIndex = 0; componentIndex < components.length; componentIndex++) {
+			DataTab tab = loadDataTab(components[componentIndex]);
+
+			if (tab == null) {
+				return null; // the tab failed to load
+			}
+
+			tabs.add(tab);
+		}
+
+		return tabs;
+	}
+	private DataTab loadDataTab(String saveString) {
+		DataTab tab = new DataTab("Loading");
+
+		if (!tab.loadSaveString(saveString)) {
+			return null;
+		}
+
+		return tab;
+	}
+	private Data loadData(String saveString) {
+		Data data = new Data();
+
+		if (!data.loadSaveString(saveString)) {
+			return null;
+		}
+
+		return data;
+	}
+	/* //////////////////////////////////////////////////////////////////////////////// */
+	// // Nested classes //
+	/* //////////////////////////////////////////////////////////////////////////////// */
+	/*
+	* I'm sorry this is definitely not ideal. Data needs to access objects from
+	* this outer class there is no cleaner way that I can think of. The DataTab class
+	* could be separate but it would be just weired if that would be a different class
+	* while the data is here.
+	*/
+	public class DataTab {
+
+		static final char FORMAT_TAB_SEPARATOR  = 0x1D;
+		static final char FORMAT_DATA_SEPARATOR = 0x1E;
+
+		/* //////////////////////////////////////////////////////////////////////////////// */
+		// // Static group load and save functions //
+		/* //////////////////////////////////////////////////////////////////////////////// */
+
+		/* //////////////////////////////////////////////////////////////////////////////// */
+		// // Class //
+		/* //////////////////////////////////////////////////////////////////////////////// */
+		String title;
+		ArrayList<Data> dataList;
+
+		DataTab(String title) {
+			this.dataList = new ArrayList<Data>();
+			this.title = title;
+		}
+
+		/* ********************************************************* */
+		// * utils *
+		/* ********************************************************* */
+		void add(Data data) {
+			this.dataList.add(data);
+		}
+
+		/* ********************************************************* */
+		// * saving and loading *
+		/* ********************************************************* */
+		// FORMAT_DATA_SEPARATOR => DS
+		// [title] ([DS] [dataList.getSaveString()]) x dataList.size()
+		String getSaveString() {
+			StringBuilder sb = new StringBuilder();
+
+			//title
+			sb.append(this.title);
+
+			for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
+				sb.append(FORMAT_DATA_SEPARATOR);
+				sb.append(dataList.get(dataIndex).getSaveString());
+			}
+
+			return sb.toString();
+		}
+		boolean loadSaveString(String saveString) {
+			if (saveString.isEmpty()) {
+				return false; // something went seriously wrong
+			}
+			String[] components = saveString.split(FORMAT_DATA_SEPARATOR + "");
+
+			// load title
+			this.title = components[0];
+
+			// load dataList
+			for (int dataNo = 1; dataNo < components.length; dataNo++) {
+				Data data = loadData(components[dataNo]);
+
+				if (data == null)
+					return false; // loading the dataList has failed. well done me!
+
+				this.add(data);
+			}
+
+			// well done
+			return true;
+		}
+	}
+	public class Data {
+
+		static final char FORMAT_UNIT_SEPARATOR = 0x1F;
+
+		String title;
+		ArrayList<String> data;
+		int copyDataIndex;
+
+		private Data() {
+			this.data = new ArrayList<String>();
+		}
+		public Data(String title, String data)
+		{
+			this();
+			this.title = title;
+			this.data.add(data);
+			this.copyDataIndex = 0;
+		}
+
+
+		// [FORMAT_UNIT_SEPARATOR] => US
+		// Save format [title] [US] [copyDataIndex] ([US] [data]) x data.size()
+		String getSaveString() {
+			StringBuilder sb = new StringBuilder();
+
+			// Title
+			sb.append(title);
+
+			// copy Data Index
+			sb.append(FORMAT_UNIT_SEPARATOR);
+			sb.append(Integer.toString(copyDataIndex));
+
+			// Data
+			for (int dataIndex = 0; dataIndex < data.size(); dataIndex++) {
+				sb.append(FORMAT_UNIT_SEPARATOR);
+				sb.append(data.get(dataIndex));
+			}
+
+			return sb.toString();
+		}
+		boolean loadSaveString(String saveString) {
+			if (saveString.isEmpty()) {
+				return false;
+			}
+
+			String[] components = saveString.split("" + FORMAT_UNIT_SEPARATOR);
+
+			if (components.length < 3) {
+				return false; //a save string has at least 3 components
+			}
+
+			this.title = components[0];
+			try {
+				this.copyDataIndex = Integer.parseInt(components[1]);
+			} catch (NumberFormatException e) {
+				return false;
+			}
+
+			for (int componentNo = 2; componentNo < components.length; componentNo++) {
+				this.data.add(components[componentNo]);
+			}
+
+			return true;
+		}
+
 	}
 }
 
