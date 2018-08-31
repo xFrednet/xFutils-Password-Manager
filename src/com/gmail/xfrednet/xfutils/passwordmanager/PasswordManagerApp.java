@@ -33,7 +33,10 @@
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -42,7 +45,13 @@ import java.util.Date;
 
 import static javafx.application.Platform.exit;
 
+
 public class PasswordManagerApp {
+	public enum GUI_MODE {
+		GUI_GRID_MODE,
+		GUI_LIST_MODE
+	}
+
 
 	private static final boolean JUMP_ASK  = true;
 
@@ -54,6 +63,8 @@ public class PasswordManagerApp {
 
 	private static final Color[] GUI_MODE_INFO_COLORS = {Color.green, Color.blue, Color.red};
 	private static final Color   GUI_BORDER_COLOR     = new Color(0xacacac);
+	private static final int     GUI_DEFAULT_GAP      = 5;
+	private static final Border  GUI_DEFAULT_BORDER   = BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
 
 	private static final int     RETRIEVE_MODE       = 0;
 	private static final int     CHANGE_MODE         = 1;
@@ -76,7 +87,7 @@ public class PasswordManagerApp {
 	private JLabel guiModeInfoLabel;
 	private JPanel guiModeInfoColor;
 	private JButton[] guiModeButtons;
-	//data tabs
+	//contentList tabs
 	private JTabbedPane guiDataTabs;
 	private JTextField guiNewTabNameField;
 	private JSpinner guiNewTabIndexSelector;
@@ -108,10 +119,22 @@ public class PasswordManagerApp {
 		}
 		System.out.println("Let'se got");
 
-		//TODO load data
+		//TODO load contentList
+		DataTab tab1 = new DataTab("tab 1");
+		tab1.add(new Data("Test data 1", "hello"));
+		tab1.add(new Data("Test data 2", "hello"));
+		tab1.add(new Data("Test data 3", "hello"));
+		tab1.add(new Data("Test data 4", "hello"));
+		tab1.add(new Data("Test data 5", "hello"));
+		tab1.add(new Data("Test data 6", "hello"));
+		tab1.add(new Data("Test data 7", "hello"));
+		this.dataTabs.add(tab1);
+
 		initBaseGUI();
-		//TODO create data GUI
-		//TODO update data GUI
+
+		initTabGUI();
+		//TODO update contentList GUI
+
 		setMode(RETRIEVE_MODE);
 	}
 
@@ -195,7 +218,7 @@ public class PasswordManagerApp {
 			this.guiDataInfoPanel = new JPanel();
 			this.guiDataInfoPanel.setBorder(BorderFactory.createCompoundBorder(
 					BorderFactory.createLineBorder(GUI_BORDER_COLOR),
-					BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+					GUI_DEFAULT_BORDER));
 			infoPanel.add(this.guiDataInfoPanel);
 
 			//
@@ -205,7 +228,7 @@ public class PasswordManagerApp {
 			selectModePanel.setLayout(new GridLayout(3, 1, 5, 5));
 			selectModePanel.setBorder(BorderFactory.createCompoundBorder(
 					BorderFactory.createLineBorder(GUI_BORDER_COLOR),
-					BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+					GUI_DEFAULT_BORDER));
 
 			// guiModeInfoLabel
 			this.guiModeInfoLabel = new JLabel(this.language.NO_MODE_SELECTED, JLabel.LEFT);
@@ -295,6 +318,21 @@ public class PasswordManagerApp {
 		this.window.add(mainPanel);
 		this.window.setVisible(true);
 	}
+	private void initTabGUI() {
+
+		int iteration = 0;
+		for (DataTab tab : this.dataTabs) {
+
+			JPanel panel = tab.createGUI(3);
+			JScrollPane pane = new JScrollPane();
+			pane.add(panel);
+			this.guiDataTabs.insertTab(tab.title, null, pane, null, iteration);
+
+			iteration++;
+		}
+
+		this.guiDataTabs.setSelectedIndex(0);
+	}
 
 	private void setMode(int modeID) {
 		if (modeID < 0 || modeID >= MODE_COUNT) {
@@ -320,25 +358,17 @@ public class PasswordManagerApp {
 
 		DataTab tab = new DataTab(name);
 		this.dataTabs.add(index, tab);
-		this.guiDataTabs.insertTab(tab.title, null, new JPanel(), null, index);
 
+		//gui
+		JPanel panel = tab.createGUI(3);
+		this.guiDataTabs.insertTab(tab.title, null, panel, null, index);
+		this.guiDataTabs.setSelectedIndex(index);
+
+		// update the addTab panel
 		((SpinnerNumberModel)this.guiNewTabIndexSelector.getModel()).setMaximum(this.dataTabs.size()); // one line wonder or horror
 		this.guiNewTabIndexSelector.setValue(this.dataTabs.size());
 
 		//TODO save the new created tab
-	}
-
-	/* ********************************************************* */
-	// * GUI *
-	/* ********************************************************* */
-	private JPanel createTabPanel(DataTab tab) {
-		JPanel mainPanel = new JPanel();
-
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
-
-
-		return mainPanel;
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -555,12 +585,12 @@ public class PasswordManagerApp {
 		String[] components = saveString.split(DataTab.FORMAT_TAB_SEPARATOR + "");
 
 		if (components.length == 0) {
-			return null; // well there is no dataList to load
+			return null; // well there is no contentList to load
 		}
 
 		ArrayList<DataTab> tabs = new ArrayList<DataTab>();
 		for (int componentIndex = 0; componentIndex < components.length; componentIndex++) {
-			DataTab tab = loadDataTab(components[componentIndex]);
+			DataTab tab = loadDataTabFromSaveString(components[componentIndex]);
 
 			if (tab == null) {
 				return null; // the tab failed to load
@@ -571,7 +601,7 @@ public class PasswordManagerApp {
 
 		return tabs;
 	}
-	private DataTab loadDataTab(String saveString) {
+	private DataTab loadDataTabFromSaveString(String saveString) {
 		DataTab tab = new DataTab("Loading");
 
 		if (!tab.loadSaveString(saveString)) {
@@ -580,7 +610,7 @@ public class PasswordManagerApp {
 
 		return tab;
 	}
-	private Data loadData(String saveString) {
+	private Data loadDataFromSaveString(String saveString) {
 		Data data = new Data();
 
 		if (!data.loadSaveString(saveString)) {
@@ -589,6 +619,7 @@ public class PasswordManagerApp {
 
 		return data;
 	}
+
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Nested classes //
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -596,12 +627,13 @@ public class PasswordManagerApp {
 	* I'm sorry this is definitely not ideal. Data needs to access objects from
 	* this outer class there is no cleaner way that I can think of. The DataTab class
 	* could be separate but it would be just weired if that would be a different class
-	* while the data is here.
+	* while the contentList is here.
 	*/
 	public class DataTab {
 
 		static final char FORMAT_TAB_SEPARATOR  = 0x1D;
 		static final char FORMAT_DATA_SEPARATOR = 0x1E;
+		static final int  GUI_ROW_HEIGHT = 50;
 
 		/* //////////////////////////////////////////////////////////////////////////////// */
 		// // Static group load and save functions //
@@ -612,6 +644,7 @@ public class PasswordManagerApp {
 		/* //////////////////////////////////////////////////////////////////////////////// */
 		String title;
 		ArrayList<Data> dataList;
+		JPanel guiPanel;
 
 		DataTab(String title) {
 			this.dataList = new ArrayList<Data>();
@@ -624,21 +657,73 @@ public class PasswordManagerApp {
 		void add(Data data) {
 			this.dataList.add(data);
 		}
+		JPanel createGUI(int buttonsPerRow) {
+
+			/*
+			* Validation
+			*/
+			if (buttonsPerRow <= 0)
+				return null; // well there you have less than one button per row
+
+			/*
+			* creating the GUI
+			*/
+			this.guiPanel = new JPanel();
+			this.guiPanel.setLayout(new GridBagLayout());
+
+			// The following is a roller coaster of emotions
+			//
+			// 1. this is gonna end terrible
+			//    so basically I create a array of GridBagConstrains that
+			//    should be used for everyone in a row. This means that if the length
+			//    of this array is 5 the GUI has 5 buttons in one row
+			//
+			// 2. I even have a worse idea I'll see if I change this
+			//
+			// 3. So I removed the gui modes and replaced that with the value
+			//    buttonsPerRow. Now I'll also create a array with a GridBagConstraints
+			//    for every button in a row
+			//
+			GridBagConstraints[] placements = new GridBagConstraints[buttonsPerRow];
+			for (int pIndex = 0; pIndex < placements.length; pIndex++) {
+				placements[pIndex] = new GridBagConstraints();
+
+				placements[pIndex].fill = GridBagConstraints.BOTH;
+				placements[pIndex].weightx = 1.0;
+				placements[pIndex].insets = new Insets(0, 0,
+						GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
+
+				if (pIndex == placements.length - 1)
+					placements[pIndex].gridwidth = GridBagConstraints.REMAINDER;
+			}
+
+			int iterations = 0;
+			for (Data data : this.dataList) {
+
+				JButton button = data.createGUI();
+				button.setPreferredSize(new Dimension(0, GUI_ROW_HEIGHT));
+				this.guiPanel.add(button, placements[iterations % placements.length]);
+
+				iterations++;
+			}
+
+			return guiPanel;
+		}
 
 		/* ********************************************************* */
 		// * saving and loading *
 		/* ********************************************************* */
 		// FORMAT_DATA_SEPARATOR => DS
-		// [title] ([DS] [dataList.getSaveString()]) x dataList.size()
+		// [title] ([DS] [contentList.getSaveString()]) x contentList.size()
 		String getSaveString() {
 			StringBuilder sb = new StringBuilder();
 
 			//title
 			sb.append(this.title);
 
-			for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
+			for (Data data : this.dataList) {
 				sb.append(FORMAT_DATA_SEPARATOR);
-				sb.append(dataList.get(dataIndex).getSaveString());
+				sb.append(data.getSaveString());
 			}
 
 			return sb.toString();
@@ -652,12 +737,12 @@ public class PasswordManagerApp {
 			// load title
 			this.title = components[0];
 
-			// load dataList
+			// load contentList
 			for (int dataNo = 1; dataNo < components.length; dataNo++) {
-				Data data = loadData(components[dataNo]);
+				Data data = loadDataFromSaveString(components[dataNo]);
 
 				if (data == null)
-					return false; // loading the dataList has failed. well done me!
+					return false; // loading the contentList has failed. well done me!
 
 				this.add(data);
 			}
@@ -671,37 +756,49 @@ public class PasswordManagerApp {
 		static final char FORMAT_UNIT_SEPARATOR = 0x1F;
 
 		String title;
-		ArrayList<String> data;
+		ArrayList<String> contentList;
 		int copyDataIndex;
 
+		JButton guiButton;
+
 		private Data() {
-			this.data = new ArrayList<String>();
+			this.contentList = new ArrayList<String>();
 		}
 		public Data(String title, String data)
 		{
 			this();
 			this.title = title;
-			this.data.add(data);
+			this.contentList.add(data);
 			this.copyDataIndex = 0;
 		}
 
+		JButton createGUI() {
+
+			this.guiButton = new JButton(this.title);
+
+			this.guiButton.addActionListener(e -> {
+				System.out.println(this.title);
+			});
+
+			return this.guiButton;
+		}
 
 		// [FORMAT_UNIT_SEPARATOR] => US
-		// Save format [title] [US] [copyDataIndex] ([US] [data]) x data.size()
+		// Save format [title] [US] [copyDataIndex] ([US] [contentList]) x contentList.size()
 		String getSaveString() {
 			StringBuilder sb = new StringBuilder();
 
 			// Title
-			sb.append(title);
+			sb.append(this.title);
 
 			// copy Data Index
 			sb.append(FORMAT_UNIT_SEPARATOR);
-			sb.append(Integer.toString(copyDataIndex));
+			sb.append(Integer.toString(this.copyDataIndex));
 
 			// Data
-			for (int dataIndex = 0; dataIndex < data.size(); dataIndex++) {
+			for (String data : this.contentList) {
 				sb.append(FORMAT_UNIT_SEPARATOR);
-				sb.append(data.get(dataIndex));
+				sb.append(data);
 			}
 
 			return sb.toString();
@@ -725,7 +822,7 @@ public class PasswordManagerApp {
 			}
 
 			for (int componentNo = 2; componentNo < components.length; componentNo++) {
-				this.data.add(components[componentNo]);
+				this.contentList.add(components[componentNo]);
 			}
 
 			return true;
