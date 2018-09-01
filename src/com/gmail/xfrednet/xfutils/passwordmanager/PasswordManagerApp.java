@@ -47,11 +47,6 @@ import static javafx.application.Platform.exit;
 
 
 public class PasswordManagerApp {
-	public enum GUI_MODE {
-		GUI_GRID_MODE,
-		GUI_LIST_MODE
-	}
-
 
 	private static final boolean JUMP_ASK  = true;
 
@@ -76,6 +71,7 @@ public class PasswordManagerApp {
 
 	byte[] key;
 	private int currentMode;
+	private int buttonsPerRow;
 	ArrayList<DataTab> dataTabs;
 
 	//
@@ -112,6 +108,7 @@ public class PasswordManagerApp {
 	public PasswordManagerApp(byte[] key) {
 		this.key = key;
 		this.dataTabs = new ArrayList<DataTab>();
+		this.buttonsPerRow = 3;
 
 		if (!initSettings()) {
 			System.err.println("initSettings failed!");
@@ -323,10 +320,10 @@ public class PasswordManagerApp {
 		int iteration = 0;
 		for (DataTab tab : this.dataTabs) {
 
-			JPanel panel = tab.createGUI(3);
-			JScrollPane pane = new JScrollPane();
-			pane.add(panel);
-			this.guiDataTabs.insertTab(tab.title, null, pane, null, iteration);
+			JPanel panel = tab.initGUI(this.buttonsPerRow);
+			JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+			this.guiDataTabs.insertTab(tab.title, null, scrollPane, null, iteration);
 
 			iteration++;
 		}
@@ -360,8 +357,10 @@ public class PasswordManagerApp {
 		this.dataTabs.add(index, tab);
 
 		//gui
-		JPanel panel = tab.createGUI(3);
-		this.guiDataTabs.insertTab(tab.title, null, panel, null, index);
+		JPanel panel = tab.initGUI(this.buttonsPerRow);
+		JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+		this.guiDataTabs.insertTab(tab.title, null, scrollPane, null, index);
 		this.guiDataTabs.setSelectedIndex(index);
 
 		// update the addTab panel
@@ -657,19 +656,34 @@ public class PasswordManagerApp {
 		void add(Data data) {
 			this.dataList.add(data);
 		}
-		JPanel createGUI(int buttonsPerRow) {
-
-			/*
-			* Validation
-			*/
-			if (buttonsPerRow <= 0)
-				return null; // well there you have less than one button per row
+		JPanel initGUI(int buttonsPerRow) {
 
 			/*
 			* creating the GUI
 			*/
 			this.guiPanel = new JPanel();
 			this.guiPanel.setLayout(new GridBagLayout());
+
+			/*
+			* Create button GUIs
+			* */
+			for (Data data : this.dataList) {
+				data.createGUI();
+			}
+
+			/*
+			* update GUI
+			* */
+			updateGUI(buttonsPerRow);
+
+			return this.guiPanel;
+		}
+		void updateGUI(int buttonsPerRow) {
+			/*
+			 * Validation
+			 */
+			if (buttonsPerRow <= 0)
+				return; // well there you have less than one button per row
 
 			// The following is a roller coaster of emotions
 			//
@@ -688,26 +702,30 @@ public class PasswordManagerApp {
 			for (int pIndex = 0; pIndex < placements.length; pIndex++) {
 				placements[pIndex] = new GridBagConstraints();
 
-				placements[pIndex].fill = GridBagConstraints.BOTH;
+				placements[pIndex].fill    = GridBagConstraints.HORIZONTAL;
 				placements[pIndex].weightx = 1.0;
-				placements[pIndex].insets = new Insets(0, 0,
+				placements[pIndex].insets  = new Insets(0, 0,
 						GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
 
 				if (pIndex == placements.length - 1)
 					placements[pIndex].gridwidth = GridBagConstraints.REMAINDER;
 			}
 
+			/*
+			* Remove the buttons readd the buttons
+			* */
+			this.guiPanel.removeAll();
 			int iterations = 0;
 			for (Data data : this.dataList) {
 
-				JButton button = data.createGUI();
-				button.setPreferredSize(new Dimension(0, GUI_ROW_HEIGHT));
-				this.guiPanel.add(button, placements[iterations % placements.length]);
+				this.guiPanel.add(data.guiButton, placements[iterations % placements.length]);
 
 				iterations++;
 			}
 
-			return guiPanel;
+			// The buttons have a padding on the right and bottom
+			// this adds a padding to the top and left
+			this.guiPanel.setBorder(BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, 0, 0));
 		}
 
 		/* ********************************************************* */
@@ -775,6 +793,7 @@ public class PasswordManagerApp {
 		JButton createGUI() {
 
 			this.guiButton = new JButton(this.title);
+			this.guiButton.setPreferredSize(new Dimension(0, DataTab.GUI_ROW_HEIGHT));
 
 			this.guiButton.addActionListener(e -> {
 				System.out.println(this.title);
@@ -782,6 +801,7 @@ public class PasswordManagerApp {
 
 			return this.guiButton;
 		}
+
 
 		// [FORMAT_UNIT_SEPARATOR] => US
 		// Save format [title] [US] [copyDataIndex] ([US] [contentList]) x contentList.size()
