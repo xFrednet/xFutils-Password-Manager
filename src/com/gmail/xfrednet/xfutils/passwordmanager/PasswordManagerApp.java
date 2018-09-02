@@ -32,16 +32,18 @@
  ******************************************************************************/
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 import static javafx.application.Platform.exit;
 
@@ -56,10 +58,14 @@ public class PasswordManagerApp {
 	private static final int    SALT_SIZE          = 256;
 	private static final String SETTINGS_FILE_NAME = "settings.txt";
 
-	private static final Color[] GUI_MODE_INFO_COLORS = {Color.green, Color.blue, Color.red};
-	private static final Color   GUI_BORDER_COLOR     = new Color(0xacacac);
-	private static final int     GUI_DEFAULT_GAP      = 5;
-	private static final Border  GUI_DEFAULT_BORDER   = BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
+	private static final int       GUI_INFO_AREA_HEIGHT       = 100;
+	private static final Color[]   GUI_MODE_INFO_COLORS       = {Color.green, Color.blue, Color.red};
+	private static final Color     GUI_BORDER_COLOR           = new Color(0xacacac);
+	private static final int       GUI_DEFAULT_GAP            = 5;
+	private static final Border    GUI_DEFAULT_BORDER         = BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
+	private static final int       GUI_DATA_INFO_PANE_COUNT   = 5;
+	private static final int       GUI_DATA_INFO_LABEL_WIDTH  = 50;
+	private static final Dimension GUI_ICON_BUTTON_DIMENSIONS = new Dimension(24, 24);
 
 	private static final int     RETRIEVE_MODE       = 0;
 	private static final int     CHANGE_MODE         = 1;
@@ -80,6 +86,9 @@ public class PasswordManagerApp {
 	private JFrame window;
 	// info
 	private JPanel guiDataInfoPanel;
+
+	private JTextPane[] guiDataInfoPanes;
+
 	private JLabel guiModeInfoLabel;
 	private JPanel guiModeInfoColor;
 	private JButton[] guiModeButtons;
@@ -118,13 +127,20 @@ public class PasswordManagerApp {
 
 		//TODO load contentList
 		DataTab tab1 = new DataTab("tab 1");
-		tab1.add(new Data("Test data 1", "hello"));
-		tab1.add(new Data("Test data 2", "hello"));
-		tab1.add(new Data("Test data 3", "hello"));
-		tab1.add(new Data("Test data 4", "hello"));
-		tab1.add(new Data("Test data 5", "hello"));
-		tab1.add(new Data("Test data 6", "hello"));
-		tab1.add(new Data("Test data 7", "hello"));
+		tab1.add(new Data("Test data 1", "hello 1"));
+		tab1.dataList.get(0).contentList.add("This");
+		tab1.dataList.get(0).contentList.add("is");
+		tab1.dataList.get(0).contentList.add("xFrednet");
+		tab1.dataList.get(0).contentList.add("The");
+		tab1.dataList.get(0).contentList.add("One");
+		tab1.dataList.get(0).contentList.add("And");
+		tab1.dataList.get(0).contentList.add("Only");
+		tab1.add(new Data("Test data 2<br>next Line", "hello 2"));
+		tab1.add(new Data("Test data 3", "hello 3"));
+		tab1.add(new Data("Test data 4", "hello 4"));
+		tab1.add(new Data("Test data 5", "hello 5"));
+		tab1.add(new Data("Test data 6", "hello 6"));
+		tab1.add(new Data("Test data 7", "hello 7"));
 		this.dataTabs.add(tab1);
 
 		initBaseGUI();
@@ -132,7 +148,7 @@ public class PasswordManagerApp {
 		initTabGUI();
 		//TODO update contentList GUI
 
-		setMode(RETRIEVE_MODE);
+		setMode(CHANGE_MODE);
 	}
 
 	private boolean initSettings() {
@@ -143,7 +159,7 @@ public class PasswordManagerApp {
 
 			this.settings = Settings.InitDefault();
 			if (!this.settings.saveOptions(SETTINGS_FILE_NAME)) {
-				System.err.println("Saving the nwe  Settings instance has failed! bye bye :/");
+				System.err.println("Saving the new Settings instance has failed! bye bye :/");
 				return false;
 			}
 		}
@@ -207,22 +223,55 @@ public class PasswordManagerApp {
 		//
 		if (true) { // for folding
 			JPanel infoPanel = new JPanel();
-			infoPanel.setMinimumSize(new Dimension(0, 100) );
-			infoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100) );
+			infoPanel.setMinimumSize(new Dimension(0, GUI_INFO_AREA_HEIGHT) );
+			infoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, GUI_INFO_AREA_HEIGHT) );
 			infoPanel.setLayout(new GridLayout(1, 2));
 
+			//
 			// Data info 1/2
-			this.guiDataInfoPanel = new JPanel();
+			//
+			this.guiDataInfoPanel = new JPanel(new GridBagLayout());
 			this.guiDataInfoPanel.setBorder(BorderFactory.createCompoundBorder(
 					BorderFactory.createLineBorder(GUI_BORDER_COLOR),
 					GUI_DEFAULT_BORDER));
 			infoPanel.add(this.guiDataInfoPanel);
 
+
+			JLabel[] labels = new JLabel[GUI_DATA_INFO_PANE_COUNT];
+			this.guiDataInfoPanes = new JTextPane[GUI_DATA_INFO_PANE_COUNT];
+
+			// GridBagConstraints
+			GridBagConstraints labelConstrains = new GridBagConstraints();
+			labelConstrains.fill = GridBagConstraints.BOTH;
+			GridBagConstraints paneConstrains = new GridBagConstraints();
+			paneConstrains.fill = GridBagConstraints.BOTH;
+			paneConstrains.weightx = 1.0f;
+			paneConstrains.gridwidth = GridBagConstraints.REMAINDER;
+
+			for (int infoPaneIndex = 0; infoPaneIndex < GUI_DATA_INFO_PANE_COUNT; infoPaneIndex++) {
+				// label
+				labels[infoPaneIndex] = new JLabel();
+				labels[infoPaneIndex].setPreferredSize(new Dimension(GUI_DATA_INFO_LABEL_WIDTH, 0));
+
+				if (infoPaneIndex == 0) {
+					labels[infoPaneIndex].setText(this.language.INFO_PANEL_TITLE_LABEL);
+				} else {
+					String content = String.format(this.language.INFO_PANEL_DATA_LABEL, infoPaneIndex - 1);
+					labels[infoPaneIndex].setText(content);
+				}
+				this.guiDataInfoPanel.add(labels[infoPaneIndex], labelConstrains);
+
+				// text
+				this.guiDataInfoPanes[infoPaneIndex] = CreateSelectableText();
+				this.guiDataInfoPanes[infoPaneIndex].setText("<html>-</html>");
+				this.guiDataInfoPanel.add(this.guiDataInfoPanes[infoPaneIndex], paneConstrains);
+			}
+
 			//
 			// Mode 1/2
 			//
 			JPanel selectModePanel = new JPanel();
-			selectModePanel.setLayout(new GridLayout(3, 1, 5, 5));
+			selectModePanel.setLayout(new GridLayout(3, 1, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP));
 			selectModePanel.setBorder(BorderFactory.createCompoundBorder(
 					BorderFactory.createLineBorder(GUI_BORDER_COLOR),
 					GUI_DEFAULT_BORDER));
@@ -236,7 +285,7 @@ public class PasswordManagerApp {
 			selectModePanel.add(this.guiModeInfoColor);
 
 			// mode select buttons
-			JPanel modeButtonPanel = new JPanel(new GridLayout(1, 3, 5, 5));
+			JPanel modeButtonPanel = new JPanel(new GridLayout(1, 3, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP));
 			this.guiModeButtons = new JButton[3];
 			for (int modeButtonNo = 0; modeButtonNo < MODE_COUNT; modeButtonNo++) {
 				this.guiModeButtons[modeButtonNo] = new JButton(this.language.MODE_BUTTON_LABELS[modeButtonNo]);
@@ -522,6 +571,9 @@ public class PasswordManagerApp {
 		if (testString.contains(Data.FORMAT_UNIT_SEPARATOR + ""))
 			return false;
 
+		if (testString.contains("<html>") || testString.contains("</html>"))
+			return false;
+
 		return true;
 	}
 
@@ -560,6 +612,20 @@ public class PasswordManagerApp {
 				null,
 				options,
 				options[0]);
+	}
+	private static JTextPane CreateSelectableText() {
+
+		JTextPane testField = new JTextPane();
+
+		testField.setContentType("text/html"); // let the text pane know that I want HTML support
+		testField.setEditable(false);          // remove the edit option
+		testField.setBackground(null);         // Remove cosmetics
+		testField.setBorder(null);             // Remove cosmetics
+
+		return testField;
+	}
+	private static void CopyToClipboard(String text) {
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
 	}
 
 	private String getDataTabGroupSaveString(ArrayList<DataTab> tabs) {
@@ -633,10 +699,6 @@ public class PasswordManagerApp {
 		static final char FORMAT_TAB_SEPARATOR  = 0x1D;
 		static final char FORMAT_DATA_SEPARATOR = 0x1E;
 		static final int  GUI_ROW_HEIGHT = 50;
-
-		/* //////////////////////////////////////////////////////////////////////////////// */
-		// // Static group load and save functions //
-		/* //////////////////////////////////////////////////////////////////////////////// */
 
 		/* //////////////////////////////////////////////////////////////////////////////// */
 		// // Class //
@@ -782,27 +844,186 @@ public class PasswordManagerApp {
 		private Data() {
 			this.contentList = new ArrayList<String>();
 		}
-		public Data(String title, String data)
-		{
+		Data(String title, String data) {
 			this();
 			this.title = title;
 			this.contentList.add(data);
 			this.copyDataIndex = 0;
 		}
 
-		JButton createGUI() {
+		void createGUI() {
 
-			this.guiButton = new JButton(this.title);
+			this.guiButton = new JButton("<html>" + this.title + "</html>");
 			this.guiButton.setPreferredSize(new Dimension(0, DataTab.GUI_ROW_HEIGHT));
 
 			this.guiButton.addActionListener(e -> {
-				System.out.println(this.title);
-			});
 
-			return this.guiButton;
+				boolean saveChanges = false;
+
+				switch (PasswordManagerApp.this.currentMode) {
+					case RETRIEVE_MODE:
+						writeToInfoLabel();
+						break;
+					case CHANGE_MODE:
+						saveChanges = true;
+						openChangeDataGUI();
+						break;
+					case DELETE_MODE:
+						saveChanges = true;
+						break;
+				}
+
+				if (saveChanges) {
+					// TODO save changes
+				}
+			});
 		}
 
+		// actions
+		void writeToInfoLabel() {
 
+			//TODO maybe remove the line break for long titles or data
+			JTextPane[] panes = PasswordManagerApp.this.guiDataInfoPanes;
+
+			panes[0].setText("<html>" + this.title.replace("<br>", " ") + "</html>");
+
+			for (int paneIndex = 1; paneIndex < panes.length; paneIndex++) {
+				int contentIndex = paneIndex - 1;
+
+				if (contentIndex < this.contentList.size()) {
+					String content = this.contentList.get(contentIndex).replace("<br>", "");
+					panes[paneIndex].setText("<html>" + content + "</html>");
+
+				} else {
+					panes[paneIndex].setText("<html>-</html>");
+				}
+			}
+		}
+
+		/* ********************************************************* */
+		// * GUI stuff *
+		/* ********************************************************* */
+		void openChangeDataGUI() {
+
+			Language language = PasswordManagerApp.this.language;
+
+			//
+			// Create dialog
+			//
+			JDialog dialog = new JDialog(PasswordManagerApp.this.window);
+			dialog.setAutoRequestFocus(true);
+			dialog.setLocationRelativeTo(PasswordManagerApp.this.window);
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+			//
+			// Panel & Layout
+			//
+			ImageIcon editIcon   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("edit_icon.png")));
+			ImageIcon copyIcon   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("copy_icon.png")));
+			ImageIcon deleteIcon = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("delete_icon.png")));
+			ImageIcon checkIcon  = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("check_icon.png")));
+			Border panelBorder = BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(GUI_BORDER_COLOR, 1),
+					BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP / 2, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP / 2, GUI_DEFAULT_GAP));
+
+			GridLayout mainLayout = new GridLayout(this.contentList.size() + 1, 1);
+			JPanel mainPanel = new JPanel(mainLayout);
+			ButtonGroup radioGroup = new ButtonGroup();
+
+			//
+			// GridBagLayout constrains
+			//
+			// radioConstrains
+			GridBagConstraints radioConstrains = new GridBagConstraints();
+			radioConstrains.fill           = GridBagConstraints.HORIZONTAL;
+			radioConstrains.insets         = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+			// labelConstrains
+			GridBagConstraints labelConstrains = new GridBagConstraints();
+			labelConstrains.fill           = GridBagConstraints.HORIZONTAL;
+			labelConstrains.insets         = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+			// dataConstrains
+			GridBagConstraints dataConstrains = new GridBagConstraints();
+			dataConstrains.fill            = GridBagConstraints.HORIZONTAL;
+			dataConstrains.weightx         = 1.0;
+			dataConstrains.insets          = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+			// editIconConstrains
+			GridBagConstraints editIconConstrains = new GridBagConstraints();
+			editIconConstrains.fill        = GridBagConstraints.HORIZONTAL;
+			editIconConstrains.insets      = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+			// copyIconConstrains
+			GridBagConstraints copyIconConstrains = new GridBagConstraints();
+			copyIconConstrains.fill        = GridBagConstraints.HORIZONTAL;
+			copyIconConstrains.insets      = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+			// deleteIconConstrains
+			GridBagConstraints deleteIconConstrains = new GridBagConstraints();
+			deleteIconConstrains.fill      = GridBagConstraints.HORIZONTAL;
+			deleteIconConstrains.gridwidth = GridBagConstraints.REMAINDER; // end row
+			deleteIconConstrains.insets    = new Insets(0, 0, 0, 0); // no insets, done by the panel
+
+			//
+			// Add title
+			//
+			if (true) { // for folding
+				JPanel titlePanel = new JPanel(new GridBagLayout());
+				titlePanel.setBorder(panelBorder);
+
+				titlePanel.add(new JPanel(), radioConstrains); // no radio button
+
+				// titleLabel
+				JLabel titleLabel = new JLabel(language.INFO_PANEL_TITLE_LABEL);
+				titlePanel.add(titleLabel, labelConstrains);
+
+				// titleField
+				JTextPane titleField = CreateSelectableText();
+				titleField.setContentType("text/plain");
+				titleField.setText(this.title);
+				titlePanel.add(titleField, dataConstrains);
+
+				// editTitleButton
+				JButton editTitleButton = new JButton(editIcon);
+				editTitleButton.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+				editTitleButton.addActionListener(e -> {
+					System.out.println("editTitleButton: Edit le title");
+				});
+				titlePanel.add(editTitleButton, editIconConstrains);
+
+				// copyTitleButton
+				JButton copyTitleButton = new JButton(copyIcon);
+				copyTitleButton.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+				copyTitleButton.addActionListener(e -> {
+					CopyToClipboard(this.title);
+				});
+				titlePanel.add(copyTitleButton, copyIconConstrains);
+
+				titlePanel.add(new JPanel(), deleteIconConstrains); // no delete Icon for the title
+
+				// add to the main panel, not that I may have ever forgotten that
+				mainPanel.add(titlePanel);
+			}
+
+			//
+			// Add content rows
+			//
+			for (int contentIndex = 0; contentIndex < this.contentList.size(); contentIndex++) {
+				JPanel panel = new JPanel();
+				panel.setBorder(panelBorder);
+
+				//TODO add content row
+
+				mainPanel.add(panel);
+			}
+
+			//
+			// Show dialog
+			//
+			dialog.setContentPane(mainPanel);
+			dialog.pack();
+			dialog.setVisible(true);
+		}
+
+		/* ********************************************************* */
+		// * saving and loading *
+		/* ********************************************************* */
 		// [FORMAT_UNIT_SEPARATOR] => US
 		// Save format [title] [US] [copyDataIndex] ([US] [contentList]) x contentList.size()
 		String getSaveString() {

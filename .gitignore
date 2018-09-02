@@ -3,6 +3,7 @@ salt.and.pepper
 
 # Compiled class file
 *.class
+out/
 
 # Log file
 *.log

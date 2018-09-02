@@ -42,6 +42,8 @@ public class Language {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Info panel //
 	/* //////////////////////////////////////////////////////////////////////////////// */
+	public final String INFO_PANEL_TITLE_LABEL = "Name: ";
+	public final String INFO_PANEL_DATA_LABEL = "Data %d: ";
 	public final String NO_MODE_SELECTED = "No mode is selected";
 	public final String[] MODE_BUTTON_LABELS = {"Retrieve mode", "Change mode", "Delete mode"};
 	public final String[] MODE_INFO_LABEL_TEXT = {
@@ -51,7 +53,7 @@ public class Language {
 	};
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	// // Info panel //
+	// // Add tab panel //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	public final String ADD_TAB_NAME_FIELD_TEXT = "Please enter the name of the new Tab";
 	public final String ADD_TAB_INDEX_LABEL = "Index:";
