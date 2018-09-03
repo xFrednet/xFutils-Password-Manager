@@ -32,13 +32,13 @@
  ******************************************************************************/
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
-import javafx.scene.control.RadioButton;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -92,6 +92,8 @@ public class PasswordManagerApp {
 	// Base GUI
 	//
 	private JFrame window;
+
+	private JMenuItem guiAddDataMItem;
 
 	private JTextPane[] guiDataInfoPanes;
 
@@ -200,7 +202,7 @@ public class PasswordManagerApp {
 
 			fileMenu.add(new JMenuItem("TODO Change Password"));
 			fileMenu.add(new JPopupMenu.Separator());
-			fileMenu.add(new JMenuItem("TODO Add Data"));
+
 			fileMenu.add(new JPopupMenu.Separator());
 			fileMenu.add(new JMenuItem("TODO Copy Salt"));
 			fileMenu.add(new JMenuItem("TODO Make Backup"));
@@ -209,8 +211,13 @@ public class PasswordManagerApp {
 			menuBar.add(fileMenu);
 
 			// add Data
-			JMenu addDataMenu = new JMenu("TODO Add Data");
-			menuBar.add(addDataMenu);
+			this.guiAddDataMItem = new JMenuItem(this.language.ADD_DATA_MENU_NAME);
+			this.guiAddDataMItem.addActionListener(e -> {
+				int tabIndex = this.guiDataTabs.getSelectedIndex();
+
+				this.dataTabs.get(tabIndex).createData(this.buttonsPerRow);
+			});
+			menuBar.add(this.guiAddDataMItem);
 
 			// extra
 			JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
@@ -404,7 +411,7 @@ public class PasswordManagerApp {
 		System.out.println("A new Mode was selected! Mode: " + this.language.MODE_BUTTON_LABELS[modeID]);
 	}
 	private void createTab(String name, int index) {
-		if (!IsStringSupported(name)) {
+		if (IsStringInvalid(name)) {
 			ShowInfoDialog(this.language.ERROR_STRING_NOT_SUPPORTED, this.window);
 			return;
 		}
@@ -565,23 +572,23 @@ public class PasswordManagerApp {
 
 		return false; // The writing failed
 	}
-	private static boolean IsStringSupported(String testString) {
+	private static boolean IsStringInvalid(String testString) {
 		if (testString.isEmpty())
-			return false;
+			return true;
 
 		if (testString.contains(DataTab.FORMAT_TAB_SEPARATOR + ""))
-			return false;
+			return true;
 
 		if (testString.contains(DataTab.FORMAT_DATA_SEPARATOR + ""))
-			return false;
+			return true;
 
 		if (testString.contains(Data.FORMAT_UNIT_SEPARATOR + ""))
-			return false;
+			return true;
 
 		if (testString.contains("<html>") || testString.contains("</html>"))
-			return false;
+			return true;
 
-		return true;
+		return false;
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -614,7 +621,7 @@ public class PasswordManagerApp {
 		Object[] options = {"OK"};
 		JOptionPane.showOptionDialog(parent,
 				infoString,TITLE,
-				JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.DEFAULT_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
 				null,
 				options,
@@ -724,6 +731,19 @@ public class PasswordManagerApp {
 		/* ********************************************************* */
 		void add(Data data) {
 			this.dataList.add(data);
+		}
+		void createData(int buttonsPerRow) {
+			Data data = new Data(PasswordManagerApp.this.language.NEW_DATA_DEFAULT_TITLE);
+			data.openChangeDataGUI(true);
+
+			if (data.contentList.size() == 0) {
+				return; // the data is invalid
+			}
+
+			this.dataList.add(data);
+
+			data.createGUI();
+			updateGUI(buttonsPerRow);
 		}
 		JPanel initGUI(int buttonsPerRow) {
 
@@ -851,6 +871,11 @@ public class PasswordManagerApp {
 		private Data() {
 			this.contentList = new ArrayList<String>();
 		}
+		Data(String title) {
+			this();
+			this.title = title;
+			this.copyDataIndex = 0;
+		}
 		Data(String title, String data) {
 			this();
 			this.title = title;
@@ -873,7 +898,7 @@ public class PasswordManagerApp {
 						break;
 					case CHANGE_MODE:
 						saveChanges = true;
-						openChangeDataGUI();
+						openChangeDataGUI(false);
 						break;
 					case DELETE_MODE:
 						saveChanges = true;
@@ -910,7 +935,8 @@ public class PasswordManagerApp {
 		/* ********************************************************* */
 		// * GUI stuff *
 		/* ********************************************************* */
-		void openChangeDataGUI() {
+		void openChangeDataGUI(boolean newlyCreated) {
+			final int GUI_EDIT_DATA_COMPONENT_INDEX = 3;
 			Language language = PasswordManagerApp.this.language;
 
 			//
@@ -935,11 +961,13 @@ public class PasswordManagerApp {
 			JPanel titlePanel = createChangeDataGUITitleRow();
 			JTextPane titleField = (JTextPane) titlePanel.getComponent(2);
 			mainPanel.add(titlePanel);
+			if (newlyCreated) {
+				((JButton)titlePanel.getComponent(GUI_EDIT_DATA_COMPONENT_INDEX)).doClick();
+			}
 
 			//
 			// Add content rows
 			//
-			final int GUI_EDIT_DATA_COMPONENT_INDEX = 3;
 			ArrayList<JRadioButton> radioList = new ArrayList<JRadioButton>();
 			ArrayList<JTextPane> dataFields = new ArrayList<JTextPane>();
 			for (int contentIndex = 0; contentIndex < this.contentList.size(); contentIndex++) {
@@ -970,6 +998,9 @@ public class PasswordManagerApp {
 				dialog.setSize(dialog.getWidth(), dialog.getHeight() + titlePanel.getHeight());
 			});
 			actionRow.add(addDataButton);
+			if (newlyCreated) {
+				addDataButton.doClick();
+			}
 
 			JButton saveDataButton = new JButton(language.CHANGE_DATA_SAVE_BUTTON_LABEL);
 			saveDataButton.addActionListener(e -> {
@@ -977,7 +1008,7 @@ public class PasswordManagerApp {
 				//
 				// Validation
 				//
-				if (!IsStringSupported(titleField.getText())) {
+				if (IsStringInvalid(titleField.getText())) {
 					ShowInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
 					return; // couldn't save give the user the option to change the input
 				}
@@ -989,7 +1020,7 @@ public class PasswordManagerApp {
 						continue; // jup deleted
 					}
 
-					if (!IsStringSupported(dataField.getText())) {
+					if (IsStringInvalid(dataField.getText())) {
 						ShowInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
 						return; // couldn't save give the user the option to change the input
 					}
@@ -1033,7 +1064,8 @@ public class PasswordManagerApp {
 				//
 				// Finish
 				//
-				this.guiButton.setText("<html>" + this.title + "</html>");
+				if (this.guiButton != null)
+					this.guiButton.setText("<html>" + this.title + "</html>");
 				dialog.dispose();
 			});
 			actionRow.add(saveDataButton);
@@ -1052,6 +1084,7 @@ public class PasswordManagerApp {
 			dialog.setContentPane(mainPanel);
 			dialog.pack();
 			dialog.setSize(GUI_CHANGE_DATA_GUI_DEFAULT_WIDTH, dialog.getHeight());
+			dialog.setModal(true); // makes it a real pop up that pauses the program
 			dialog.setVisible(true);
 		}
 		private JPanel createChangeDataGUITitleRow() {
@@ -1283,8 +1316,6 @@ public class PasswordManagerApp {
 					dataField.setBackground(GUI_DELETET_DATA_BACKGOUND);
 					dataField.setEditable(false);
 					dataField.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-
-					//TODO put data fiel out of edit mode
 				} else {
 					//
 					// undo

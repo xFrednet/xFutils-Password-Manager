@@ -38,6 +38,8 @@ public class Language {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	public final String FILE_MENU_NAME = "File";
 	public final String EXTRAS_MENU_NAME = "Extras";
+	public final String ADD_DATA_MENU_NAME = "Add data";
+	public final String NEW_DATA_DEFAULT_TITLE = "Title";
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Info panel //
