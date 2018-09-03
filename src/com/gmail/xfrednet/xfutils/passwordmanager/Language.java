@@ -60,7 +60,20 @@ public class Language {
 	public final String ADD_TAB_BUTTON_LABEL = "Add tab";
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
+	// // change Data panel //
+	/* //////////////////////////////////////////////////////////////////////////////// */
+	public final String CHANGE_DATA_ADD_BUTTON_LABEL = "Add data";
+	public final String CHANGE_DATA_SAVE_BUTTON_LABEL = "Save data";
+	public final String CHANGE_DATA_CANCEL_BUTTON_LABEL = "Cancel";
+	public final String CHANGE_DATA_COPY_INDEX_SELECT_RADIO_TOOLTIP = "This decides which data will be copied to clipboard using the shortcut";
+	public final String CHANGE_DATA_EDIT_BUTTON_TOOLTIP = "Press to edit this data";
+	public final String CHANGE_DATA_COPY_BUTTON_TOOLTIP = "Copies the data to the clipboard";
+	public final String CHANGE_DATA_REMOVE_BUTTON_TOOLTIP = "Press to remove this data";
+	public final String CHANGE_DATA_UNDO_BUTTON_TOOLTIP = "Press to edit this data";
+
+	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Error/Warning messages //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	public final String ERROR_STRING_NOT_SUPPORTED = "The entered string contains unsupported characters";
+	public final String ERROR_DATA_0_ENTRIES = "This title has to have at least 1 string associated with it";
 }

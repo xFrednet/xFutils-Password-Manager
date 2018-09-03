@@ -32,14 +32,14 @@
  ******************************************************************************/
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
-import javax.imageio.ImageIO;
+import javafx.scene.control.RadioButton;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,14 +58,22 @@ public class PasswordManagerApp {
 	private static final int    SALT_SIZE          = 256;
 	private static final String SETTINGS_FILE_NAME = "settings.txt";
 
+	private static final Color     GUI_DELETET_DATA_BACKGOUND = Color.red;
 	private static final int       GUI_INFO_AREA_HEIGHT       = 100;
 	private static final Color[]   GUI_MODE_INFO_COLORS       = {Color.green, Color.blue, Color.red};
 	private static final Color     GUI_BORDER_COLOR           = new Color(0xacacac);
 	private static final int       GUI_DEFAULT_GAP            = 5;
-	private static final Border    GUI_DEFAULT_BORDER         = BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
+	private static final Border    GUI_DEFAULT_GAP_BORDER     = BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
 	private static final int       GUI_DATA_INFO_PANE_COUNT   = 5;
 	private static final int       GUI_DATA_INFO_LABEL_WIDTH  = 50;
 	private static final Dimension GUI_ICON_BUTTON_DIMENSIONS = new Dimension(24, 24);
+	private static final int       GUI_CHANGE_DATA_GUI_DEFAULT_WIDTH = 500;
+
+	private static final ImageIcon GUI_EDIT_ICON              = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("edit_icon.png")));
+	private static final ImageIcon GUI_COPY_ICON              = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("copy_icon.png")));
+	private static final ImageIcon GUI_DELETE_ICON            = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("delete_icon.png")));
+	private static final ImageIcon GUI_CHECK_ICON             = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("check_icon.png")));
+	private static final ImageIcon GUI_UNDO_ICON             = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("undo_icon.png")));
 
 	private static final int     RETRIEVE_MODE       = 0;
 	private static final int     CHANGE_MODE         = 1;
@@ -75,17 +83,15 @@ public class PasswordManagerApp {
 	private Settings settings;
 	private final Language language = new Language();
 
-	byte[] key;
+	private byte[] key;
 	private int currentMode;
 	private int buttonsPerRow;
-	ArrayList<DataTab> dataTabs;
+	private ArrayList<DataTab> dataTabs;
 
 	//
 	// Base GUI
 	//
 	private JFrame window;
-	// info
-	private JPanel guiDataInfoPanel;
 
 	private JTextPane[] guiDataInfoPanes;
 
@@ -114,7 +120,7 @@ public class PasswordManagerApp {
 
 	}
 
-	public PasswordManagerApp(byte[] key) {
+	private PasswordManagerApp(byte[] key) {
 		this.key = key;
 		this.dataTabs = new ArrayList<DataTab>();
 		this.buttonsPerRow = 3;
@@ -230,11 +236,12 @@ public class PasswordManagerApp {
 			//
 			// Data info 1/2
 			//
-			this.guiDataInfoPanel = new JPanel(new GridBagLayout());
-			this.guiDataInfoPanel.setBorder(BorderFactory.createCompoundBorder(
+			// info
+			JPanel guiDataInfoPanel = new JPanel(new GridBagLayout());
+			guiDataInfoPanel.setBorder(BorderFactory.createCompoundBorder(
 					BorderFactory.createLineBorder(GUI_BORDER_COLOR),
-					GUI_DEFAULT_BORDER));
-			infoPanel.add(this.guiDataInfoPanel);
+					GUI_DEFAULT_GAP_BORDER));
+			infoPanel.add(guiDataInfoPanel);
 
 
 			JLabel[] labels = new JLabel[GUI_DATA_INFO_PANE_COUNT];
@@ -259,12 +266,12 @@ public class PasswordManagerApp {
 					String content = String.format(this.language.INFO_PANEL_DATA_LABEL, infoPaneIndex - 1);
 					labels[infoPaneIndex].setText(content);
 				}
-				this.guiDataInfoPanel.add(labels[infoPaneIndex], labelConstrains);
+				guiDataInfoPanel.add(labels[infoPaneIndex], labelConstrains);
 
 				// text
 				this.guiDataInfoPanes[infoPaneIndex] = CreateSelectableText();
 				this.guiDataInfoPanes[infoPaneIndex].setText("<html>-</html>");
-				this.guiDataInfoPanel.add(this.guiDataInfoPanes[infoPaneIndex], paneConstrains);
+				guiDataInfoPanel.add(this.guiDataInfoPanes[infoPaneIndex], paneConstrains);
 			}
 
 			//
@@ -274,7 +281,7 @@ public class PasswordManagerApp {
 			selectModePanel.setLayout(new GridLayout(3, 1, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP));
 			selectModePanel.setBorder(BorderFactory.createCompoundBorder(
 					BorderFactory.createLineBorder(GUI_BORDER_COLOR),
-					GUI_DEFAULT_BORDER));
+					GUI_DEFAULT_GAP_BORDER));
 
 			// guiModeInfoLabel
 			this.guiModeInfoLabel = new JLabel(this.language.NO_MODE_SELECTED, JLabel.LEFT);
@@ -586,8 +593,8 @@ public class PasswordManagerApp {
 	private static String ArrayToHex(byte[] data) {
 		StringBuilder sb = new StringBuilder();
 
-		for (int index = 0; index < data.length; index++) {
-			sb.append(String.format("%02X", data[index]));
+		for (byte b : data) {
+			sb.append(String.format("%02X", b));
 		}
 
 		return sb.toString();
@@ -654,8 +661,8 @@ public class PasswordManagerApp {
 		}
 
 		ArrayList<DataTab> tabs = new ArrayList<DataTab>();
-		for (int componentIndex = 0; componentIndex < components.length; componentIndex++) {
-			DataTab tab = loadDataTabFromSaveString(components[componentIndex]);
+		for (String component : components) {
+			DataTab tab = loadDataTabFromSaveString(component);
 
 			if (tab == null) {
 				return null; // the tab failed to load
@@ -853,7 +860,7 @@ public class PasswordManagerApp {
 
 		void createGUI() {
 
-			this.guiButton = new JButton("<html>" + this.title + "</html>");
+			this.guiButton = new JButton("<html>" + this.title + "</html>"); // this text is also updated by the change gui save button
 			this.guiButton.setPreferredSize(new Dimension(0, DataTab.GUI_ROW_HEIGHT));
 
 			this.guiButton.addActionListener(e -> {
@@ -904,7 +911,6 @@ public class PasswordManagerApp {
 		// * GUI stuff *
 		/* ********************************************************* */
 		void openChangeDataGUI() {
-
 			Language language = PasswordManagerApp.this.language;
 
 			//
@@ -914,111 +920,393 @@ public class PasswordManagerApp {
 			dialog.setAutoRequestFocus(true);
 			dialog.setLocationRelativeTo(PasswordManagerApp.this.window);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setResizable(false);
 
 			//
 			// Panel & Layout
 			//
-			ImageIcon editIcon   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("edit_icon.png")));
-			ImageIcon copyIcon   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("copy_icon.png")));
-			ImageIcon deleteIcon = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("delete_icon.png")));
-			ImageIcon checkIcon  = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("check_icon.png")));
-			Border panelBorder = BorderFactory.createCompoundBorder(
-					BorderFactory.createLineBorder(GUI_BORDER_COLOR, 1),
-					BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP / 2, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP / 2, GUI_DEFAULT_GAP));
-
-			GridLayout mainLayout = new GridLayout(this.contentList.size() + 1, 1);
+			GridLayout mainLayout = new GridLayout(1 + this.contentList.size() + 1, 1);
 			JPanel mainPanel = new JPanel(mainLayout);
 			ButtonGroup radioGroup = new ButtonGroup();
 
 			//
-			// GridBagLayout constrains
-			//
-			// radioConstrains
-			GridBagConstraints radioConstrains = new GridBagConstraints();
-			radioConstrains.fill           = GridBagConstraints.HORIZONTAL;
-			radioConstrains.insets         = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
-			// labelConstrains
-			GridBagConstraints labelConstrains = new GridBagConstraints();
-			labelConstrains.fill           = GridBagConstraints.HORIZONTAL;
-			labelConstrains.insets         = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
-			// dataConstrains
-			GridBagConstraints dataConstrains = new GridBagConstraints();
-			dataConstrains.fill            = GridBagConstraints.HORIZONTAL;
-			dataConstrains.weightx         = 1.0;
-			dataConstrains.insets          = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
-			// editIconConstrains
-			GridBagConstraints editIconConstrains = new GridBagConstraints();
-			editIconConstrains.fill        = GridBagConstraints.HORIZONTAL;
-			editIconConstrains.insets      = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
-			// copyIconConstrains
-			GridBagConstraints copyIconConstrains = new GridBagConstraints();
-			copyIconConstrains.fill        = GridBagConstraints.HORIZONTAL;
-			copyIconConstrains.insets      = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
-			// deleteIconConstrains
-			GridBagConstraints deleteIconConstrains = new GridBagConstraints();
-			deleteIconConstrains.fill      = GridBagConstraints.HORIZONTAL;
-			deleteIconConstrains.gridwidth = GridBagConstraints.REMAINDER; // end row
-			deleteIconConstrains.insets    = new Insets(0, 0, 0, 0); // no insets, done by the panel
-
-			//
 			// Add title
 			//
-			if (true) { // for folding
-				JPanel titlePanel = new JPanel(new GridBagLayout());
-				titlePanel.setBorder(panelBorder);
-
-				titlePanel.add(new JPanel(), radioConstrains); // no radio button
-
-				// titleLabel
-				JLabel titleLabel = new JLabel(language.INFO_PANEL_TITLE_LABEL);
-				titlePanel.add(titleLabel, labelConstrains);
-
-				// titleField
-				JTextPane titleField = CreateSelectableText();
-				titleField.setContentType("text/plain");
-				titleField.setText(this.title);
-				titlePanel.add(titleField, dataConstrains);
-
-				// editTitleButton
-				JButton editTitleButton = new JButton(editIcon);
-				editTitleButton.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
-				editTitleButton.addActionListener(e -> {
-					System.out.println("editTitleButton: Edit le title");
-				});
-				titlePanel.add(editTitleButton, editIconConstrains);
-
-				// copyTitleButton
-				JButton copyTitleButton = new JButton(copyIcon);
-				copyTitleButton.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
-				copyTitleButton.addActionListener(e -> {
-					CopyToClipboard(this.title);
-				});
-				titlePanel.add(copyTitleButton, copyIconConstrains);
-
-				titlePanel.add(new JPanel(), deleteIconConstrains); // no delete Icon for the title
-
-				// add to the main panel, not that I may have ever forgotten that
-				mainPanel.add(titlePanel);
-			}
+			JPanel titlePanel = createChangeDataGUITitleRow();
+			JTextPane titleField = (JTextPane) titlePanel.getComponent(2);
+			mainPanel.add(titlePanel);
 
 			//
 			// Add content rows
 			//
+			final int GUI_EDIT_DATA_COMPONENT_INDEX = 3;
+			ArrayList<JRadioButton> radioList = new ArrayList<JRadioButton>();
+			ArrayList<JTextPane> dataFields = new ArrayList<JTextPane>();
 			for (int contentIndex = 0; contentIndex < this.contentList.size(); contentIndex++) {
-				JPanel panel = new JPanel();
-				panel.setBorder(panelBorder);
-
-				//TODO add content row
-
-				mainPanel.add(panel);
+				mainPanel.add(createChangeDataGUIDataRow(contentIndex, radioGroup, radioList, dataFields));
 			}
+
+			//
+			// action button row
+			//
+			JPanel actionRow = new JPanel(new GridLayout(1, 3, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP));
+			actionRow.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(GUI_BORDER_COLOR),
+					GUI_DEFAULT_GAP_BORDER));
+
+			JButton addDataButton = new JButton(language.CHANGE_DATA_ADD_BUTTON_LABEL);
+			addDataButton.addActionListener(e -> {
+				int index = dataFields.size();
+
+				// add panel
+				mainLayout.setRows(mainLayout.getRows() + 1);
+				JPanel dataRowPanel = createChangeDataGUIDataRow(index, radioGroup, radioList, dataFields);
+				mainPanel.add(dataRowPanel, index + 1);
+				((JButton)dataRowPanel.getComponent(GUI_EDIT_DATA_COMPONENT_INDEX)).doClick();
+
+				mainPanel.updateUI();
+
+				// resize the dialog
+				dialog.setSize(dialog.getWidth(), dialog.getHeight() + titlePanel.getHeight());
+			});
+			actionRow.add(addDataButton);
+
+			JButton saveDataButton = new JButton(language.CHANGE_DATA_SAVE_BUTTON_LABEL);
+			saveDataButton.addActionListener(e -> {
+
+				//
+				// Validation
+				//
+				if (!IsStringSupported(titleField.getText())) {
+					ShowInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
+					return; // couldn't save give the user the option to change the input
+				}
+				int dataCount = 0;
+				for (JTextPane dataField : dataFields) {
+
+					// test if this data was deleted
+					if (dataField.getBackground() == GUI_DELETET_DATA_BACKGOUND) {
+						continue; // jup deleted
+					}
+
+					if (!IsStringSupported(dataField.getText())) {
+						ShowInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
+						return; // couldn't save give the user the option to change the input
+					}
+					dataCount++;
+				}
+				if (dataCount == 0) {
+					ShowInfoDialog(language.ERROR_DATA_0_ENTRIES, dialog);
+					return; // couldn't save give the user the option to change the input
+				}
+
+				//
+				// Save to this class
+				//
+				this.title = titleField.getText();
+				this.contentList.clear();
+				this.copyDataIndex = 0;
+				int rowIndex = -1; // the index of the current loop
+				int dataIndex = 0;
+				for (JTextPane dataField : dataFields) {
+
+					rowIndex++;
+
+					// test if this data was deleted
+					if (dataField.getBackground() == GUI_DELETET_DATA_BACKGOUND) {
+						continue; // jup deleted
+					}
+
+					this.contentList.add(dataField.getText());
+
+					if (radioList.get(rowIndex).isSelected())
+						this.copyDataIndex = dataIndex;
+
+					dataIndex++;
+				}
+
+				//
+				// Save to file
+				//
+				// TODO save to file
+
+				//
+				// Finish
+				//
+				this.guiButton.setText("<html>" + this.title + "</html>");
+				dialog.dispose();
+			});
+			actionRow.add(saveDataButton);
+
+			JButton cancelEditButton = new JButton(language.CHANGE_DATA_CANCEL_BUTTON_LABEL);
+			cancelEditButton.addActionListener(e -> {
+				dialog.dispose();
+			});
+			actionRow.add(cancelEditButton);
+
+			mainPanel.add(actionRow);
 
 			//
 			// Show dialog
 			//
 			dialog.setContentPane(mainPanel);
 			dialog.pack();
+			dialog.setSize(GUI_CHANGE_DATA_GUI_DEFAULT_WIDTH, dialog.getHeight());
 			dialog.setVisible(true);
+		}
+		private JPanel createChangeDataGUITitleRow() {
+			JPanel titlePanel = new JPanel(new GridBagLayout());
+			titlePanel.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(GUI_BORDER_COLOR, 1),
+					BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP / 2, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP / 2, GUI_DEFAULT_GAP)));
+
+			//
+			// Radio button fill panel
+			//
+			GridBagConstraints fillPanelConstraints1 = new GridBagConstraints();
+			fillPanelConstraints1.fill           = GridBagConstraints.HORIZONTAL;
+			fillPanelConstraints1.insets         = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+
+			JPanel fillPanel1 = new JPanel();
+			fillPanel1.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+			titlePanel.add(fillPanel1, fillPanelConstraints1); // no radio button
+
+			//
+			// titleLabel
+			//
+			GridBagConstraints labelConstrains = new GridBagConstraints();
+			labelConstrains.fill           = GridBagConstraints.HORIZONTAL;
+			labelConstrains.insets         = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+			titlePanel.add(new JLabel(language.INFO_PANEL_TITLE_LABEL), labelConstrains);
+
+			// titleField
+			GridBagConstraints dataConstrains = new GridBagConstraints();
+			dataConstrains.fill            = GridBagConstraints.HORIZONTAL;
+			dataConstrains.weightx         = 1.0;
+			dataConstrains.insets          = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+
+			JTextPane titleField = CreateSelectableText();
+			titleField.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+			titleField.setName("titleField");
+			titleField.setContentType("text/plain");
+			titleField.setText(this.title);
+			titlePanel.add(titleField, dataConstrains);
+
+			// editTitleButton
+			GridBagConstraints editIconConstrains = new GridBagConstraints();
+			editIconConstrains.fill        = GridBagConstraints.HORIZONTAL;
+			editIconConstrains.insets      = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+
+			JButton editTitleButton = new JButton(GUI_EDIT_ICON);
+			editTitleButton.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+			editTitleButton.setToolTipText(language.CHANGE_DATA_EDIT_BUTTON_TOOLTIP);
+			editTitleButton.addActionListener(e -> {
+				if (editTitleButton.getIcon().equals(GUI_EDIT_ICON)) {
+
+					//
+					// make the data field eatable(no this is not a typo)
+					//
+					titleField.setEditable(true);
+					titleField.setBorder(BorderFactory.createLineBorder(GUI_BORDER_COLOR));
+					titleField.setCaretPosition(titleField.getText().length());
+					titleField.requestFocus();
+
+					editTitleButton.setIcon(GUI_CHECK_ICON);
+				} else {
+
+					//
+					// make uneatable(again not a typo) nad remove visual border
+					//
+					titleField.setEditable(false);
+					titleField.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+					editTitleButton.setIcon(GUI_EDIT_ICON);
+				}
+			});
+			titlePanel.add(editTitleButton, editIconConstrains);
+
+			//
+			// copyTitleButton
+			//
+			GridBagConstraints copyIconConstrains = new GridBagConstraints();
+			copyIconConstrains.fill        = GridBagConstraints.HORIZONTAL;
+			copyIconConstrains.insets      = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+
+			JButton copyTitleButton = new JButton(GUI_COPY_ICON);
+			copyTitleButton.setToolTipText(language.CHANGE_DATA_COPY_BUTTON_TOOLTIP);
+			copyTitleButton.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+			copyTitleButton.addActionListener(e -> {
+				CopyToClipboard(this.title);
+			});
+			titlePanel.add(copyTitleButton, copyIconConstrains);
+
+			//
+			// Delete icon fill panel
+			//
+			GridBagConstraints fillPanelConstraints2 = new GridBagConstraints();
+			fillPanelConstraints2.fill      = GridBagConstraints.HORIZONTAL;
+			fillPanelConstraints2.gridwidth = GridBagConstraints.REMAINDER; // end row
+			fillPanelConstraints2.insets    = new Insets(0, 0, 0, 0); // no insets, done by the panel
+
+			JPanel fillPanel2 = new JPanel();
+			fillPanel2.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+			titlePanel.add(fillPanel2, fillPanelConstraints2); // no delete Icon for the title
+
+			return titlePanel;
+		}
+		private JPanel createChangeDataGUIDataRow(int index, ButtonGroup radioGroup, ArrayList<JRadioButton> radioList, ArrayList<JTextPane> dataFields) {
+			//
+			// Create Panel
+			//
+			JPanel titlePanel = new JPanel(new GridBagLayout());
+			titlePanel.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(GUI_BORDER_COLOR, 1),
+					BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP / 2, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP / 2, GUI_DEFAULT_GAP)));
+
+			//
+			// Radio
+			//
+			GridBagConstraints radioConstrains = new GridBagConstraints();
+			radioConstrains.fill           = GridBagConstraints.HORIZONTAL;
+			radioConstrains.insets         = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+
+			JRadioButton copyIndexRadio = new JRadioButton();  // the best radio on the world
+			copyIndexRadio.setSelected(index == this.copyDataIndex);
+			copyIndexRadio.setToolTipText(language.CHANGE_DATA_COPY_INDEX_SELECT_RADIO_TOOLTIP);
+			JPanel radioHome = new JPanel(); // I need a home to keep the space if copyIndexRadio is invisible
+			radioHome.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+			radioHome.add(copyIndexRadio); // move into the home
+			radioGroup.add(copyIndexRadio); // Join a radio station
+			radioList.add(copyIndexRadio);
+			titlePanel.add(radioHome, radioConstrains); // Advertisement for the new Radio (I need a life)
+
+			// title label
+			GridBagConstraints labelConstrains = new GridBagConstraints();
+			labelConstrains.fill           = GridBagConstraints.HORIZONTAL;
+			labelConstrains.insets         = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+			titlePanel.add(new JLabel(String.format(language.INFO_PANEL_DATA_LABEL, index)), labelConstrains);
+
+			//
+			// text field
+			//
+			GridBagConstraints dataConstrains = new GridBagConstraints();
+			dataConstrains.fill            = GridBagConstraints.HORIZONTAL;
+			dataConstrains.weightx         = 1.0;
+			dataConstrains.insets          = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+
+			JTextPane dataField = CreateSelectableText();
+			dataField.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+			dataField.setContentType("text/plain");
+			if (index < this.contentList.size()) {
+				dataField.setText(this.contentList.get(index));
+			} else {
+				dataField.setText("");
+			}
+			titlePanel.add(dataField, dataConstrains);
+			dataFields.add(dataField);
+
+			//
+			// editDataButton
+			//
+			GridBagConstraints editIconConstrains = new GridBagConstraints();
+			editIconConstrains.fill        = GridBagConstraints.HORIZONTAL;
+			editIconConstrains.insets      = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+
+			JButton editDataButton = new JButton(GUI_EDIT_ICON);
+			editDataButton.setToolTipText(language.CHANGE_DATA_EDIT_BUTTON_TOOLTIP);
+			editDataButton.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+			editDataButton.addActionListener(e -> {
+				if (editDataButton.getIcon().equals(GUI_EDIT_ICON)) {
+
+					//
+					// make the data field eatable(no this is not a typo)
+					//
+					dataField.setEditable(true);
+					dataField.setBorder(BorderFactory.createLineBorder(GUI_BORDER_COLOR));
+					dataField.setCaretPosition(dataField.getText().length());
+					dataField.requestFocus();
+
+					editDataButton.setIcon(GUI_CHECK_ICON);
+				} else {
+
+					//
+					// make uneatable(again not a typo) nad remove visual border
+					//
+					dataField.setEditable(false);
+					dataField.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+					editDataButton.setIcon(GUI_EDIT_ICON);
+				}
+			});
+			titlePanel.add(editDataButton, editIconConstrains);
+
+			//
+			// copyDataButton
+			//
+			GridBagConstraints copyIconConstrains = new GridBagConstraints();
+			copyIconConstrains.fill        = GridBagConstraints.HORIZONTAL;
+			copyIconConstrains.insets      = new Insets(0, 0, 0, GUI_DEFAULT_GAP);
+
+			JButton copyDataButton = new JButton(GUI_COPY_ICON);
+			copyDataButton.setToolTipText(language.CHANGE_DATA_COPY_BUTTON_TOOLTIP);
+			copyDataButton.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+			copyDataButton.addActionListener(e -> {
+				CopyToClipboard(dataField.getText());
+			});
+			titlePanel.add(copyDataButton, copyIconConstrains);
+
+			//
+			// deleteIconButton
+			//
+			GridBagConstraints deleteIconConstrains = new GridBagConstraints(); // deleteIconConstrains
+			deleteIconConstrains.fill      = GridBagConstraints.HORIZONTAL;
+			deleteIconConstrains.gridwidth = GridBagConstraints.REMAINDER; // end row
+			deleteIconConstrains.insets    = new Insets(0, 0, 0, 0); // no insets, done by the panel
+
+			JButton deleteIconButton = new JButton(GUI_DELETE_ICON);
+			deleteIconButton.setToolTipText(language.CHANGE_DATA_REMOVE_BUTTON_TOOLTIP);
+			deleteIconButton.setPreferredSize(GUI_ICON_BUTTON_DIMENSIONS);
+			deleteIconButton.addActionListener(e -> {
+
+				boolean newComponentVisibility;
+				if (deleteIconButton.getIcon().equals(GUI_DELETE_ICON)) {
+					//
+					// delete
+					//
+					newComponentVisibility = false;
+
+					copyIndexRadio.setSelected(false); // unselect it just in case
+
+					deleteIconButton.setIcon(GUI_UNDO_ICON);
+					deleteIconButton.setToolTipText(language.CHANGE_DATA_UNDO_BUTTON_TOOLTIP);
+
+					dataField.setBackground(GUI_DELETET_DATA_BACKGOUND);
+					dataField.setEditable(false);
+					dataField.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+					//TODO put data fiel out of edit mode
+				} else {
+					//
+					// undo
+					//
+					newComponentVisibility = true;
+
+					deleteIconButton.setIcon(GUI_DELETE_ICON);
+					deleteIconButton.setToolTipText(language.CHANGE_DATA_REMOVE_BUTTON_TOOLTIP);
+
+					dataField.setBackground(null);
+				}
+
+				//hide or show components
+				copyIndexRadio.setVisible(newComponentVisibility);
+				copyDataButton.setVisible(newComponentVisibility);
+				editDataButton.setVisible(newComponentVisibility);
+
+				titlePanel.updateUI();
+			});
+			titlePanel.add(deleteIconButton, deleteIconConstrains);
+
+			return titlePanel;
 		}
 
 		/* ********************************************************* */
@@ -1071,7 +1359,3 @@ public class PasswordManagerApp {
 
 	}
 }
-
-
-
-
