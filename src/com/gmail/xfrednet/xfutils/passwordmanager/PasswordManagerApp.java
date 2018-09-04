@@ -32,16 +32,22 @@
  ******************************************************************************/
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
+
+import java.security.*;
+
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 
@@ -52,28 +58,35 @@ public class PasswordManagerApp {
 
 	private static final boolean JUMP_ASK  = true;
 
-	private static final String TITLE              = "xFutils Password Manager";
-	private static final String TIME_STAMP_FORMAT  = "yyyy.MM.dd.HH.mm.ss";
-	private static final String SALT_FILE_NAME     = "salt.and.pepper";
-	private static final int    SALT_SIZE          = 256;
-	private static final String SETTINGS_FILE_NAME = "settings.txt";
+	private static final String TITLE                = "xFutils Password Manager";
+	private static final String TIME_STAMP_FORMAT    = "yyyy.MM.dd.HH.mm.ss";
+	private static final String SALT_FILE_NAME       = "salt.and.pepper";
+	private static final int    SALT_SIZE            = 256 / 8;
+	private static final String SETTINGS_FILE_NAME   = "settings.txt";
+	private static final String CIPHER_ALGORITHM     = "AES/CBC/PKCS5Padding";
+	private static final int    CIPHER_INIT_VEC_SIZE = 16;
+	private static final String SAFE_FILE_NAME       = "save.XFCRYPT";
 
-	private static final Color     GUI_DELETET_DATA_BACKGOUND = Color.red;
-	private static final int       GUI_INFO_AREA_HEIGHT       = 100;
-	private static final Color[]   GUI_MODE_INFO_COLORS       = {Color.green, Color.blue, Color.red};
-	private static final Color     GUI_BORDER_COLOR           = new Color(0xacacac);
-	private static final int       GUI_DEFAULT_GAP            = 5;
-	private static final Border    GUI_DEFAULT_GAP_BORDER     = BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
-	private static final int       GUI_DATA_INFO_PANE_COUNT   = 5;
-	private static final int       GUI_DATA_INFO_LABEL_WIDTH  = 50;
-	private static final Dimension GUI_ICON_BUTTON_DIMENSIONS = new Dimension(24, 24);
+	private static final byte FORMAT_TAB_SEPARATOR  = 0x1D;
+	private static final byte FORMAT_DATA_SEPARATOR = 0x1E;
+	private static final byte FORMAT_UNIT_SEPARATOR = 0x1F;
+
+	private static final Color     GUI_DELETE_DATA_BACKGROUND        = Color.red;
+	private static final int       GUI_INFO_AREA_HEIGHT              = 100;
+	private static final Color[]   GUI_MODE_INFO_COLORS              = {Color.green, Color.blue, Color.red};
+	private static final Color     GUI_BORDER_COLOR                  = new Color(0xacacac);
+	private static final int       GUI_DEFAULT_GAP                   = 5;
+	private static final Border    GUI_DEFAULT_GAP_BORDER            = BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
+	private static final int       GUI_DATA_INFO_PANE_COUNT          = 5;
+	private static final int       GUI_DATA_INFO_LABEL_WIDTH         = 50;
+	private static final Dimension GUI_ICON_BUTTON_DIMENSIONS        = new Dimension(24, 24);
 	private static final int       GUI_CHANGE_DATA_GUI_DEFAULT_WIDTH = 500;
 
-	private static final ImageIcon GUI_EDIT_ICON              = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("edit_icon.png")));
-	private static final ImageIcon GUI_COPY_ICON              = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("copy_icon.png")));
-	private static final ImageIcon GUI_DELETE_ICON            = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("delete_icon.png")));
-	private static final ImageIcon GUI_CHECK_ICON             = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("check_icon.png")));
-	private static final ImageIcon GUI_UNDO_ICON             = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("undo_icon.png")));
+	private static final ImageIcon GUI_EDIT_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("edit_icon.png")));
+	private static final ImageIcon GUI_COPY_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("copy_icon.png")));
+	private static final ImageIcon GUI_DELETE_ICON = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("delete_icon.png")));
+	private static final ImageIcon GUI_CHECK_ICON  = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("check_icon.png")));
+	private static final ImageIcon GUI_UNDO_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("undo_icon.png")));
 
 	private static final int     RETRIEVE_MODE       = 0;
 	private static final int     CHANGE_MODE         = 1;
@@ -83,7 +96,10 @@ public class PasswordManagerApp {
 	private Settings settings;
 	private final Language language = new Language();
 
-	private byte[] key;
+	private byte[] salt;
+	private String password;
+	private byte[] cipherInitVector;
+
 	private int currentMode;
 	private int buttonsPerRow;
 	private ArrayList<DataTab> dataTabs;
@@ -105,25 +121,23 @@ public class PasswordManagerApp {
 	private JTextField guiNewTabNameField;
 	private JSpinner guiNewTabIndexSelector;
 
-	public static void main(String[] args) {
+	public static void main(String[] args){
 
-		byte[] key = GetDecryptionKey();
+		String password = AskForPassword();
 
-		if (key == null) {
+		if (password == null) {
 			System.out.println("GetDecryptionKey failed or was terminated. The program will also terminate!");
 			return;
-		} else {
-			System.out.println("Key: " + ArrayToHex(key));
 		}
+		System.out.println("Password: " + password);
 
-		System.out.println("Key: " + ArrayToHex(HexToArray(ArrayToHex(key))));
 
-		PasswordManagerApp app = new PasswordManagerApp(key);
+		PasswordManagerApp app = new PasswordManagerApp(password);
 
 	}
 
-	private PasswordManagerApp(byte[] key) {
-		this.key = key;
+	private PasswordManagerApp(String password) {
+		this.password = password;
 		this.dataTabs = new ArrayList<DataTab>();
 		this.buttonsPerRow = 3;
 
@@ -131,30 +145,30 @@ public class PasswordManagerApp {
 			System.err.println("initSettings failed!");
 			exit();
 		}
-		System.out.println("Let'se got");
 
 		//TODO load contentList
-		DataTab tab1 = new DataTab("tab 1");
-		tab1.add(new Data("Test data 1", "hello 1"));
-		tab1.dataList.get(0).contentList.add("This");
-		tab1.dataList.get(0).contentList.add("is");
-		tab1.dataList.get(0).contentList.add("xFrednet");
-		tab1.dataList.get(0).contentList.add("The");
-		tab1.dataList.get(0).contentList.add("One");
-		tab1.dataList.get(0).contentList.add("And");
-		tab1.dataList.get(0).contentList.add("Only");
-		tab1.add(new Data("Test data 2<br>next Line", "hello 2"));
-		tab1.add(new Data("Test data 3", "hello 3"));
-		tab1.add(new Data("Test data 4", "hello 4"));
-		tab1.add(new Data("Test data 5", "hello 5"));
-		tab1.add(new Data("Test data 6", "hello 6"));
-		tab1.add(new Data("Test data 7", "hello 7"));
-		this.dataTabs.add(tab1);
+		if (!loadData(SAFE_FILE_NAME)) {
+			reinitCipherValues();
+		}
+		//DataTab tab1 = new DataTab("tab 1");
+		//tab1.add(new Data("Test data 1", "hello 1"));
+		//tab1.dataList.get(0).contentList.add("This");
+		//tab1.dataList.get(0).contentList.add("is");
+		//tab1.dataList.get(0).contentList.add("xFrednet");
+		//tab1.dataList.get(0).contentList.add("The");
+		//tab1.dataList.get(0).contentList.add("One");
+		//tab1.dataList.get(0).contentList.add("And");
+		//tab1.dataList.get(0).contentList.add("Only");
+		//tab1.add(new Data("Test data 2<br>next Line", "hello 2"));
+		//tab1.add(new Data("Test data 3", "hello 3"));
+		//tab1.add(new Data("Test data 4", "hello 4"));
+		//tab1.add(new Data("Test data 5", "hello 5"));
+		//tab1.add(new Data("Test data 6", "hello 6"));
+		//tab1.add(new Data("Test data 7", "hello 7"));
+		//this.dataTabs.add(tab1);
 
 		initBaseGUI();
-
 		initTabGUI();
-		//TODO update contentList GUI
 
 		setMode(CHANGE_MODE);
 	}
@@ -218,6 +232,11 @@ public class PasswordManagerApp {
 				this.dataTabs.get(tabIndex).createData(this.buttonsPerRow);
 			});
 			menuBar.add(this.guiAddDataMItem);
+			JMenuItem saveMenu = new JMenuItem("save, TODO remove this");
+			saveMenu.addActionListener(e -> {
+				System.out.println("saveData output: " + saveData(SAFE_FILE_NAME));
+			});
+			menuBar.add(saveMenu);
 
 			// extra
 			JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
@@ -466,7 +485,7 @@ public class PasswordManagerApp {
 
 		System.out.println("Salt: " +  ArrayToHex(salt));
 
-		return Cipher.HashPassword(userInput.toCharArray(), salt);
+		return xFCipher.HashPassword(userInput.toCharArray(), salt);
 	}
 	private static String AskForPassword() {
 
@@ -530,7 +549,7 @@ public class PasswordManagerApp {
 		return null;
 	}
 	private static byte[] CreateNewSalt() {
-		byte[] buffer = Cipher.GenerateSalt(SALT_SIZE);
+		byte[] buffer = xFCipher.GenerateSalt(SALT_SIZE);
 
 		if (!SafeSalt(buffer)) {
 			return null; // We shouldn't use a salt that is not saved
@@ -576,19 +595,41 @@ public class PasswordManagerApp {
 		if (testString.isEmpty())
 			return true;
 
-		if (testString.contains(DataTab.FORMAT_TAB_SEPARATOR + ""))
+		if (testString.contains(FORMAT_TAB_SEPARATOR + ""))
 			return true;
 
-		if (testString.contains(DataTab.FORMAT_DATA_SEPARATOR + ""))
+		if (testString.contains(FORMAT_DATA_SEPARATOR + ""))
 			return true;
 
-		if (testString.contains(Data.FORMAT_UNIT_SEPARATOR + ""))
+		if (testString.contains(FORMAT_UNIT_SEPARATOR + ""))
 			return true;
 
 		if (testString.contains("<html>") || testString.contains("</html>"))
 			return true;
 
 		return false;
+	}
+
+	private static byte[] CreateRandomArray(int size) {
+		byte[] bytes = new byte[size];
+
+		new SecureRandom().nextBytes(bytes);
+
+		return bytes;
+	}
+	private static Cipher CreateCipher(int cipherMode, byte[] keyBytes, byte[] initVector) {
+		try {
+			Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+			cipher.init(cipherMode, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(initVector));
+
+			return cipher;
+
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
+				InvalidAlgorithmParameterException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -642,6 +683,141 @@ public class PasswordManagerApp {
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
 	}
 
+	private void reinitCipherValues() {
+		this.salt = xFCipher.GenerateSalt(SALT_SIZE);
+		this.cipherInitVector = CreateRandomArray(CIPHER_INIT_VEC_SIZE);
+	}
+	private boolean saveData(String fileName) {
+		File saveFile = new File(fileName);
+
+		if (this.salt.length > Byte.MAX_VALUE || this.cipherInitVector.length > Byte.MAX_VALUE)
+			return false; // salt or init vector to long
+
+		String saveString = getDataTabGroupSaveString(this.dataTabs);
+		Cipher cipher = CreateCipher(Cipher.ENCRYPT_MODE, xFCipher.HashPassword(this.password.toCharArray(), this.salt), this.cipherInitVector);
+		if (cipher == null)
+			return false;
+
+		byte[] encryptedData;
+		try {
+			encryptedData = cipher.doFinal(saveString.getBytes());
+		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			e.printStackTrace();
+			return false; // no data to save
+		}
+
+		/*
+		 * Save the salt
+		 */
+		try {
+			FileOutputStream fileStream = new FileOutputStream(saveFile);
+
+			//salt
+			fileStream.write((byte)this.salt.length);
+			fileStream.write(this.salt);
+
+			// init vector
+			fileStream.write((byte)this.cipherInitVector.length);
+			fileStream.write(this.cipherInitVector);
+
+			fileStream.write(encryptedData);
+
+			fileStream.close();
+
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	private boolean loadData(String fileName) {
+		File file = new File(fileName);
+
+		if (!file.exists()) {
+			return false; // no file => no data
+		}
+
+		try {
+			FileInputStream fileStream = new FileInputStream(file);
+
+			do {
+
+				//
+				// load salt
+				//
+				byte[] saltSize = new byte[1];
+				if (fileStream.read(saltSize) != 1) {
+					break;
+				}
+				if (saltSize[0] <= 0) {
+					break; // try to salt something with antimatter, does it work, NO!!
+				}
+				this.salt = new byte[saltSize[0]];
+				if (fileStream.read(this.salt) != this.salt.length) {
+					break; // salt reading failed
+				}
+
+				//
+				// load cipher init vector
+				//
+				byte[] ivSize = new byte[1];
+				if (fileStream.read(ivSize) != 1) {
+					break;
+				}
+				if (ivSize[0] <= 0) {
+					break; // invalid size
+				}
+				this.cipherInitVector = new byte[ivSize[0]];
+				if (fileStream.read(this.cipherInitVector) != this.cipherInitVector.length) {
+					break; // vector reading failed
+				}
+
+				//
+				// Load data
+				//
+				long fileDataSize = file.length() - 1 - this.salt.length - 1 - this.cipherInitVector.length;
+				byte[] encryptedDataBuffer = new byte[(int)fileDataSize];
+				if (fileStream.read(encryptedDataBuffer) != encryptedDataBuffer.length) {
+					break; // read data failed
+				}
+				fileStream.close();
+
+				//
+				// decrypt
+				//
+				Cipher cipher = CreateCipher(Cipher.DECRYPT_MODE, xFCipher.HashPassword(this.password.toCharArray(), this.salt), this.cipherInitVector);
+				if (cipher == null) {
+					break;
+				}
+				String saveString = null;
+				try {
+					saveString = new String(cipher.doFinal(encryptedDataBuffer));
+				} catch (IllegalBlockSizeException | BadPaddingException e) {
+					e.printStackTrace();
+					break;
+				}
+
+				//
+				// load save String
+				//
+				ArrayList<DataTab> loadedTabs = loadDataTabGroupFromSaveString(saveString);
+				if (loadedTabs == null) {
+					break;
+				}
+				this.dataTabs = loadedTabs;
+
+				return true;
+
+			} while (false);
+			fileStream.close();
+			return false;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
 	private String getDataTabGroupSaveString(ArrayList<DataTab> tabs) {
 		StringBuilder sb = new StringBuilder();
 
@@ -650,18 +826,18 @@ public class PasswordManagerApp {
 
 			// add divider
 			if (tabIndex != tabs.size() - 1) { // if not last
-				sb.append(DataTab.FORMAT_TAB_SEPARATOR);
+				sb.append(FORMAT_TAB_SEPARATOR);
 			}
 		}
 
 		return sb.toString();
 	}
 	private ArrayList<DataTab> loadDataTabGroupFromSaveString(String saveString) {
-		if (saveString.isEmpty()) {
+		if (saveString == null || saveString.isEmpty()) {
 			return null;
 		}
 
-		String[] components = saveString.split(DataTab.FORMAT_TAB_SEPARATOR + "");
+		String[] components = saveString.split(FORMAT_TAB_SEPARATOR + "");
 
 		if (components.length == 0) {
 			return null; // well there is no contentList to load
@@ -669,9 +845,9 @@ public class PasswordManagerApp {
 
 		ArrayList<DataTab> tabs = new ArrayList<DataTab>();
 		for (String component : components) {
-			DataTab tab = loadDataTabFromSaveString(component);
+			DataTab tab = new DataTab("Loading");
 
-			if (tab == null) {
+			if (!tab.loadSaveString(saveString)) {
 				return null; // the tab failed to load
 			}
 
@@ -679,24 +855,6 @@ public class PasswordManagerApp {
 		}
 
 		return tabs;
-	}
-	private DataTab loadDataTabFromSaveString(String saveString) {
-		DataTab tab = new DataTab("Loading");
-
-		if (!tab.loadSaveString(saveString)) {
-			return null;
-		}
-
-		return tab;
-	}
-	private Data loadDataFromSaveString(String saveString) {
-		Data data = new Data();
-
-		if (!data.loadSaveString(saveString)) {
-			return null;
-		}
-
-		return data;
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -710,8 +868,6 @@ public class PasswordManagerApp {
 	*/
 	public class DataTab {
 
-		static final char FORMAT_TAB_SEPARATOR  = 0x1D;
-		static final char FORMAT_DATA_SEPARATOR = 0x1E;
 		static final int  GUI_ROW_HEIGHT = 50;
 
 		/* //////////////////////////////////////////////////////////////////////////////// */
@@ -815,6 +971,8 @@ public class PasswordManagerApp {
 			// The buttons have a padding on the right and bottom
 			// this adds a padding to the top and left
 			this.guiPanel.setBorder(BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, 0, 0));
+
+			this.guiPanel.updateUI();
 		}
 
 		/* ********************************************************* */
@@ -846,10 +1004,11 @@ public class PasswordManagerApp {
 
 			// load contentList
 			for (int dataNo = 1; dataNo < components.length; dataNo++) {
-				Data data = loadDataFromSaveString(components[dataNo]);
+				Data data = new Data();
 
-				if (data == null)
-					return false; // loading the contentList has failed. well done me!
+				if (!data.loadSaveString(components[dataNo])) {
+					return false;// loading the contentList has failed. well done me!
+				}
 
 				this.add(data);
 			}
@@ -859,8 +1018,6 @@ public class PasswordManagerApp {
 		}
 	}
 	public class Data {
-
-		static final char FORMAT_UNIT_SEPARATOR = 0x1F;
 
 		String title;
 		ArrayList<String> contentList;
@@ -1016,7 +1173,7 @@ public class PasswordManagerApp {
 				for (JTextPane dataField : dataFields) {
 
 					// test if this data was deleted
-					if (dataField.getBackground() == GUI_DELETET_DATA_BACKGOUND) {
+					if (dataField.getBackground() == GUI_DELETE_DATA_BACKGROUND) {
 						continue; // jup deleted
 					}
 
@@ -1044,7 +1201,7 @@ public class PasswordManagerApp {
 					rowIndex++;
 
 					// test if this data was deleted
-					if (dataField.getBackground() == GUI_DELETET_DATA_BACKGOUND) {
+					if (dataField.getBackground() == GUI_DELETE_DATA_BACKGROUND) {
 						continue; // jup deleted
 					}
 
@@ -1313,7 +1470,7 @@ public class PasswordManagerApp {
 					deleteIconButton.setIcon(GUI_UNDO_ICON);
 					deleteIconButton.setToolTipText(language.CHANGE_DATA_UNDO_BUTTON_TOOLTIP);
 
-					dataField.setBackground(GUI_DELETET_DATA_BACKGOUND);
+					dataField.setBackground(GUI_DELETE_DATA_BACKGROUND);
 					dataField.setEditable(false);
 					dataField.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 				} else {

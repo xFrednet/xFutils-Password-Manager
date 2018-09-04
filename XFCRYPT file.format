@@ -1,0 +1,41 @@
+=========================================================================
+= ENCRYPTED FILE FORMAT
+=========================================================================
+[0.][1.][2.]
+
+#0.
+<-- unencrypted salt, $salt_size$ is given in bytes  -->
+[1 bytes: $salt_size$][&salt_size& bytes: $salt$]
+
+#1.
+<-- unencrypted, cipher information, $init_vec_size$ is given in bytes      -->
+[1 byte: $init_vec_size$][$init_vec_size$ bytes: $init_vec$]
+
+#2.
+<-- encrypted data            -->
+[bytes until eof: encrypted data]
+
+========================================================================
+= ENCRYPTED DATA FORMAT
+========================================================================
+[0.][1.][2.]
+
+#0.
+<-- unencrypted salt                         -->
+[1 byte: $salt_size$][&salt_size& bytes: $salt$]
+
+#1.
+<-- unencrypted, cipher information                       -->
+[1 byte: $init_vec_size$][$init_vec_size$ bytes: $init_vec$]
+
+#2.
+<-- encrypted data, the FORMAT_TAB_SEPARATOR is not encrypted -->
+([2.1. tabFormat][0x1D FORMAT_TAB_SEPARATOR]) x $tabCount$
+
+	#2.1. tabFormat
+	<-- encrypted data, the FORMAT_DATA_SEPARATOR is not encrypted -->
+	[title]([0x1E FORMAT_DATA_SEPARATOR][2.1.1. dataFormat]) x $dataCount$
+
+		#2.1.1. dataFormat
+		<-- encrypted data, the FORMAT_UNIT_SEPARATOR is not encrypted -->
+		[dataTitle][0x1F FORMAT_UNIT_SEPARATOR][copyDataIndex]([0x1F FORMAT_UNIT_SEPARATOR][data]) x dataCount

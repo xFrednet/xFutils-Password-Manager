@@ -38,11 +38,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
-public class Cipher {
+public class xFCipher {
 
 	private static final String PBKDF2_ALGORITHM  = "PBKDF2WithHmacSHA1";
 	private static final int    PBKDF2_ITERATIONS = 1000;
-	private static final int    PBKDF2_OUT_BYTES = 64;
+	private static final int    PBKDF2_OUT_BYTES = 128 / 8;
 
 	public static byte[] GenerateSalt(int saltSize) {
 		byte[] salt = new byte[saltSize];
