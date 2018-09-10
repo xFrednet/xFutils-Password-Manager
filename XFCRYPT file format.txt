@@ -1,0 +1,16 @@
+=========================================================================
+= ENCRYPTED FILE FORMAT
+=========================================================================
+[0.][1.][2.]
+
+#0.
+<-- unencrypted salt, $salt_size$ is given in bytes  -->
+[1 bytes: $salt_size$][&salt_size& bytes: $salt$]
+
+#1.
+<-- unencrypted, cipher information, $init_vec_size$ is given in bytes      -->
+[1 byte: $init_vec_size$][$init_vec_size$ bytes: $init_vec$]
+
+#2.
+<-- encrypted data            -->
+[bytes until eof: encrypted data]

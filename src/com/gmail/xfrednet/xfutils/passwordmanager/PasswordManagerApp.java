@@ -146,26 +146,12 @@ public class PasswordManagerApp {
 			exit();
 		}
 
-		//TODO load contentList
+		//
+		// Load data
+		//
 		if (!loadData(SAFE_FILE_NAME)) {
 			reinitCipherValues();
 		}
-		//DataTab tab1 = new DataTab("tab 1");
-		//tab1.add(new Data("Test data 1", "hello 1"));
-		//tab1.dataList.get(0).contentList.add("This");
-		//tab1.dataList.get(0).contentList.add("is");
-		//tab1.dataList.get(0).contentList.add("xFrednet");
-		//tab1.dataList.get(0).contentList.add("The");
-		//tab1.dataList.get(0).contentList.add("One");
-		//tab1.dataList.get(0).contentList.add("And");
-		//tab1.dataList.get(0).contentList.add("Only");
-		//tab1.add(new Data("Test data 2<br>next Line", "hello 2"));
-		//tab1.add(new Data("Test data 3", "hello 3"));
-		//tab1.add(new Data("Test data 4", "hello 4"));
-		//tab1.add(new Data("Test data 5", "hello 5"));
-		//tab1.add(new Data("Test data 6", "hello 6"));
-		//tab1.add(new Data("Test data 7", "hello 7"));
-		//this.dataTabs.add(tab1);
 
 		initBaseGUI();
 		initTabGUI();
@@ -216,8 +202,6 @@ public class PasswordManagerApp {
 
 			fileMenu.add(new JMenuItem("TODO Change Password"));
 			fileMenu.add(new JPopupMenu.Separator());
-
-			fileMenu.add(new JPopupMenu.Separator());
 			fileMenu.add(new JMenuItem("TODO Copy Salt"));
 			fileMenu.add(new JMenuItem("TODO Make Backup"));
 			fileMenu.add(new JPopupMenu.Separator());
@@ -226,17 +210,13 @@ public class PasswordManagerApp {
 
 			// add Data
 			this.guiAddDataMItem = new JMenuItem(this.language.ADD_DATA_MENU_NAME);
+			this.guiAddDataMItem.setMnemonic(KeyEvent.VK_A);
 			this.guiAddDataMItem.addActionListener(e -> {
 				int tabIndex = this.guiDataTabs.getSelectedIndex();
 
-				this.dataTabs.get(tabIndex).createData(this.buttonsPerRow);
+				this.dataTabs.get(tabIndex).createData();
 			});
 			menuBar.add(this.guiAddDataMItem);
-			JMenuItem saveMenu = new JMenuItem("save, TODO remove this");
-			saveMenu.addActionListener(e -> {
-				System.out.println("saveData output: " + saveData(SAFE_FILE_NAME));
-			});
-			menuBar.add(saveMenu);
 
 			// extra
 			JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
@@ -402,7 +382,7 @@ public class PasswordManagerApp {
 		int iteration = 0;
 		for (DataTab tab : this.dataTabs) {
 
-			JPanel panel = tab.initGUI(this.buttonsPerRow);
+			JPanel panel = tab.initGUI();
 			JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 			this.guiDataTabs.insertTab(tab.title, null, scrollPane, null, iteration);
@@ -438,8 +418,14 @@ public class PasswordManagerApp {
 		DataTab tab = new DataTab(name);
 		this.dataTabs.add(index, tab);
 
+		if (!saveData(SAFE_FILE_NAME)) {
+			ShowInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED, this.window);
+			this.dataTabs.remove(index);
+			return;
+		}
+
 		//gui
-		JPanel panel = tab.initGUI(this.buttonsPerRow);
+		JPanel panel = tab.initGUI();
 		JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		this.guiDataTabs.insertTab(tab.title, null, scrollPane, null, index);
@@ -449,7 +435,6 @@ public class PasswordManagerApp {
 		((SpinnerNumberModel)this.guiNewTabIndexSelector.getModel()).setMaximum(this.dataTabs.size()); // one line wonder or horror
 		this.guiNewTabIndexSelector.setValue(this.dataTabs.size());
 
-		//TODO save the new created tab
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -847,7 +832,7 @@ public class PasswordManagerApp {
 		for (String component : components) {
 			DataTab tab = new DataTab("Loading");
 
-			if (!tab.loadSaveString(saveString)) {
+			if (!tab.loadSaveString(component)) {
 				return null; // the tab failed to load
 			}
 
@@ -888,8 +873,8 @@ public class PasswordManagerApp {
 		void add(Data data) {
 			this.dataList.add(data);
 		}
-		void createData(int buttonsPerRow) {
-			Data data = new Data(PasswordManagerApp.this.language.NEW_DATA_DEFAULT_TITLE);
+		void createData() {
+			Data data = new Data(PasswordManagerApp.this.language.NEW_DATA_DEFAULT_TITLE, this);
 			data.openChangeDataGUI(true);
 
 			if (data.contentList.size() == 0) {
@@ -898,10 +883,15 @@ public class PasswordManagerApp {
 
 			this.dataList.add(data);
 
+			if (!saveData(SAFE_FILE_NAME)) {
+				ShowInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED, PasswordManagerApp.this.window);
+				this.dataList.remove(data);
+				return; // saving failed
+			}
 			data.createGUI();
-			updateGUI(buttonsPerRow);
+			updateGUI();
 		}
-		JPanel initGUI(int buttonsPerRow) {
+		JPanel initGUI() {
 
 			/*
 			* creating the GUI
@@ -919,11 +909,13 @@ public class PasswordManagerApp {
 			/*
 			* update GUI
 			* */
-			updateGUI(buttonsPerRow);
+			updateGUI();
 
 			return this.guiPanel;
 		}
-		void updateGUI(int buttonsPerRow) {
+		void updateGUI() {
+
+			int buttonsPerRow = PasswordManagerApp.this.buttonsPerRow;
 			/*
 			 * Validation
 			 */
@@ -967,6 +959,10 @@ public class PasswordManagerApp {
 
 				iterations++;
 			}
+			// keep the layout if there are less data than buttonsPerRow
+			for (; iterations < placements.length; iterations++) {
+				this.guiPanel.add(new JPanel(), placements[iterations % placements.length]);
+			}
 
 			// The buttons have a padding on the right and bottom
 			// this adds a padding to the top and left
@@ -1004,7 +1000,7 @@ public class PasswordManagerApp {
 
 			// load contentList
 			for (int dataNo = 1; dataNo < components.length; dataNo++) {
-				Data data = new Data();
+				Data data = new Data(this);
 
 				if (!data.loadSaveString(components[dataNo])) {
 					return false;// loading the contentList has failed. well done me!
@@ -1016,6 +1012,22 @@ public class PasswordManagerApp {
 			// well done
 			return true;
 		}
+
+		void killData(Data data) {
+
+			int index = this.dataList.indexOf(data);
+			if (index == -1) {
+				return; // the data was not found in this tab
+			}
+			this.dataList.remove(index);
+
+			if (!saveData(SAFE_FILE_NAME)) {
+				this.dataList.add(index, data); // readd it since it wasn't really killed
+				ShowInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED, PasswordManagerApp.this.window);
+			} else {
+				updateGUI();
+			}
+		}
 	}
 	public class Data {
 
@@ -1023,20 +1035,17 @@ public class PasswordManagerApp {
 		ArrayList<String> contentList;
 		int copyDataIndex;
 
+		DataTab parent;
+
 		JButton guiButton;
 
-		private Data() {
+		private Data(DataTab parent) {
+			this.parent = parent;
 			this.contentList = new ArrayList<String>();
 		}
-		Data(String title) {
-			this();
+		Data(String title, DataTab parent) {
+			this(parent);
 			this.title = title;
-			this.copyDataIndex = 0;
-		}
-		Data(String title, String data) {
-			this();
-			this.title = title;
-			this.contentList.add(data);
 			this.copyDataIndex = 0;
 		}
 
@@ -1047,23 +1056,16 @@ public class PasswordManagerApp {
 
 			this.guiButton.addActionListener(e -> {
 
-				boolean saveChanges = false;
-
 				switch (PasswordManagerApp.this.currentMode) {
 					case RETRIEVE_MODE:
 						writeToInfoLabel();
 						break;
 					case CHANGE_MODE:
-						saveChanges = true;
 						openChangeDataGUI(false);
 						break;
 					case DELETE_MODE:
-						saveChanges = true;
+						parent.killData(this);
 						break;
-				}
-
-				if (saveChanges) {
-					// TODO save changes
 				}
 			});
 		}
@@ -1213,16 +1215,22 @@ public class PasswordManagerApp {
 					dataIndex++;
 				}
 
+				if (this.guiButton != null)
+					this.guiButton.setText("<html>" + this.title + "</html>");
+
 				//
 				// Save to file
 				//
-				// TODO save to file
+				if (!newlyCreated){
+					if (!saveData(SAFE_FILE_NAME)) {
+						ShowInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED, PasswordManagerApp.this.window);
+						return;
+					}
+				}
 
 				//
 				// Finish
 				//
-				if (this.guiButton != null)
-					this.guiButton.setText("<html>" + this.title + "</html>");
 				dialog.dispose();
 			});
 			actionRow.add(saveDataButton);

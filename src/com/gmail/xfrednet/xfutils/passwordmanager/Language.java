@@ -65,7 +65,7 @@ public class Language {
 	// // change Data panel //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	public final String CHANGE_DATA_ADD_BUTTON_LABEL = "Add data";
-	public final String CHANGE_DATA_SAVE_BUTTON_LABEL = "Save data";
+	public final String CHANGE_DATA_SAVE_BUTTON_LABEL = "Save";
 	public final String CHANGE_DATA_CANCEL_BUTTON_LABEL = "Cancel";
 	public final String CHANGE_DATA_COPY_INDEX_SELECT_RADIO_TOOLTIP = "This decides which data will be copied to clipboard using the shortcut";
 	public final String CHANGE_DATA_EDIT_BUTTON_TOOLTIP = "Press to edit this data";
@@ -78,4 +78,5 @@ public class Language {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	public final String ERROR_STRING_NOT_SUPPORTED = "The entered string contains unsupported characters";
 	public final String ERROR_DATA_0_ENTRIES = "This title has to have at least 1 string associated with it";
+	public final String ERROR_SAVE_TO_FILE_FAILED = "The data couldn't be saved.";
 }
