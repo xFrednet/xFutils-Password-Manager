@@ -58,7 +58,7 @@ import static javafx.application.Platform.exit;
 
 public class PasswordManagerApp {
 
-	private static final boolean JUMP_ASK  = true;
+	private static final boolean JUMP_ASK  = false;
 
 	private static final String TITLE                = "xFutils Password Manager";
 	private static final String TIME_STAMP_FORMAT    = "yyyy.MM.dd.HH.mm.ss";
@@ -86,6 +86,7 @@ public class PasswordManagerApp {
 	//
 	// GUI
 	//
+	private static final int       GUI_ENTER_PASSWORD_GUI_WIDTH      = 300;
 	private static final Color     GUI_DELETE_DATA_BACKGROUND        = Color.red;
 	private static final int       GUI_INFO_AREA_HEIGHT              = 100;
 	private static final Color[]   GUI_MODE_INFO_COLORS              = {Color.green, Color.blue, Color.red};
@@ -143,29 +144,31 @@ public class PasswordManagerApp {
 	private JSpinner guiNewTabIndexSelector;
 
 	public static void main(String[] args){
-
-		String password = AskForPassword();
-
-		if (password == null) {
-			System.out.println("GetDecryptionKey failed or was terminated. The program will also terminate!");
-			return;
-		}
-		System.out.println("Password: " + password);
-
-
-		PasswordManagerApp app = new PasswordManagerApp(password);
-
+		PasswordManagerApp app = new PasswordManagerApp();
 	}
 
-	private PasswordManagerApp(String password) {
-		this.password = password;
+	private PasswordManagerApp() {
+		this.window = null;
 		this.dataTabs = new ArrayList<DataTab>();
 		this.buttonsPerRow = 3;
 
+		//
+		// load settings
+		//
 		if (!initSettings()) {
 			System.err.println("initSettings failed!");
 			exit();
 		}
+
+		//
+		// get password
+		//
+		this.password = askForPassword();
+		if (this.password == null) {
+			System.out.println("GetDecryptionKey failed or was terminated. The program will also terminate!");
+			return;
+		}
+		System.out.println("Password: " + this.password);
 
 		//
 		// Load data
@@ -179,7 +182,9 @@ public class PasswordManagerApp {
 
 		setMode(RETRIEVE_MODE);
 
+		//
 		// make backup if last backup was last month
+		//
 		Date thirtyDaysAgo = Date.from(ZonedDateTime.now().plusDays(-30).toInstant());
 		Date lastBackup = new Date(this.settings.lastBackup);
 		if (thirtyDaysAgo.after(lastBackup)) {
@@ -480,34 +485,66 @@ public class PasswordManagerApp {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Cipher interfacing //
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	private static String AskForPassword() {
+	private String askForPassword() {
 
 		if (JUMP_ASK)
 			return "HELLO";
 		/*
 		 * Configuration
 		 */
+		JDialog pwDialog = new JDialog();
 		JPanel contentPanel = new JPanel();
-		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+		contentPanel.setBorder(GUI_DEFAULT_GAP_BORDER);
+		contentPanel.setLayout(new GridLayout(3, 1, 5, 5));
 		contentPanel.setFocusable(false);
-		JLabel textLabel = new JLabel("Enter a password:");
-		textLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+		// text
+		JLabel textLabel = new JLabel(this.language.ENTER_PASSWORD_INFO_LABEL);
 		textLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		textLabel.setFocusable(false);
-
-		JPasswordField passwordField = new JPasswordField();
 		contentPanel.add(textLabel);
+
+		// password field
+		JPasswordField passwordField = new JPasswordField();
 		contentPanel.add(passwordField);
+
+		// buttons
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+
+		JButton cancelButton = new JButton(this.language.ENTER_PASSWORD_CANCEL_BUTTON_LABEL);
+		cancelButton.addActionListener(e ->{
+			pwDialog.dispose();
+		});
+		buttonPanel.add(cancelButton);
+
+		JButton submitButton = new JButton(this.language.ENTER_PASSWORD_OKAY_BUTTON_LABEL);
+		pwDialog.getRootPane().setDefaultButton(submitButton); // make it the submit button
+		submitButton.addActionListener(e -> {
+			pwDialog.setVisible(false);
+		});
+		buttonPanel.add(submitButton);
+		contentPanel.add(buttonPanel);
 
 		/*
 		 * show the input dialog
 		 */
-		int option = JOptionPane.showConfirmDialog(null, contentPanel, TITLE, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		// size & content
+		pwDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		pwDialog.setContentPane(contentPanel);
+		pwDialog.pack();
+		pwDialog.setSize(GUI_ENTER_PASSWORD_GUI_WIDTH, pwDialog.getHeight());
+		pwDialog.setResizable(false);
+		pwDialog.setLocationRelativeTo(null);
+		pwDialog.setTitle(TITLE);
+		//focus
+		pwDialog.setModal(true);
+		pwDialog.setAutoRequestFocus(true);
+		pwDialog.setVisible(true);
 
-		/*
-		 * process the user input
-		 */
-		if (option == JOptionPane.OK_OPTION) {
+		// the okay button only hides the dialog. which also means that it is still is displayable at this point
+		if (pwDialog.isDisplayable()) {
+			pwDialog.dispose();
+
 			char[] password = passwordField.getPassword();
 
 			if (password.length == 0) {
@@ -516,7 +553,7 @@ public class PasswordManagerApp {
 
 			return new String(password);
 		} else {
-			return null; //Cancel was selected
+			return null;
 		}
 	}
 	private static boolean IsStringInvalid(String testString) {
@@ -750,7 +787,6 @@ public class PasswordManagerApp {
 				ArrayList<DataTab> loadedTabs = loadDataTabGroupFromSaveString(saveString);
 				if (loadedTabs == null) {
 					break;
-
 				}
 				this.dataTabs = loadedTabs;
 
