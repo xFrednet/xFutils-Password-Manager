@@ -32,63 +32,196 @@
  ******************************************************************************/
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
-public class Language {
+class Language {
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Enter password dialog //
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	public final String ENTER_PASSWORD_INFO_LABEL   = "Please enter your Password: ";
-	public final String ENTER_PASSWORD_CANCEL_BUTTON_LABEL = "Cancel";
-	public final String ENTER_PASSWORD_OKAY_BUTTON_LABEL = "Done";
+	final String ENTER_PASSWORD_INFO_LABEL;
+	final String ENTER_PASSWORD_CANCEL_BUTTON_LABEL;
+	final String ENTER_PASSWORD_OKAY_BUTTON_LABEL;
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Menu //
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	public final String FILE_MENU_NAME = "File";
-	public final String BACKUP_MENU_NAME = "Make Backup";
-	public final String EXTRAS_MENU_NAME = "Extras";
-	public final String ADD_DATA_MENU_NAME = "Add data";
-	public final String NEW_DATA_DEFAULT_TITLE = "Title";
+	final String FILE_MENU_NAME;
+	final String BACKUP_MENU_NAME;
+	final String SETTINGS_MENU_NAME;
+	final String SETTINGS_FRAME_MENU_NAME;
+	final String SETTINGS_SAVE_POS_MENU_NAME;
+	final String SETTINGS_SAVE_SIZE_MENU_NAME;
+	final String SETTINGS_LAYOUT_MENU_NAME;
+	final String SETTINGS_BUTTON_COUNT_MENU_NAME;
+	final String SETTINGS_LANGUAGE_MENU_NAME;
+	final String SETTINGS_LANGUAGE_ENG_MENU_NAME = "English";
+	final String SETTINGS_LANGUAGE_DE_MENU_NAME = "Deutsch";
+	final String SETTINGS_RESET_MENU_NAME;
+	final String EXTRAS_MENU_NAME;
+	final String ADD_DATA_MENU_NAME;
+	final String NEW_DATA_DEFAULT_TITLE;
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Info panel //
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	public final String INFO_PANEL_TITLE_LABEL = "Name: ";
-	public final String INFO_PANEL_DATA_LABEL = "Data %d: ";
-	public final String NO_MODE_SELECTED = "No mode is selected";
-	public final String[] MODE_BUTTON_LABELS = {"Retrieve mode", "Change mode", "Delete mode"};
-	public final String[] MODE_INFO_LABEL_TEXT = {
-			"Clicking on a label will show the stored contentList",
-			"Clicking on a label will open a dialog to change the contentList",
-			"Clicking on a label will delete the stored contentList",
-	};
+	final String   INFO_PANEL_TITLE_LABEL;
+	final String   INFO_PANEL_DATA_LABEL;
+	final String   NO_MODE_SELECTED;
+	final String[] MODE_BUTTON_LABELS;
+	final String[] MODE_INFO_LABEL_TEXT;
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Add tab panel //
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	public final String ADD_TAB_NAME_FIELD_TEXT = "Please enter the name of the new Tab";
-	public final String ADD_TAB_INDEX_LABEL = "Index:";
-	public final String ADD_TAB_BUTTON_LABEL = "Add tab";
+	final String ADD_TAB_NAME_FIELD_TEXT;
+	final String ADD_TAB_INDEX_LABEL;
+	final String ADD_TAB_BUTTON_LABEL;
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	// // change Data panel //
+	// // Change data panel //
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	public final String CHANGE_DATA_ADD_BUTTON_LABEL = "Add data";
-	public final String CHANGE_DATA_SAVE_BUTTON_LABEL = "Save";
-	public final String CHANGE_DATA_CANCEL_BUTTON_LABEL = "Cancel";
-	public final String CHANGE_DATA_COPY_INDEX_SELECT_RADIO_TOOLTIP = "This decides which data will be copied to clipboard using the shortcut";
-	public final String CHANGE_DATA_EDIT_BUTTON_TOOLTIP = "Press to edit this data";
-	public final String CHANGE_DATA_COPY_BUTTON_TOOLTIP = "Copies the data to the clipboard";
-	public final String CHANGE_DATA_REMOVE_BUTTON_TOOLTIP = "Press to remove this data";
-	public final String CHANGE_DATA_UNDO_BUTTON_TOOLTIP = "Press to edit this data";
+	final String CHANGE_DATA_ADD_BUTTON_LABEL;
+	final String CHANGE_DATA_SAVE_BUTTON_LABEL;
+	final String CHANGE_DATA_CANCEL_BUTTON_LABEL;
+	final String CHANGE_DATA_COPY_INDEX_SELECT_RADIO_TOOLTIP;
+	final String CHANGE_DATA_EDIT_BUTTON_TOOLTIP;
+	final String CHANGE_DATA_COPY_BUTTON_TOOLTIP;
+	final String CHANGE_DATA_REMOVE_BUTTON_TOOLTIP;
+	final String CHANGE_DATA_UNDO_BUTTON_TOOLTIP;
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Error/Warning/Info popup messages //
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	public final String ERROR_STRING_NOT_SUPPORTED = "The entered string contains unsupported characters";
-	public final String ERROR_DATA_0_ENTRIES = "This title has to have at least 1 string associated with it";
-	public final String ERROR_PLEASE_SELECT_A_DATA_TAB = "Please select a data tab to add data to";
-	public final String ERROR_SAVE_TO_FILE_FAILED = "The data couldn't be saved.";
-	public final String ERROR_SAVE_BACKUP_FAILED = "The backup couldn't be saved.";
-	public final String INFO_SAVE_BACKUP_OKAY = "The backup was saved!";
+	final String ERROR_STRING_NOT_SUPPORTED;
+	final String ERROR_DATA_0_ENTRIES;
+	final String ERROR_PLEASE_SELECT_A_DATA_TAB;
+	final String ERROR_SAVE_TO_FILE_FAILED;
+	final String ERROR_SAVE_BACKUP_FAILED;
+	final String INFO_SAVE_BACKUP_OKAY;
+	final String INFO_RESTART_TO_LOAD_CHANGE;
+
+	static final int ENG = 0;
+	static final int DE = 1;
+
+	Language(int lang) {
+		switch (lang) {
+		case DE:
+			// Enter password dialog
+			this.ENTER_PASSWORD_INFO_LABEL          = "Gebe bitte dein Passwort ein: ";
+			this.ENTER_PASSWORD_CANCEL_BUTTON_LABEL = "Abbrechen";
+			this.ENTER_PASSWORD_OKAY_BUTTON_LABEL   = "Fertig";
+
+			// Menu
+			this.FILE_MENU_NAME                  = "Datei";
+			this.BACKUP_MENU_NAME                = "Erstelle ein Backup";
+			this.SETTINGS_MENU_NAME              = "Einstellungen";
+			this.SETTINGS_FRAME_MENU_NAME        = "Fenster";
+			this.SETTINGS_SAVE_POS_MENU_NAME     = "Position speichern";
+			this.SETTINGS_SAVE_SIZE_MENU_NAME    = "Größe speichern";
+			this.SETTINGS_LAYOUT_MENU_NAME       = "Layout auswählen";
+			this.SETTINGS_BUTTON_COUNT_MENU_NAME = "%d Knöpfe pro Reihe";
+			this.SETTINGS_LANGUAGE_MENU_NAME     = "Sprache";
+			this.SETTINGS_RESET_MENU_NAME        = "Einstellungen zurücksetzen";
+			this.EXTRAS_MENU_NAME                = "Extras";
+			this.ADD_DATA_MENU_NAME              = "Infos hinzufügen";
+			this.NEW_DATA_DEFAULT_TITLE          = "Titel";
+
+			// Info panel
+			this.INFO_PANEL_TITLE_LABEL = "Name: ";
+			this.INFO_PANEL_DATA_LABEL  = "Info %d: ";
+			this.NO_MODE_SELECTED       = "Kein Modus wurde ausgewählt";
+			this.MODE_BUTTON_LABELS     = new String[]{"Lese Modus", "Änderungs Modus", "Lösch Modus"};
+			this.MODE_INFO_LABEL_TEXT   = new String[]{
+					"Durch klicken auf ein Knopf werden die gespeicherten Daten angezeigt",
+					"Durch klicken auf ein Knopf können die Daten geändert werden",
+					"Durch klicken auf ein Knopf werden die gespeicherten Daten gelöscht",
+			};
+
+			// Add tab info panel
+			this.ADD_TAB_NAME_FIELD_TEXT = "Gebe den neuen Tab einen Namen";
+			this.ADD_TAB_INDEX_LABEL     = "Index:";
+			this.ADD_TAB_BUTTON_LABEL    = "Tab hinzufügen";
+
+			// Change data panel
+			this.CHANGE_DATA_ADD_BUTTON_LABEL                = "Neue Info hinzufügen";
+			this.CHANGE_DATA_SAVE_BUTTON_LABEL               = "Speichern";
+			this.CHANGE_DATA_CANCEL_BUTTON_LABEL             = "Abbrechen";
+			this.CHANGE_DATA_COPY_INDEX_SELECT_RADIO_TOOLTIP = "Hierdurch können sie entscheiden was automatisch kopiert werden soll";
+			this.CHANGE_DATA_EDIT_BUTTON_TOOLTIP             = "Drücken Sie, um diese Info zu bearbeiten";
+			this.CHANGE_DATA_COPY_BUTTON_TOOLTIP             = "Kopiert die Info in die Zwischenablage";
+			this.CHANGE_DATA_REMOVE_BUTTON_TOOLTIP           = "Drücken Sie, um diese Info zu löschen";
+			this.CHANGE_DATA_UNDO_BUTTON_TOOLTIP             = "Drücken Sie, um die Änderung rückgängig zu machen";
+
+			// Error/Warning/Info popup messages
+			this.ERROR_STRING_NOT_SUPPORTED     = "Der eingegebene Text wird leider nicht unterstützt";
+			this.ERROR_DATA_0_ENTRIES           = "Es muss zumindest eine Info zum Titel gespeichert werden";
+			this.ERROR_PLEASE_SELECT_A_DATA_TAB = "Bitte wähle einen anderen Tab aus um eine Info hinzuzufügen";
+			this.ERROR_SAVE_TO_FILE_FAILED      = "Die Daten konnten leider nicht gespeichert werden";
+			this.ERROR_SAVE_BACKUP_FAILED       = "Das Backup konnte leider nicht gespeichert werden";
+			this.INFO_SAVE_BACKUP_OKAY          = "Das Backup wurde erfolgreich erstellt";
+			this.INFO_RESTART_TO_LOAD_CHANGE    = "Restarte bitte die Anwendung um die Änderungen zu laden";
+
+			break;
+
+		default:
+		case ENG:
+			// Enter password dialog
+			this.ENTER_PASSWORD_INFO_LABEL          = "Please enter your Password: ";
+			this.ENTER_PASSWORD_CANCEL_BUTTON_LABEL = "Cancel";
+			this.ENTER_PASSWORD_OKAY_BUTTON_LABEL   = "Done";
+
+			// Menu
+			this.FILE_MENU_NAME                  = "File";
+			this.BACKUP_MENU_NAME                = "Make Backup";
+			this.SETTINGS_MENU_NAME              = "Settings";
+			this.SETTINGS_FRAME_MENU_NAME        = "Window";
+			this.SETTINGS_SAVE_POS_MENU_NAME     = "Save position";
+			this.SETTINGS_SAVE_SIZE_MENU_NAME    = "Save size";
+			this.SETTINGS_LAYOUT_MENU_NAME       = "Layout";
+			this.SETTINGS_BUTTON_COUNT_MENU_NAME = "%d buttons per row";
+			this.SETTINGS_LANGUAGE_MENU_NAME     = "Language";
+			this.SETTINGS_RESET_MENU_NAME        = "Reset settings";
+			this.EXTRAS_MENU_NAME                = "Extras";
+			this.ADD_DATA_MENU_NAME              = "Add data";
+			this.NEW_DATA_DEFAULT_TITLE          = "Title";
+
+			// Info panel
+			this.INFO_PANEL_TITLE_LABEL = "Name: ";
+			this.INFO_PANEL_DATA_LABEL  = "Data %d: ";
+			this.NO_MODE_SELECTED       = "No mode is selected";
+			this.MODE_BUTTON_LABELS     = new String[]{"Retrieve mode", "Change mode", "Delete mode"};
+			this.MODE_INFO_LABEL_TEXT   = new String[]{
+					"Clicking on a button will show the stored data",
+					"Clicking on a button will open a dialog to change the data",
+					"Clicking on a button will delete the stored data",
+			};
+
+			// Add tab info panel
+			this.ADD_TAB_NAME_FIELD_TEXT = "Please enter the name of the new Tab";
+			this.ADD_TAB_INDEX_LABEL     = "Index:";
+			this.ADD_TAB_BUTTON_LABEL    = "Add tab";
+
+			// Change data panel
+			this.CHANGE_DATA_ADD_BUTTON_LABEL                = "Add data";
+			this.CHANGE_DATA_SAVE_BUTTON_LABEL               = "Save";
+			this.CHANGE_DATA_CANCEL_BUTTON_LABEL             = "Cancel";
+			this.CHANGE_DATA_COPY_INDEX_SELECT_RADIO_TOOLTIP = "This decides which data will be copied to clipboard using the shortcut";
+			this.CHANGE_DATA_EDIT_BUTTON_TOOLTIP             = "Press to edit this data";
+			this.CHANGE_DATA_COPY_BUTTON_TOOLTIP             = "Copies the data to the clipboard";
+			this.CHANGE_DATA_REMOVE_BUTTON_TOOLTIP           = "Press to remove this data";
+			this.CHANGE_DATA_UNDO_BUTTON_TOOLTIP             = "Press to undo the change";
+
+			// Error/Warning/Info popup messages
+			this.ERROR_STRING_NOT_SUPPORTED     = "The entered string contains unsupported characters";
+			this.ERROR_DATA_0_ENTRIES           = "This title has to have at least 1 string associated with it";
+			this.ERROR_PLEASE_SELECT_A_DATA_TAB = "Please select a data tab to add data to";
+			this.ERROR_SAVE_TO_FILE_FAILED      = "The data couldn't be saved.";
+			this.ERROR_SAVE_BACKUP_FAILED       = "The backup couldn't be saved.";
+			this.INFO_SAVE_BACKUP_OKAY          = "The backup was saved!";
+			this.INFO_RESTART_TO_LOAD_CHANGE    = "Please restart the application to load the changes";
+
+
+			break;
+
+		}
+	}
 }

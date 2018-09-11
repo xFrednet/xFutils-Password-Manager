@@ -2,4 +2,6 @@ frameX=560
 frameY=240
 frameWidth=800
 frameHeight=600
-lastBackup=1536604250937
+buttonsPerRow=3
+lastBackup=1536695722178
+languageID=0

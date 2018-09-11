@@ -58,7 +58,7 @@ import static javafx.application.Platform.exit;
 
 public class PasswordManagerApp {
 
-	private static final boolean JUMP_ASK  = false;
+	private static final boolean JUMP_ASK  = true;
 
 	private static final String TITLE                = "xFutils Password Manager";
 	private static final String TIME_STAMP_FORMAT    = "yyyy.MM.dd.HH.mm.ss";
@@ -81,7 +81,6 @@ public class PasswordManagerApp {
 	private static final String CIPHER_ALGORITHM         = "AES/CBC/PKCS5Padding";
 	private static final int    CIPHER_INIT_VEC_SIZE     = 16;
 	private static final int    CIPHER_SALT_SIZE         = 256 / 8;
-
 
 	//
 	// GUI
@@ -116,14 +115,13 @@ public class PasswordManagerApp {
 	// // THE CLASS //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	private Settings settings;
-	private final Language language = new Language();
+	private final Language language;
 
 	private byte[] salt;
 	private String password;
 	private byte[] cipherInitVector;
 
 	private int currentMode;
-	private int buttonsPerRow;
 	private ArrayList<DataTab> dataTabs;
 
 	//
@@ -150,7 +148,6 @@ public class PasswordManagerApp {
 	private PasswordManagerApp() {
 		this.window = null;
 		this.dataTabs = new ArrayList<DataTab>();
-		this.buttonsPerRow = 3;
 
 		//
 		// load settings
@@ -159,6 +156,8 @@ public class PasswordManagerApp {
 			System.err.println("initSettings failed!");
 			exit();
 		}
+
+		this.language = new Language(this.settings.languageID);
 
 		//
 		// get password
@@ -177,6 +176,8 @@ public class PasswordManagerApp {
 			reinitCipherValues();
 		}
 
+		initWindow();
+		initMenu();
 		initBaseGUI();
 		initTabGUI();
 
@@ -207,7 +208,7 @@ public class PasswordManagerApp {
 
 		return true;
 	}
-	private void initBaseGUI() {
+	private void initWindow() {
 		//
 		// JFrame
 		//
@@ -215,65 +216,140 @@ public class PasswordManagerApp {
 		this.window.setBounds(this.settings.frameX, this.settings.frameY, this.settings.frameWidth, this.settings.frameHeight);
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.window.setResizable(true);
+	}
+	private void initMenu() {
+		JMenuBar menuBar = new JMenuBar();
 
+		// file
+		JMenu fileMenu = new JMenu(this.language.FILE_MENU_NAME);
+		fileMenu.setMnemonic(KeyEvent.VK_F);
+
+		fileMenu.add(new JMenuItem("TODO Change Password"));
+		fileMenu.add(new JPopupMenu.Separator());
+		JMenuItem backupMItem = new JMenuItem(this.language.BACKUP_MENU_NAME);
+		backupMItem.addActionListener(e -> {
+			if (createBackup()) {
+				ShowInfoDialog(this.language.INFO_SAVE_BACKUP_OKAY, this.window);
+			}
+		});
+		fileMenu.add(backupMItem);
+		fileMenu.add(new JPopupMenu.Separator());
+
+		// #######################
+		// # settings #
+		// #######################
+		JMenu settingsMenu = new JMenu(this.language.SETTINGS_MENU_NAME);
+
+		//
+		// frameMenu
+		//
+		JMenu frameMenu = new JMenu(this.language.SETTINGS_FRAME_MENU_NAME);
+		JMenuItem savePosMenu = new JMenuItem(this.language.SETTINGS_SAVE_POS_MENU_NAME);
+		savePosMenu.addActionListener(e -> {
+			settings.frameX = this.window.getX();
+			settings.frameY = this.window.getY();
+			settings.save(SETTINGS_FILE_NAME);
+		});
+		frameMenu.add(savePosMenu);
+		JMenuItem saveSizeMenu = new JMenuItem(this.language.SETTINGS_SAVE_SIZE_MENU_NAME);
+		saveSizeMenu.addActionListener(e -> {
+			settings.frameWidth  = this.window.getWidth();
+			settings.frameHeight = this.window.getHeight();
+			settings.save(SETTINGS_FILE_NAME);
+		});
+		frameMenu.add(saveSizeMenu);
+		settingsMenu.add(frameMenu);
+
+		//
+		// layout menu
+		//
+		//TODO well the layout menu
+
+		//
+		// languageMenu
+		//
+		JMenu languageMenu = new JMenu(this.language.SETTINGS_LANGUAGE_MENU_NAME);
+		JCheckBoxMenuItem langDe = new JCheckBoxMenuItem(this.language.SETTINGS_LANGUAGE_DE_MENU_NAME);
+		JCheckBoxMenuItem langEng = new JCheckBoxMenuItem(this.language.SETTINGS_LANGUAGE_ENG_MENU_NAME);
+		langDe.setState(this.settings.languageID == Language.DE);
+		langEng.setState(this.settings.languageID == Language.ENG);
+		langDe.addActionListener(e -> {
+			if (this.settings.languageID == Language.DE)
+				return;
+
+			this.settings.languageID = Language.DE;
+			this.settings.save(SETTINGS_FILE_NAME);
+			langEng.setState(false);
+
+			ShowInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE, this.window);
+		});
+		langEng.addActionListener(e -> {
+			if (this.settings.languageID == Language.ENG)
+				return;
+
+			this.settings.languageID = Language.ENG;
+			this.settings.save(SETTINGS_FILE_NAME);
+			langDe.setState(false);
+
+			ShowInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE, this.window);
+		});
+		languageMenu.add(langDe);
+		languageMenu.add(langEng);
+		settingsMenu.add(languageMenu);
+
+		//
+		// reset
+		//
+		JMenuItem resetMenu = new JMenuItem(this.language.SETTINGS_RESET_MENU_NAME);
+		resetMenu.addActionListener(e -> {
+			this.settings = Settings.InitDefault();
+			this.settings.save(SETTINGS_FILE_NAME);
+			ShowInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE, this.window);
+		});
+		settingsMenu.add(resetMenu);
+
+		fileMenu.add(settingsMenu);
+		menuBar.add(fileMenu);
+
+		// #######################
+		// # add Data #
+		// #######################
+		this.guiAddDataMItem = new JMenuItem(this.language.ADD_DATA_MENU_NAME);
+		this.guiAddDataMItem.setMnemonic(KeyEvent.VK_A);
+		this.guiAddDataMItem.addActionListener(e -> {
+			int tabIndex = this.guiDataTabs.getSelectedIndex();
+
+			// make sure that the current tab is not the "+" tab
+			if (tabIndex == this.guiDataTabs.getTabCount() - 1) {
+				ShowInfoDialog(this.language.ERROR_PLEASE_SELECT_A_DATA_TAB, this.window);
+				return;
+			}
+
+			this.dataTabs.get(tabIndex).createData();
+
+		});
+		menuBar.add(this.guiAddDataMItem);
+
+		// #######################
+		// # Extra #
+		// #######################
+		JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
+		extrasMenu.add(new JMenuItem("TODO export to unencrypted txt file"));
+		extrasMenu.add(new JMenuItem("TODO import txt file"));
+		extrasMenu.add(new JPopupMenu.Separator());
+		extrasMenu.add(new JMenuItem("TODO encrypt file"));
+		extrasMenu.add(new JMenuItem("TODO decrypt file"));
+		menuBar.add(extrasMenu);
+
+		this.window.setJMenuBar(menuBar);
+	}
+	private void initBaseGUI() {
 		//
 		// Layout
 		//
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		mainPanel.setLayout(new BorderLayout());
-
-		//
-		// Menu
-		//
-		if (true) { //for folding
-			JMenuBar menuBar = new JMenuBar();
-
-			// file
-			JMenu fileMenu = new JMenu(this.language.FILE_MENU_NAME);
-			fileMenu.setMnemonic(KeyEvent.VK_F);
-
-			fileMenu.add(new JMenuItem("TODO Change Password"));
-			fileMenu.add(new JPopupMenu.Separator());
-			JMenuItem backupMItem = new JMenuItem(this.language.BACKUP_MENU_NAME);
-			backupMItem.addActionListener(e -> {
-				if (createBackup()) {
-					ShowInfoDialog(this.language.INFO_SAVE_BACKUP_OKAY, this.window);
-				}
-			});
-			fileMenu.add(backupMItem);
-			fileMenu.add(new JPopupMenu.Separator());
-			fileMenu.add(new JMenuItem("TODO Open Settings"));
-			menuBar.add(fileMenu);
-
-			// add Data
-			this.guiAddDataMItem = new JMenuItem(this.language.ADD_DATA_MENU_NAME);
-			this.guiAddDataMItem.setMnemonic(KeyEvent.VK_A);
-			this.guiAddDataMItem.addActionListener(e -> {
-				int tabIndex = this.guiDataTabs.getSelectedIndex();
-
-				// make sure that the current tab is not the "+" tab
-				if (tabIndex == this.guiDataTabs.getTabCount() - 1) {
-					ShowInfoDialog(this.language.ERROR_PLEASE_SELECT_A_DATA_TAB, this.window);
-					return;
-				}
-
-				this.dataTabs.get(tabIndex).createData();
-
-			});
-			menuBar.add(this.guiAddDataMItem);
-
-			// extra
-			JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
-			extrasMenu.add(new JMenuItem("TODO export to unencrypted txt file"));
-			extrasMenu.add(new JMenuItem("TODO import txt file"));
-			extrasMenu.add(new JPopupMenu.Separator());
-			extrasMenu.add(new JMenuItem("TODO encrypt file"));
-			extrasMenu.add(new JMenuItem("TODO decrypt file"));
-			menuBar.add(extrasMenu);
-
-			this.window.setJMenuBar(menuBar);
-		}
 
 		//
 		// Info/Option panel
@@ -927,7 +1003,7 @@ public class PasswordManagerApp {
 		}
 		void updateGUI() {
 
-			int buttonsPerRow = PasswordManagerApp.this.buttonsPerRow;
+			int buttonsPerRow = PasswordManagerApp.this.settings.buttonsPerRow;
 			/*
 			 * Validation
 			 */

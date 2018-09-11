@@ -39,11 +39,13 @@ import java.util.Scanner;
 
 class Settings {
 
-	 int frameX;
+	int frameX;
 	int frameY;
 	int frameWidth;
 	int frameHeight;
+	int buttonsPerRow;
 	long lastBackup;
+	int languageID;
 
 	static Settings InitDefault() {
 		Settings settings = new Settings();
@@ -54,7 +56,9 @@ class Settings {
 		settings.frameHeight = 600;
 		settings.frameX = screenSize.width / 2  - settings.frameWidth / 2;
 		settings.frameY = screenSize.height / 2 - settings.frameHeight / 2;
+		settings.buttonsPerRow = 3;
 		settings.lastBackup = 0;
+		settings.languageID = Language.ENG;
 
 		return settings;
 	}
@@ -70,23 +74,29 @@ class Settings {
 	private boolean processLoadString(String name, String value) {
 		try {
 			switch (name) {
-				case "frameX" :
-					this.frameX = Integer.parseInt(value);
-					return true;
-				case "frameY" :
-					this.frameY = Integer.parseInt(value);
-					return true;
-				case "frameWidth" :
-					this.frameWidth = Integer.parseInt(value);
-					return true;
-				case "frameHeight":
-					this.frameHeight = Integer.parseInt(value);
-					return true;
-				case "lastBackup":
-					this.lastBackup = Long.parseLong(value);
-					return true;
-				default:
-					return false;
+			case "frameX" :
+				this.frameX = Integer.parseInt(value);
+				return true;
+			case "frameY" :
+				this.frameY = Integer.parseInt(value);
+				return true;
+			case "frameWidth" :
+				this.frameWidth = Integer.parseInt(value);
+				return true;
+			case "frameHeight":
+				this.frameHeight = Integer.parseInt(value);
+				return true;
+			case "buttonsPerRow":
+				this.buttonsPerRow = Integer.parseInt(value);
+				return true;
+			case "lastBackup":
+				this.lastBackup = Long.parseLong(value);
+				return true;
+			case "languageID":
+				this.languageID = Integer.parseInt(value);
+				return true;
+			default:
+				return false;
 			}
 		} catch (NumberFormatException e) {
 			System.err.println("Settings.processLoadString: NumberFormatException, value String: " + value);
@@ -134,11 +144,13 @@ class Settings {
 		try {
 			Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
 
-			writer.write("frameX="      + this.frameX      + "\n");
-			writer.write("frameY="      + this.frameY      + "\n");
-			writer.write("frameWidth="  + this.frameWidth  + "\n");
-			writer.write("frameHeight=" + this.frameHeight + "\n");
-			writer.write("lastBackup="  + this.lastBackup + "\n");
+			writer.write("frameX="        + this.frameX        + "\n");
+			writer.write("frameY="        + this.frameY        + "\n");
+			writer.write("frameWidth="    + this.frameWidth    + "\n");
+			writer.write("frameHeight="   + this.frameHeight   + "\n");
+			writer.write("buttonsPerRow=" + this.buttonsPerRow + "\n");
+			writer.write("lastBackup="    + this.lastBackup    + "\n");
+			writer.write("languageID="    + this.languageID    + "\n");
 
 			writer.close();
 			return true;
