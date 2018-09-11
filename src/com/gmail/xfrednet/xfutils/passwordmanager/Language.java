@@ -37,6 +37,7 @@ public class Language {
 	// // Menu //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	public final String FILE_MENU_NAME = "File";
+	public final String BACKUP_MENU_NAME = "Make Backup";
 	public final String EXTRAS_MENU_NAME = "Extras";
 	public final String ADD_DATA_MENU_NAME = "Add data";
 	public final String NEW_DATA_DEFAULT_TITLE = "Title";
@@ -74,9 +75,11 @@ public class Language {
 	public final String CHANGE_DATA_UNDO_BUTTON_TOOLTIP = "Press to edit this data";
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	// // Error/Warning messages //
+	// // Error/Warning/Info popup messages //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	public final String ERROR_STRING_NOT_SUPPORTED = "The entered string contains unsupported characters";
 	public final String ERROR_DATA_0_ENTRIES = "This title has to have at least 1 string associated with it";
 	public final String ERROR_SAVE_TO_FILE_FAILED = "The data couldn't be saved.";
+	public final String ERROR_SAVE_BACKUP_FAILED = "The backup couldn't be saved.";
+	public final String INFO_SAVE_BACKUP_OKAY = "The backup was saved!";
 }

@@ -46,8 +46,8 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 
@@ -66,6 +66,7 @@ public class PasswordManagerApp {
 	private static final String CIPHER_ALGORITHM     = "AES/CBC/PKCS5Padding";
 	private static final int    CIPHER_INIT_VEC_SIZE = 16;
 	private static final String SAFE_FILE_NAME       = "save.XFCRYPT";
+	private static final String BACKUP_FILE_NAME     = "backup\\backup%s.XFCRYPT";
 
 	private static final byte FORMAT_TAB_SEPARATOR  = 0x1D;
 	private static final byte FORMAT_DATA_SEPARATOR = 0x1E;
@@ -156,7 +157,14 @@ public class PasswordManagerApp {
 		initBaseGUI();
 		initTabGUI();
 
-		setMode(CHANGE_MODE);
+		setMode(RETRIEVE_MODE);
+
+		// make backup if last backup was last month
+		Date thirtyDaysAgo = Date.from(ZonedDateTime.now().plusDays(-30).toInstant());
+		Date lastBackup = new Date(this.settings.lastBackup);
+		if (thirtyDaysAgo.after(lastBackup)) {
+			createBackup();
+		}
 	}
 
 	private boolean initSettings() {
@@ -166,7 +174,7 @@ public class PasswordManagerApp {
 			System.err.println("Settings.LoadSettings has failed a new settings instance will be initialized and saved!");
 
 			this.settings = Settings.InitDefault();
-			if (!this.settings.saveOptions(SETTINGS_FILE_NAME)) {
+			if (!this.settings.save(SETTINGS_FILE_NAME)) {
 				System.err.println("Saving the new Settings instance has failed! bye bye :/");
 				return false;
 			}
@@ -202,8 +210,13 @@ public class PasswordManagerApp {
 
 			fileMenu.add(new JMenuItem("TODO Change Password"));
 			fileMenu.add(new JPopupMenu.Separator());
-			fileMenu.add(new JMenuItem("TODO Copy Salt"));
-			fileMenu.add(new JMenuItem("TODO Make Backup"));
+			JMenuItem backupMItem = new JMenuItem(this.language.BACKUP_MENU_NAME);
+			backupMItem.addActionListener(e -> {
+				if (createBackup()) {
+					ShowInfoDialog(this.language.INFO_SAVE_BACKUP_OKAY, this.window);
+				}
+			});
+			fileMenu.add(backupMItem);
 			fileMenu.add(new JPopupMenu.Separator());
 			fileMenu.add(new JMenuItem("TODO Open Settings"));
 			menuBar.add(fileMenu);
@@ -440,38 +453,6 @@ public class PasswordManagerApp {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Cipher interfacing //
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	private static byte[] GetDecryptionKey() {
-		String userInput = AskForPassword();
-		if (userInput == null) {
-			return null;
-		}
-
-		/*
-		 * Load or generate salt
-		 */
-		byte[] salt = LoadSalt();
-		if (salt == null) {
-			//Info dialog
-			//TODO add option to set salt instead of creating a new one
-			int option = JOptionPane.showConfirmDialog(null,
-					"The salt could not be loaded! A new salt will be generated!",
-					TITLE, JOptionPane.OK_CANCEL_OPTION);
-
-			// create new if ok was selected
-			if (option == JOptionPane.OK_OPTION) {
-				System.out.println("A new salt will be generated!");
-				salt = CreateNewSalt();
-			}
-		}
-		if (salt == null) {
-			System.err.println("The creation of the salt failed!!!");
-			return null; // unable to load or create the salt
-		}
-
-		System.out.println("Salt: " +  ArrayToHex(salt));
-
-		return xFCipher.HashPassword(userInput.toCharArray(), salt);
-	}
 	private static String AskForPassword() {
 
 		if (JUMP_ASK)
@@ -510,71 +491,6 @@ public class PasswordManagerApp {
 		} else {
 			return null; //Cancel was selected
 		}
-	}
-	private static byte[] LoadSalt() {
-		File file = new File(SALT_FILE_NAME);
-
-		// if file exists load it's content
-		if (file.exists()) {
-			try {
-				FileInputStream fileStream = new FileInputStream(file);
-
-				//read
-				byte[] buffer = new byte[SALT_SIZE];
-				int readBytes = fileStream.read(buffer, 0, SALT_SIZE);
-				fileStream.close();
-				if (readBytes == SALT_SIZE) {
-					return buffer;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return null;
-	}
-	private static byte[] CreateNewSalt() {
-		byte[] buffer = xFCipher.GenerateSalt(SALT_SIZE);
-
-		if (!SafeSalt(buffer)) {
-			return null; // We shouldn't use a salt that is not saved
-		}
-
-		return buffer;
-	}
-	private static boolean SafeSalt(byte[] salt) {
-
-		/*
-		 * Validation
-		 */
-		if (salt.length < SALT_SIZE) {
-			return false;
-		}
-
-		/*
-		 * backup / rename old file
-		 */
-		File saltFile = new File(SALT_FILE_NAME);
-		if (saltFile.exists()) {
-			if (!saltFile.renameTo(new File(GetTimeStamp() + SALT_FILE_NAME))) {
-				return false; //failed to rename old salt file!
-			}
-		}
-
-		/*
-		 * Save the salt
-		 */
-		try {
-			FileOutputStream fileStream = new FileOutputStream(saltFile);
-			fileStream.write(salt, 0, SALT_SIZE);
-			fileStream.close();
-
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return false; // The writing failed
 	}
 	private static boolean IsStringInvalid(String testString) {
 		if (testString.isEmpty())
@@ -674,6 +590,11 @@ public class PasswordManagerApp {
 	}
 	private boolean saveData(String fileName) {
 		File saveFile = new File(fileName);
+		if (fileName.contains("\\")) {
+			String pathStr = fileName.substring(0, fileName.lastIndexOf("\\"));
+			File path = new File(pathStr);
+			path.mkdirs();
+		}
 
 		if (this.salt.length > Byte.MAX_VALUE || this.cipherInitVector.length > Byte.MAX_VALUE)
 			return false; // salt or init vector to long
@@ -802,6 +723,21 @@ public class PasswordManagerApp {
 		}
 
 		return false;
+	}
+	private boolean createBackup() {
+
+		String fileName = String.format(BACKUP_FILE_NAME, GetTimeStamp());
+		if (saveData(fileName)) {
+			System.out.println("Made a backup, backup name: " + fileName);
+			this.settings.lastBackup = new Date().getTime();
+			this.settings.save(SETTINGS_FILE_NAME);
+
+			return true;
+		} else {
+			ShowInfoDialog(this.language.ERROR_SAVE_BACKUP_FAILED, this.window);
+			return false;
+		}
+
 	}
 	private String getDataTabGroupSaveString(ArrayList<DataTab> tabs) {
 		StringBuilder sb = new StringBuilder();

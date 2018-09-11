@@ -43,6 +43,7 @@ public class Settings {
 	public int frameY;
 	public int frameWidth;
 	public int frameHeight;
+	public long lastBackup;
 
 	public static Settings InitDefault() {
 		Settings settings = new Settings();
@@ -53,13 +54,14 @@ public class Settings {
 		settings.frameHeight = 600;
 		settings.frameX = screenSize.width / 2  - settings.frameWidth / 2;
 		settings.frameY = screenSize.height / 2 - settings.frameHeight / 2;
+		settings.lastBackup = 0;
 
 		return settings;
 	}
 	public static Settings LoadSettings(String fileName) {
 		Settings settings = new Settings();
 
-		if (!settings.loadSettings(fileName)) {
+		if (!settings.load(fileName)) {
 			return null;
 		}
 
@@ -69,17 +71,22 @@ public class Settings {
 		try {
 			switch (name) {
 				case "frameX" :
-					frameX = Integer.parseInt(value);
+					this.frameX = Integer.parseInt(value);
 					return true;
 				case "frameY" :
-					frameY = Integer.parseInt(value);
+					this.frameY = Integer.parseInt(value);
 					return true;
 				case "frameWidth" :
-					frameWidth = Integer.parseInt(value);
+					this.frameWidth = Integer.parseInt(value);
 					return true;
 				case "frameHeight":
-					frameHeight = Integer.parseInt(value);
+					this.frameHeight = Integer.parseInt(value);
 					return true;
+				case "lastBackup":
+					this.lastBackup = Long.parseLong(value);
+					return true;
+				default:
+					return false;
 			}
 		} catch (NumberFormatException e) {
 			System.err.println("Settings.processLoadString: NumberFormatException, value String: " + value);
@@ -87,7 +94,7 @@ public class Settings {
 
 		return false;
 	}
-	private boolean loadSettings(String fileName) {
+	private boolean load(String fileName) {
 		File file = new File(fileName);
 
 		if (!file.exists())
@@ -123,14 +130,15 @@ public class Settings {
 
 		return false;
 	}
-	public boolean saveOptions(String fileName) {
+	public boolean save(String fileName) {
 		try {
 			Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
 
-			writer.write("frameX="      + frameX      + "\n");
-			writer.write("frameY="      + frameY      + "\n");
-			writer.write("frameWidth="  + frameWidth  + "\n");
-			writer.write("frameHeight=" + frameHeight + "\n");
+			writer.write("frameX="      + this.frameX      + "\n");
+			writer.write("frameY="      + this.frameY      + "\n");
+			writer.write("frameWidth="  + this.frameWidth  + "\n");
+			writer.write("frameHeight=" + this.frameHeight + "\n");
+			writer.write("lastBackup="  + this.lastBackup + "\n");
 
 			writer.close();
 			return true;
