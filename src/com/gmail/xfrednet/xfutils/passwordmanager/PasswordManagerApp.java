@@ -37,6 +37,7 @@ import java.security.*;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import javax.swing.*;
@@ -45,6 +46,7 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -60,18 +62,30 @@ public class PasswordManagerApp {
 
 	private static final String TITLE                = "xFutils Password Manager";
 	private static final String TIME_STAMP_FORMAT    = "yyyy.MM.dd.HH.mm.ss";
-	private static final String SALT_FILE_NAME       = "salt.and.pepper";
-	private static final int    SALT_SIZE            = 256 / 8;
-	private static final String SETTINGS_FILE_NAME   = "settings.txt";
-	private static final String CIPHER_ALGORITHM     = "AES/CBC/PKCS5Padding";
-	private static final int    CIPHER_INIT_VEC_SIZE = 16;
-	private static final String SAFE_FILE_NAME       = "save.XFCRYPT";
-	private static final String BACKUP_FILE_NAME     = "backup\\backup%s.XFCRYPT";
 
+
+	//
+	// cipher & saving
+	//
 	private static final byte FORMAT_TAB_SEPARATOR  = 0x1D;
 	private static final byte FORMAT_DATA_SEPARATOR = 0x1E;
 	private static final byte FORMAT_UNIT_SEPARATOR = 0x1F;
 
+	private static final String SAFE_FILE_NAME       = "save.XFCRYPT";
+	private static final String BACKUP_FILE_NAME     = "backup\\backup%s.XFCRYPT";
+	private static final String SETTINGS_FILE_NAME   = "settings.txt";
+
+	private static final String CIPHER_PWHASH_ALGORITHM  = "PBKDF2WithHmacSHA1";
+	private static final int    CIPHER_PWHASH_SIZE       = 128 / 8;
+	private static final int    CIPHER_PWHASH_ITERATIONS = 200000;
+	private static final String CIPHER_ALGORITHM         = "AES/CBC/PKCS5Padding";
+	private static final int    CIPHER_INIT_VEC_SIZE     = 16;
+	private static final int    CIPHER_SALT_SIZE         = 256 / 8;
+
+
+	//
+	// GUI
+	//
 	private static final Color     GUI_DELETE_DATA_BACKGROUND        = Color.red;
 	private static final int       GUI_INFO_AREA_HEIGHT              = 100;
 	private static final Color[]   GUI_MODE_INFO_COLORS              = {Color.green, Color.blue, Color.red};
@@ -89,11 +103,17 @@ public class PasswordManagerApp {
 	private static final ImageIcon GUI_CHECK_ICON  = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("check_icon.png")));
 	private static final ImageIcon GUI_UNDO_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("undo_icon.png")));
 
+	//
+	// Modes
+	//
 	private static final int     RETRIEVE_MODE       = 0;
 	private static final int     CHANGE_MODE         = 1;
 	private static final int     DELETE_MODE         = 2;
 	private static final int     MODE_COUNT          = 3;
 
+	/* //////////////////////////////////////////////////////////////////////////////// */
+	// // THE CLASS //
+	/* //////////////////////////////////////////////////////////////////////////////// */
 	private Settings settings;
 	private final Language language = new Language();
 
@@ -227,7 +247,14 @@ public class PasswordManagerApp {
 			this.guiAddDataMItem.addActionListener(e -> {
 				int tabIndex = this.guiDataTabs.getSelectedIndex();
 
+				// make sure that the current tab is not the "+" tab
+				if (tabIndex == this.guiDataTabs.getTabCount() - 1) {
+					ShowInfoDialog(this.language.ERROR_PLEASE_SELECT_A_DATA_TAB, this.window);
+					return;
+				}
+
 				this.dataTabs.get(tabIndex).createData();
+
 			});
 			menuBar.add(this.guiAddDataMItem);
 
@@ -511,6 +538,19 @@ public class PasswordManagerApp {
 		return false;
 	}
 
+	private static byte[] HashPassword(String password, byte[] salt) {
+
+		PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, CIPHER_PWHASH_ITERATIONS, CIPHER_PWHASH_SIZE * 8);
+
+		try {
+			SecretKeyFactory skf = SecretKeyFactory.getInstance(CIPHER_PWHASH_ALGORITHM);
+			return skf.generateSecret(spec).getEncoded();
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 	private static byte[] CreateRandomArray(int size) {
 		byte[] bytes = new byte[size];
 
@@ -585,7 +625,7 @@ public class PasswordManagerApp {
 	}
 
 	private void reinitCipherValues() {
-		this.salt = xFCipher.GenerateSalt(SALT_SIZE);
+		this.salt = CreateRandomArray(CIPHER_SALT_SIZE);
 		this.cipherInitVector = CreateRandomArray(CIPHER_INIT_VEC_SIZE);
 	}
 	private boolean saveData(String fileName) {
@@ -600,7 +640,7 @@ public class PasswordManagerApp {
 			return false; // salt or init vector to long
 
 		String saveString = getDataTabGroupSaveString(this.dataTabs);
-		Cipher cipher = CreateCipher(Cipher.ENCRYPT_MODE, xFCipher.HashPassword(this.password.toCharArray(), this.salt), this.cipherInitVector);
+		Cipher cipher = CreateCipher(Cipher.ENCRYPT_MODE, HashPassword(this.password, this.salt), this.cipherInitVector);
 		if (cipher == null)
 			return false;
 
@@ -692,7 +732,7 @@ public class PasswordManagerApp {
 				//
 				// decrypt
 				//
-				Cipher cipher = CreateCipher(Cipher.DECRYPT_MODE, xFCipher.HashPassword(this.password.toCharArray(), this.salt), this.cipherInitVector);
+				Cipher cipher = CreateCipher(Cipher.DECRYPT_MODE, HashPassword(this.password, this.salt), this.cipherInitVector);
 				if (cipher == null) {
 					break;
 				}
@@ -710,11 +750,11 @@ public class PasswordManagerApp {
 				ArrayList<DataTab> loadedTabs = loadDataTabGroupFromSaveString(saveString);
 				if (loadedTabs == null) {
 					break;
+
 				}
 				this.dataTabs = loadedTabs;
 
 				return true;
-
 			} while (false);
 			fileStream.close();
 			return false;
@@ -1039,7 +1079,6 @@ public class PasswordManagerApp {
 			//
 			JDialog dialog = new JDialog(PasswordManagerApp.this.window);
 			dialog.setAutoRequestFocus(true);
-			dialog.setLocationRelativeTo(PasswordManagerApp.this.window);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setResizable(false);
 
@@ -1185,6 +1224,7 @@ public class PasswordManagerApp {
 			dialog.setContentPane(mainPanel);
 			dialog.pack();
 			dialog.setSize(GUI_CHANGE_DATA_GUI_DEFAULT_WIDTH, dialog.getHeight());
+			dialog.setLocationRelativeTo(PasswordManagerApp.this.window);
 			dialog.setModal(true); // makes it a real pop up that pauses the program
 			dialog.setVisible(true);
 		}

@@ -37,15 +37,15 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class Settings {
+class Settings {
 
-	public int frameX;
-	public int frameY;
-	public int frameWidth;
-	public int frameHeight;
-	public long lastBackup;
+	 int frameX;
+	int frameY;
+	int frameWidth;
+	int frameHeight;
+	long lastBackup;
 
-	public static Settings InitDefault() {
+	static Settings InitDefault() {
 		Settings settings = new Settings();
 
 		// JFrame Position
@@ -58,7 +58,7 @@ public class Settings {
 
 		return settings;
 	}
-	public static Settings LoadSettings(String fileName) {
+	static Settings LoadSettings(String fileName) {
 		Settings settings = new Settings();
 
 		if (!settings.load(fileName)) {
@@ -130,7 +130,7 @@ public class Settings {
 
 		return false;
 	}
-	public boolean save(String fileName) {
+	boolean save(String fileName) {
 		try {
 			Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
 
@@ -143,8 +143,6 @@ public class Settings {
 			writer.close();
 			return true;
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

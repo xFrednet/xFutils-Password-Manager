@@ -79,6 +79,7 @@ public class Language {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	public final String ERROR_STRING_NOT_SUPPORTED = "The entered string contains unsupported characters";
 	public final String ERROR_DATA_0_ENTRIES = "This title has to have at least 1 string associated with it";
+	public final String ERROR_PLEASE_SELECT_A_DATA_TAB = "Please select a data tab to add data to";
 	public final String ERROR_SAVE_TO_FILE_FAILED = "The data couldn't be saved.";
 	public final String ERROR_SAVE_BACKUP_FAILED = "The backup couldn't be saved.";
 	public final String INFO_SAVE_BACKUP_OKAY = "The backup was saved!";
