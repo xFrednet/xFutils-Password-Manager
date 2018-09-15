@@ -3,5 +3,6 @@ frameY=240
 frameWidth=800
 frameHeight=600
 buttonsPerRow=3
-lastBackup=1536695722178
+lastBackup=1537018925633
 languageID=0
+copyCloseKey=16

@@ -33,6 +33,7 @@
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
@@ -46,19 +47,21 @@ class Settings {
 	int buttonsPerRow;
 	long lastBackup;
 	int languageID;
+	int copyCloseKey;
 
 	static Settings InitDefault() {
 		Settings settings = new Settings();
 
 		// JFrame Position
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		settings.frameWidth = 800;
-		settings.frameHeight = 600;
-		settings.frameX = screenSize.width / 2  - settings.frameWidth / 2;
-		settings.frameY = screenSize.height / 2 - settings.frameHeight / 2;
+		settings.frameWidth    = 800;
+		settings.frameHeight   = 600;
+		settings.frameX        = screenSize.width / 2  - settings.frameWidth / 2;
+		settings.frameY        = screenSize.height / 2 - settings.frameHeight / 2;
 		settings.buttonsPerRow = 3;
-		settings.lastBackup = 0;
-		settings.languageID = Language.ENG;
+		settings.lastBackup    = 0;
+		settings.languageID    = Language.ENG;
+		settings.copyCloseKey  = KeyEvent.VK_SHIFT;
 
 		return settings;
 	}
@@ -94,6 +97,9 @@ class Settings {
 				return true;
 			case "languageID":
 				this.languageID = Integer.parseInt(value);
+				return true;
+			case "copyCloseKey":
+				this.copyCloseKey = Integer.parseInt(value);
 				return true;
 			default:
 				return false;
@@ -151,6 +157,7 @@ class Settings {
 			writer.write("buttonsPerRow=" + this.buttonsPerRow + "\n");
 			writer.write("lastBackup="    + this.lastBackup    + "\n");
 			writer.write("languageID="    + this.languageID    + "\n");
+			writer.write("copyCloseKey="  + this.copyCloseKey);
 
 			writer.close();
 			return true;

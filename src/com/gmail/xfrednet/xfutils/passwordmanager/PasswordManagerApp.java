@@ -85,10 +85,10 @@ public class PasswordManagerApp {
 	//
 	// GUI
 	//
-	private static final int       GUI_ENTER_PASSWORD_GUI_WIDTH      = 300;
+	private static final int       GUI_ENTER_PASSWORD_GUI_WIDTH      = 400;
 	private static final Color     GUI_DELETE_DATA_BACKGROUND        = Color.red;
 	private static final int       GUI_INFO_AREA_HEIGHT              = 100;
-	private static final Color[]   GUI_MODE_INFO_COLORS              = {Color.green, Color.blue, Color.red};
+	private static final Color[]   GUI_MODE_INFO_COLORS              = new Color[]{Color.green, Color.blue, Color.red};
 	private static final Color     GUI_BORDER_COLOR                  = new Color(0xacacac);
 	private static final int       GUI_DEFAULT_GAP                   = 5;
 	private static final Border    GUI_DEFAULT_GAP_BORDER            = BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
@@ -96,6 +96,7 @@ public class PasswordManagerApp {
 	private static final int       GUI_DATA_INFO_LABEL_WIDTH         = 50;
 	private static final Dimension GUI_ICON_BUTTON_DIMENSIONS        = new Dimension(24, 24);
 	private static final int       GUI_CHANGE_DATA_GUI_DEFAULT_WIDTH = 500;
+	private static final int[]     GUI_SETTINGS_BUTTONS_PER_ROW_OPTIONS = new int[]{1, 3, 5};
 
 	private static final ImageIcon GUI_EDIT_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("edit_icon.png")));
 	private static final ImageIcon GUI_COPY_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("copy_icon.png")));
@@ -224,7 +225,11 @@ public class PasswordManagerApp {
 		JMenu fileMenu = new JMenu(this.language.FILE_MENU_NAME);
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 
-		fileMenu.add(new JMenuItem("TODO Change Password"));
+		JMenuItem changePassMItem = new JMenuItem(this.language.CHANGE_PASSWORD_MENU_NAME);
+		changePassMItem.addActionListener(e -> {
+			showChangePasswordDialog();
+		});
+		fileMenu.add(changePassMItem);
 		fileMenu.add(new JPopupMenu.Separator());
 		JMenuItem backupMItem = new JMenuItem(this.language.BACKUP_MENU_NAME);
 		backupMItem.addActionListener(e -> {
@@ -263,7 +268,46 @@ public class PasswordManagerApp {
 		//
 		// layout menu
 		//
-		//TODO well the layout menu
+		JMenu layoutMenu = new JMenu(this.language.SETTINGS_LAYOUT_MENU_NAME);
+		ButtonGroup radioStation = new ButtonGroup(); // yes this joke is getting very old
+		JRadioButtonMenuItem[] layoutRadios = new JRadioButtonMenuItem[GUI_SETTINGS_BUTTONS_PER_ROW_OPTIONS.length];
+		int index = 0;
+		for (int buttonsPerRow : GUI_SETTINGS_BUTTONS_PER_ROW_OPTIONS) {
+
+			// create radio
+			String radioName = String.format(this.language.SETTINGS_BUTTON_COUNT_MENU_NAME, buttonsPerRow);
+			JRadioButtonMenuItem radio = new JRadioButtonMenuItem(radioName);
+			radio.setSelected(buttonsPerRow == this.settings.buttonsPerRow); // select if it is the current "layout"
+			radioStation.add(radio);
+
+
+			// action listener
+			radio.addActionListener(e -> {
+				JRadioButtonMenuItem clickedRadio = (JRadioButtonMenuItem)e.getSource();
+
+				int clickedIndex = 0;
+
+				for (JRadioButtonMenuItem stationRadio : layoutRadios) {
+					if (stationRadio.equals(clickedRadio)) {
+						break;
+					}
+					clickedIndex++;
+				}
+
+				// save settings
+				this.settings.buttonsPerRow = GUI_SETTINGS_BUTTONS_PER_ROW_OPTIONS[clickedIndex];
+				this.settings.save(SETTINGS_FILE_NAME);
+
+				updateTabGUIs();
+			});
+
+			// save the radio
+			layoutMenu.add(radio);
+			layoutRadios[index] = radio;
+			index++;
+		}
+
+		settingsMenu.add(layoutMenu);
 
 		//
 		// languageMenu
@@ -304,6 +348,8 @@ public class PasswordManagerApp {
 		resetMenu.addActionListener(e -> {
 			this.settings = Settings.InitDefault();
 			this.settings.save(SETTINGS_FILE_NAME);
+			updateTabGUIs();
+
 			ShowInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE, this.window);
 		});
 		settingsMenu.add(resetMenu);
@@ -513,6 +559,11 @@ public class PasswordManagerApp {
 
 		this.guiDataTabs.setSelectedIndex(0);
 	}
+	private void updateTabGUIs() {
+		for (DataTab tab : this.dataTabs) {
+			tab.updateGUI();
+		}
+	}
 
 	private void setMode(int modeID) {
 		if (modeID < 0 || modeID >= MODE_COUNT) {
@@ -632,6 +683,110 @@ public class PasswordManagerApp {
 			return null;
 		}
 	}
+	private void showChangePasswordDialog() {
+		JDialog cpDialog = new JDialog();
+		JPanel contentPanel = new JPanel(new GridBagLayout());
+		contentPanel.setBorder(BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP, 0, GUI_DEFAULT_GAP));
+
+		// constrains
+		GridBagConstraints labelConstrains = new GridBagConstraints();
+		labelConstrains.weighty = 1.0;
+		labelConstrains.fill = GridBagConstraints.BOTH;
+		labelConstrains.insets = new Insets(GUI_DEFAULT_GAP, 0, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP);
+		GridBagConstraints inputConstrains = new GridBagConstraints();
+		inputConstrains.weighty = 1.0;
+		inputConstrains.weightx = 1.0;
+		inputConstrains.fill = GridBagConstraints.BOTH;
+		inputConstrains.gridwidth = GridBagConstraints.REMAINDER;
+		inputConstrains.insets = new Insets(GUI_DEFAULT_GAP, 0, GUI_DEFAULT_GAP, 0);
+
+		// old password
+		contentPanel.add(new JLabel(this.language.CHANGE_PASS_OLD_PASS_LABEL), labelConstrains);
+		JPasswordField oldPassField = new JPasswordField();
+		contentPanel.add(oldPassField, inputConstrains);
+
+		// new password input
+		contentPanel.add(new JLabel(this.language.CHANGE_PASS_NEW_PASS_LABEL), labelConstrains);
+		JPasswordField newPassField = new JPasswordField();
+		contentPanel.add(newPassField, inputConstrains);
+
+		// new password again
+		contentPanel.add(new JLabel(this.language.CHANGE_PASS_NEW_PASS_AGAIN_LABEL), labelConstrains);
+		JPasswordField againNewPassField = new JPasswordField();
+		contentPanel.add(againNewPassField, inputConstrains);
+
+		// input button
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 2, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP));
+		JButton cancelButton = new JButton(this.language.CHANGE_PASS_CANCEL_BUTTON_LABEL);
+		cancelButton.addActionListener(e -> {
+			cpDialog.dispose();
+		});
+		buttonPanel.add(cancelButton);
+
+		JButton changePWButton = new JButton(this.language.CHANGE_PASS_SAVE_BUTTON_LABEL);
+		changePWButton.addActionListener(e -> {
+			boolean isInputCorrect = true;
+
+			// check old pass
+			String oldPass = new String(oldPassField.getPassword());
+			if (oldPass.isEmpty() ||
+				!ComparePasswords(this.password, oldPass, this.salt)) {
+				isInputCorrect = false;
+			}
+
+			// check new pass
+			String newPass1 = new String(newPassField.getPassword());
+			String newPass2 = new String(againNewPassField.getPassword());
+			byte[] newSalt = CreateRandomArray(CIPHER_SALT_SIZE);
+			if (newPass1.isEmpty() || newPass2.isEmpty() ||
+				!ComparePasswords(newPass1, newPass2, newSalt)) {
+				isInputCorrect = false;
+			}
+
+			// invalid input
+			if (!isInputCorrect) {
+				ShowInfoDialog(this.language.CHANGE_PASS_INVALID_INPUT_LABEL, cpDialog);
+				return;
+			}
+
+			// just to be save
+			createBackup();
+
+			// save data with new password or reverse changes if something failed
+			byte[] oldSalt    = this.salt;
+			byte[] oldInitVec = this.cipherInitVector;
+			this.password         = newPass1;
+			this.salt             = newSalt;
+			this.cipherInitVector = CreateRandomArray(CIPHER_INIT_VEC_SIZE);
+			if (!saveData(SAFE_FILE_NAME)) {
+				this.password         = oldPass;
+				this.salt             = oldSalt;
+				this.cipherInitVector = oldInitVec;
+				ShowInfoDialog(this.language.CHANGE_PASS_CHANGE_PASS_FAILED, cpDialog);
+				return;
+			}
+
+			// dispose is everything worked
+			ShowInfoDialog(this.language.CHANGE_PASS_ALL_GOOD, cpDialog);
+			cpDialog.dispose();
+		});
+		cpDialog.getRootPane().setDefaultButton(changePWButton);
+		buttonPanel.add(changePWButton);
+
+		contentPanel.add(buttonPanel, inputConstrains);
+
+		// dialog
+		cpDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		cpDialog.setContentPane(contentPanel);
+		cpDialog.pack();
+		cpDialog.setSize(GUI_ENTER_PASSWORD_GUI_WIDTH, cpDialog.getHeight());
+		cpDialog.setResizable(false);
+		cpDialog.setLocationRelativeTo(null);
+		cpDialog.setTitle(TITLE);
+		cpDialog.setModal(true);
+		cpDialog.setAutoRequestFocus(true);
+		cpDialog.setVisible(true);
+	}
 	private static boolean IsStringInvalid(String testString) {
 		if (testString.isEmpty())
 			return true;
@@ -736,6 +891,28 @@ public class PasswordManagerApp {
 	private static void CopyToClipboard(String text) {
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
 	}
+	private static boolean ComparePasswords(String password1, String password2, byte[] salt) {
+
+		// Why do I hash the passwords, well just to be more correct and not have
+		// different timings if the password have different lengths. Is this necessary
+		// absolutely not because the old actual password is stored in ram and the password
+		// was entered before so a keylogger would be a way better attack.
+
+		// hash
+		byte[] pass1Hash = HashPassword(password1, salt);
+		byte[] pass2Hash = HashPassword(password2, salt);
+		if (pass1Hash == null || pass2Hash == null)
+			return false; // well nothing to compare
+
+		// compare hashes
+		byte diff = 0x00;
+		for (int index = 0; index < pass1Hash.length; index++) {
+			diff |= pass1Hash[index] ^ pass2Hash[index];
+		}
+
+		// evaluate the result
+		return diff == 0;
+	}
 
 	private void reinitCipherValues() {
 		this.salt = CreateRandomArray(CIPHER_SALT_SIZE);
@@ -743,6 +920,8 @@ public class PasswordManagerApp {
 	}
 	private boolean saveData(String fileName) {
 		File saveFile = new File(fileName);
+
+		// create the containing directory
 		if (fileName.contains("\\")) {
 			String pathStr = fileName.substring(0, fileName.lastIndexOf("\\"));
 			File path = new File(pathStr);

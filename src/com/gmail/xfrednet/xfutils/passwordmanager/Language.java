@@ -45,6 +45,7 @@ class Language {
 	// // Menu //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	final String FILE_MENU_NAME;
+	final String CHANGE_PASSWORD_MENU_NAME;
 	final String BACKUP_MENU_NAME;
 	final String SETTINGS_MENU_NAME;
 	final String SETTINGS_FRAME_MENU_NAME;
@@ -89,6 +90,18 @@ class Language {
 	final String CHANGE_DATA_UNDO_BUTTON_TOOLTIP;
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
+	// // Change password panel //
+	/* //////////////////////////////////////////////////////////////////////////////// */
+	final String CHANGE_PASS_OLD_PASS_LABEL;
+	final String CHANGE_PASS_NEW_PASS_LABEL;
+	final String CHANGE_PASS_NEW_PASS_AGAIN_LABEL;
+	final String CHANGE_PASS_CANCEL_BUTTON_LABEL;
+	final String CHANGE_PASS_SAVE_BUTTON_LABEL;
+	final String CHANGE_PASS_INVALID_INPUT_LABEL;
+	final String CHANGE_PASS_CHANGE_PASS_FAILED;
+	final String CHANGE_PASS_ALL_GOOD;
+
+	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Error/Warning/Info popup messages //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	final String ERROR_STRING_NOT_SUPPORTED;
@@ -112,6 +125,7 @@ class Language {
 
 			// Menu
 			this.FILE_MENU_NAME                  = "Datei";
+			this.CHANGE_PASSWORD_MENU_NAME       = "Passwort ändern";
 			this.BACKUP_MENU_NAME                = "Erstelle ein Backup";
 			this.SETTINGS_MENU_NAME              = "Einstellungen";
 			this.SETTINGS_FRAME_MENU_NAME        = "Fenster";
@@ -151,6 +165,16 @@ class Language {
 			this.CHANGE_DATA_REMOVE_BUTTON_TOOLTIP           = "Drücken Sie, um diese Info zu löschen";
 			this.CHANGE_DATA_UNDO_BUTTON_TOOLTIP             = "Drücken Sie, um die Änderung rückgängig zu machen";
 
+			// Change password panel
+			this.CHANGE_PASS_OLD_PASS_LABEL       = "Altes Passwort:";
+			this.CHANGE_PASS_NEW_PASS_LABEL       = "Neues Passwort:";
+			this.CHANGE_PASS_NEW_PASS_AGAIN_LABEL = "Neues Passwort:";
+			this.CHANGE_PASS_CANCEL_BUTTON_LABEL  = "Abbrechen";
+			this.CHANGE_PASS_SAVE_BUTTON_LABEL    = "Password ändern";
+			this.CHANGE_PASS_INVALID_INPUT_LABEL  = "Etwas stimmt nicht, bitte überprüfe deine Eingaben!";
+			this.CHANGE_PASS_CHANGE_PASS_FAILED   = "Leider konnte das Passwort nicht geändert werden.";
+			this.CHANGE_PASS_ALL_GOOD             = "Das Passwort wurde erfolgreich geändert";
+
 			// Error/Warning/Info popup messages
 			this.ERROR_STRING_NOT_SUPPORTED     = "Der eingegebene Text wird leider nicht unterstützt";
 			this.ERROR_DATA_0_ENTRIES           = "Es muss zumindest eine Info zum Titel gespeichert werden";
@@ -171,6 +195,7 @@ class Language {
 
 			// Menu
 			this.FILE_MENU_NAME                  = "File";
+			this.CHANGE_PASSWORD_MENU_NAME       = "Change password";
 			this.BACKUP_MENU_NAME                = "Make Backup";
 			this.SETTINGS_MENU_NAME              = "Settings";
 			this.SETTINGS_FRAME_MENU_NAME        = "Window";
@@ -210,6 +235,16 @@ class Language {
 			this.CHANGE_DATA_REMOVE_BUTTON_TOOLTIP           = "Press to remove this data";
 			this.CHANGE_DATA_UNDO_BUTTON_TOOLTIP             = "Press to undo the change";
 
+			// Change password panel
+			this.CHANGE_PASS_OLD_PASS_LABEL       = "Old password:";
+			this.CHANGE_PASS_NEW_PASS_LABEL       = "New Password:";
+			this.CHANGE_PASS_NEW_PASS_AGAIN_LABEL = "New Password again:";
+			this.CHANGE_PASS_CANCEL_BUTTON_LABEL  = "Cancel";
+			this.CHANGE_PASS_SAVE_BUTTON_LABEL    = "Change Password";
+			this.CHANGE_PASS_INVALID_INPUT_LABEL  = "Something does not add up please check your input!";
+			this.CHANGE_PASS_CHANGE_PASS_FAILED   = "Something went wrong while trying to change to the new password";
+			this.CHANGE_PASS_ALL_GOOD             = "The password was changed successfully";
+
 			// Error/Warning/Info popup messages
 			this.ERROR_STRING_NOT_SUPPORTED     = "The entered string contains unsupported characters";
 			this.ERROR_DATA_0_ENTRIES           = "This title has to have at least 1 string associated with it";
@@ -218,7 +253,6 @@ class Language {
 			this.ERROR_SAVE_BACKUP_FAILED       = "The backup couldn't be saved.";
 			this.INFO_SAVE_BACKUP_OKAY          = "The backup was saved!";
 			this.INFO_RESTART_TO_LOAD_CHANGE    = "Please restart the application to load the changes";
-
 
 			break;
 
