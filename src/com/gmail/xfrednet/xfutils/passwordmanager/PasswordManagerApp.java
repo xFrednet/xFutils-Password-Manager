@@ -33,6 +33,8 @@
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
 
+import java.awt.event.InputEvent;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 
 import javax.crypto.*;
@@ -42,6 +44,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
@@ -49,16 +52,14 @@ import java.io.*;
 import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 import static javafx.application.Platform.exit;
 
 
 public class PasswordManagerApp {
 
-	private static final boolean JUMP_ASK  = true;
+	private static final boolean JUMP_ASK = true;
 
 	private static final String TITLE                = "xFutils Password Manager";
 	private static final String TIME_STAMP_FORMAT    = "yyyy.MM.dd.HH.mm.ss";
@@ -74,6 +75,7 @@ public class PasswordManagerApp {
 	private static final String SAFE_FILE_NAME       = "save.XFCRYPT";
 	private static final String BACKUP_FILE_NAME     = "backup\\backup%s.XFCRYPT";
 	private static final String SETTINGS_FILE_NAME   = "settings.txt";
+	private static final String TXT_EXPORT_FILE_NAME = "Password Manager Export.txt";
 
 	private static final String CIPHER_PWHASH_ALGORITHM  = "PBKDF2WithHmacSHA1";
 	private static final int    CIPHER_PWHASH_SIZE       = 128 / 8;
@@ -143,7 +145,7 @@ public class PasswordManagerApp {
 	private JSpinner guiNewTabIndexSelector;
 
 	public static void main(String[] args){
-		PasswordManagerApp app = new PasswordManagerApp();
+		new PasswordManagerApp();
 	}
 
 	private PasswordManagerApp() {
@@ -380,8 +382,30 @@ public class PasswordManagerApp {
 		// # Extra #
 		// #######################
 		JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
-		extrasMenu.add(new JMenuItem("TODO export to unencrypted txt file"));
-		extrasMenu.add(new JMenuItem("TODO import txt file"));
+
+		JMenuItem exportToTXTMenu = new JMenuItem(this.language.EXTRAS_EXPORT_TO_TXT_NAME);
+		exportToTXTMenu.addActionListener(e -> {
+
+			String input = askForPassword();
+			if (ComparePasswords(input, this.password, this.salt) && exportToTXT()) {
+				ShowInfoDialog(this.language.EXTRAS_EXPORT_COMPLETE_INFO, this.window);
+			} else {
+				ShowInfoDialog(this.language.EXTRAS_EXPORT_FAILED_INFO, this.window);
+			}
+
+		});
+		extrasMenu.add(exportToTXTMenu);
+		JMenuItem importFromTextMenu = new JMenuItem(this.language.EXTRAS_IMPORT_FROM_TXT_NAME);
+		importFromTextMenu.addActionListener(e -> {
+
+			if (importFromTXT()) {
+				ShowInfoDialog(this.language.EXTRAS_IMPORT_COMPLETE_INFO, this.window);
+			} else {
+				ShowInfoDialog(this.language.EXTRAS_IMPORT_FAILED_INFO, this.window);
+			}
+		});
+		extrasMenu.add(importFromTextMenu);
+
 		extrasMenu.add(new JPopupMenu.Separator());
 		extrasMenu.add(new JMenuItem("TODO encrypt file"));
 		extrasMenu.add(new JMenuItem("TODO decrypt file"));
@@ -581,10 +605,10 @@ public class PasswordManagerApp {
 
 		System.out.println("A new Mode was selected! Mode: " + this.language.MODE_BUTTON_LABELS[modeID]);
 	}
-	private void createTab(String name, int index) {
+	private DataTab createTab(String name, int index) {
 		if (IsStringInvalid(name)) {
 			ShowInfoDialog(this.language.ERROR_STRING_NOT_SUPPORTED, this.window);
-			return;
+			return null;
 		}
 
 		DataTab tab = new DataTab(name);
@@ -593,7 +617,7 @@ public class PasswordManagerApp {
 		if (!saveData(SAFE_FILE_NAME)) {
 			ShowInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED, this.window);
 			this.dataTabs.remove(index);
-			return;
+			return null;
 		}
 
 		//gui
@@ -607,6 +631,7 @@ public class PasswordManagerApp {
 		((SpinnerNumberModel)this.guiNewTabIndexSelector.getModel()).setMaximum(this.dataTabs.size()); // one line wonder or horror
 		this.guiNewTabIndexSelector.setValue(this.dataTabs.size());
 
+		return tab;
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -925,6 +950,7 @@ public class PasswordManagerApp {
 		if (fileName.contains("\\")) {
 			String pathStr = fileName.substring(0, fileName.lastIndexOf("\\"));
 			File path = new File(pathStr);
+			//noinspection ResultOfMethodCallIgnored
 			path.mkdirs();
 		}
 
@@ -979,6 +1005,7 @@ public class PasswordManagerApp {
 		try {
 			FileInputStream fileStream = new FileInputStream(file);
 
+			//noinspection LoopStatementThatDoesntLoop,ConstantConditions
 			do {
 
 				//
@@ -1028,7 +1055,7 @@ public class PasswordManagerApp {
 				if (cipher == null) {
 					break;
 				}
-				String saveString = null;
+				String saveString;
 				try {
 					saveString = new String(cipher.doFinal(encryptedDataBuffer));
 				} catch (IllegalBlockSizeException | BadPaddingException e) {
@@ -1107,6 +1134,184 @@ public class PasswordManagerApp {
 		}
 
 		return tabs;
+	}
+
+	/* //////////////////////////////////////////////////////////////////////////////// */
+	// // Extras //
+	/* //////////////////////////////////////////////////////////////////////////////// */
+	private boolean exportToTXT() {
+
+		// #################
+		// # select file #
+		// #################
+		JFileChooser chooser = new JFileChooser();
+		chooser.setDialogTitle(this.language.EXTRAS_EXPORT_TO_TXT_NAME);
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int result = chooser.showSaveDialog(this.window);
+		if (result != JFileChooser.APPROVE_OPTION) {
+			return false; // well nothing really failed
+		}
+		File outputFile = new File(chooser.getSelectedFile().getAbsolutePath() + "\\" + TXT_EXPORT_FILE_NAME);
+		System.out.println("exportToTXT: The output file will be: " + outputFile.getAbsolutePath());
+
+		// #################
+		// # write to file #
+		// #################
+		try {
+			PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8));
+
+			// write tab
+			for (DataTab tab : this.dataTabs) {
+				writer.println("[" + tab.title + "]");
+
+				// write data
+				for (Data data : tab.dataList) {
+					writer.print(data.title + ": ");
+
+					int contentIndex = 0;
+					for (String content : data.contentList) {
+						writer.print(content);
+
+						if (contentIndex != data.contentList.size() - 1) {
+							writer.print((char)FORMAT_UNIT_SEPARATOR);
+						}
+						contentIndex++;
+					}
+
+					writer.println();
+				}
+			}
+
+			writer.flush();
+			writer.close();
+
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	private boolean importFromTXT() {
+		// #################
+		// # select file #
+		// #################
+		JFileChooser chooser = new JFileChooser();
+		chooser.setDialogTitle(this.language.EXTRAS_IMPORT_FROM_TXT_NAME);
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.setFileFilter(new FileNameExtensionFilter("Text files", "txt"));
+		int result = chooser.showSaveDialog(this.window);
+		if (result != JFileChooser.APPROVE_OPTION) {
+			return false; // well nothing really failed
+		}
+		File inputFile = new File(chooser.getSelectedFile().getAbsolutePath());
+		System.out.println("importFromTXT: The input file is: " + inputFile.getAbsolutePath());
+
+		// #################
+		// # Create Backup #
+		// #################
+		createBackup();
+
+		// #############
+		// # Read file #
+		// #############
+		try {
+			Scanner input = new Scanner(inputFile);
+
+			DataTab tab = null;
+			while (input.hasNextLine()) {
+				String line = input.nextLine().trim(); // trim remove spaces and tabs on start and end
+
+				if (line.isEmpty()) {
+					continue;
+				}
+
+				// =============
+				// Tab name
+				// =============
+				if (line.startsWith("[")) {
+					int endIndex = line.lastIndexOf("]");
+					if (endIndex == -1) {
+						continue; // no tab name end => next line
+					}
+
+					String name = line.substring(1, endIndex);
+					if (IsStringInvalid(name)) {
+						continue;
+					}
+					// test if there is already a tab with this name and if so use that tab
+					tab = null;
+					for (DataTab testTab : this.dataTabs) {
+						if (testTab.title.equals(name)) {
+							tab = testTab;
+							break;
+						}
+					}
+					// if tab was not found
+					if (tab == null) {
+						tab = createTab(name, this.dataTabs.size());
+						if (tab == null) {
+							input.close();
+							return false;
+						}
+					}
+					continue; // next line
+				}
+
+				// ============
+				// data
+				// ============
+				// The data has to have a Tab that it gets saved to so I create a tab called "imported"
+				int nameEnd = line.indexOf(": ");
+				if (nameEnd == -1)  {
+					// ie not found
+					continue;
+				}
+				if (tab == null) {
+					tab = createTab(this.language.EXTRAS_IMPORT_DEFAULT_TAB_NAME, this.dataTabs.size());
+					if (tab == null) {
+						input.close();
+						return false;
+					}
+				}
+
+				// get name and validate it
+				String dataName = line.substring(0, nameEnd);
+				if (IsStringInvalid(dataName)) {
+					continue;
+				}
+				Data data = new Data(dataName, tab);
+
+				// read components
+				String[] components = line.substring(nameEnd + 2).split(FORMAT_UNIT_SEPARATOR + "");
+				for (String component : components) {
+					if (IsStringInvalid(component)) {
+						continue;
+					}
+
+					data.contentList.add(component);
+				}
+
+				// add if valid
+				if (data.contentList.size() != 0) {
+					data.createGUI();
+					tab.add(data);
+				}
+			}
+			updateTabGUIs();
+
+			input.close();
+
+			if (!saveData(SAFE_FILE_NAME)) {
+				return false;
+			}
+
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
@@ -1325,7 +1530,20 @@ public class PasswordManagerApp {
 
 				switch (PasswordManagerApp.this.currentMode) {
 					case RETRIEVE_MODE:
-						writeToInfoLabel();
+						// copy to clipboard if shift is pressed
+						if ((e.getModifiers() & InputEvent.SHIFT_MASK) != 0) {
+
+							if (this.copyDataIndex >= this.contentList.size()) {
+								this.copyDataIndex = 0;
+							}
+							String data = this.contentList.get(this.copyDataIndex);
+							CopyToClipboard(data);
+
+							PasswordManagerApp.this.window.dispose();
+
+						} else {
+							writeToInfoLabel();
+						}
 						break;
 					case CHANGE_MODE:
 						openChangeDataGUI(false);

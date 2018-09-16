@@ -58,8 +58,18 @@ class Language {
 	final String SETTINGS_LANGUAGE_DE_MENU_NAME = "Deutsch";
 	final String SETTINGS_RESET_MENU_NAME;
 	final String EXTRAS_MENU_NAME;
+	final String EXTRAS_EXPORT_TO_TXT_NAME;
+	final String EXTRAS_IMPORT_FROM_TXT_NAME;
 	final String ADD_DATA_MENU_NAME;
 	final String NEW_DATA_DEFAULT_TITLE;
+	final String EXTRAS_TXT_FILE_DESCRIPTION;
+	final String EXTRAS_IMPORT_FILE_DIALOG_NAME;
+	final String EXTRAS_EXPORT_FILE_DIALOG_NAME;
+	final String EXTRAS_IMPORT_DEFAULT_TAB_NAME;
+	final String EXTRAS_EXPORT_COMPLETE_INFO;
+	final String EXTRAS_EXPORT_FAILED_INFO;
+	final String EXTRAS_IMPORT_COMPLETE_INFO;
+	final String EXTRAS_IMPORT_FAILED_INFO;
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Info panel //
@@ -136,8 +146,19 @@ class Language {
 			this.SETTINGS_LANGUAGE_MENU_NAME     = "Sprache";
 			this.SETTINGS_RESET_MENU_NAME        = "Einstellungen zurücksetzen";
 			this.EXTRAS_MENU_NAME                = "Extras";
+			this.EXTRAS_EXPORT_TO_TXT_NAME       = "Exportiere zu Text";
+			this.EXTRAS_IMPORT_FROM_TXT_NAME     = "Importiere von Text";
 			this.ADD_DATA_MENU_NAME              = "Infos hinzufügen";
 			this.NEW_DATA_DEFAULT_TITLE          = "Titel";
+			this.EXTRAS_TXT_FILE_DESCRIPTION     = "Text Datein";
+			this.EXTRAS_IMPORT_FILE_DIALOG_NAME  = "Wähle die Datei die geladen werden soll";
+			this.EXTRAS_EXPORT_FILE_DIALOG_NAME  = "Wähle die Output datei";
+			this.EXTRAS_IMPORT_DEFAULT_TAB_NAME  = "Importiert";
+			this.EXTRAS_EXPORT_COMPLETE_INFO     = "Die Datei wurde erfolgreich exportiert";
+			this.EXTRAS_EXPORT_FAILED_INFO       = "Leider ist beim Importieren ein Fehler aufgetreten";
+			this.EXTRAS_IMPORT_COMPLETE_INFO     = "Die Datei wurde erfolgreich importiert";
+			this.EXTRAS_IMPORT_FAILED_INFO       = "Leider konnte die Datei nicht richtig importiert werden";
+
 
 			// Info panel
 			this.INFO_PANEL_TITLE_LABEL = "Name: ";
@@ -206,8 +227,18 @@ class Language {
 			this.SETTINGS_LANGUAGE_MENU_NAME     = "Language";
 			this.SETTINGS_RESET_MENU_NAME        = "Reset settings";
 			this.EXTRAS_MENU_NAME                = "Extras";
+			this.EXTRAS_EXPORT_TO_TXT_NAME       = "Export to txt file";
+			this.EXTRAS_IMPORT_FROM_TXT_NAME     = "Import from txt file";
 			this.ADD_DATA_MENU_NAME              = "Add data";
 			this.NEW_DATA_DEFAULT_TITLE          = "Title";
+			this.EXTRAS_TXT_FILE_DESCRIPTION     = "Text files";
+			this.EXTRAS_IMPORT_FILE_DIALOG_NAME  = "Choose the file to import";
+			this.EXTRAS_EXPORT_FILE_DIALOG_NAME  = "Choose the output file";
+			this.EXTRAS_IMPORT_DEFAULT_TAB_NAME  = "Imported";
+			this.EXTRAS_EXPORT_COMPLETE_INFO     = "The file was successfully exported";
+			this.EXTRAS_EXPORT_FAILED_INFO       = "Something failed during the export process";
+			this.EXTRAS_IMPORT_COMPLETE_INFO     = "The file was successfully imported";
+			this.EXTRAS_IMPORT_FAILED_INFO       = "Something failed during the import process";
 
 			// Info panel
 			this.INFO_PANEL_TITLE_LABEL = "Name: ";
