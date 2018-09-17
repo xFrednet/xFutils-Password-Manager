@@ -141,7 +141,6 @@ public class PasswordManagerApp {
 	private JButton[] guiModeButtons;
 	//contentList tabs
 	private JTabbedPane guiDataTabs;
-	private JTextField guiNewTabNameField;
 	private JSpinner guiNewTabIndexSelector;
 
 	public static void main(String[] args){
@@ -523,40 +522,8 @@ public class PasswordManagerApp {
 			contentPanel.setLayout(new BorderLayout());
 			this.guiDataTabs = new JTabbedPane();
 
-			// add tab tab
-			JPanel addTabPanel = new JPanel();
-			addTabPanel.setLayout(new GridLayout(3, 1, 5, 5));
-
-			// name filed
-			this.guiNewTabNameField = new JTextField();
-			this.guiNewTabNameField.setText(this.language.ADD_TAB_NAME_FIELD_TEXT);
-			addTabPanel.add(this.guiNewTabNameField);
-
-			// index selector
-			JPanel indexSelectPanel = new JPanel(new GridLayout(1, 2));
-			indexSelectPanel.add(new JLabel(this.language.ADD_TAB_INDEX_LABEL));
-			this.guiNewTabIndexSelector = new JSpinner(
-					new SpinnerNumberModel(this.dataTabs.size(), 0, this.dataTabs.size(), 1));
-			indexSelectPanel.add(this.guiNewTabIndexSelector);
-			addTabPanel.add(indexSelectPanel);
-
-			//add button
-			JButton addTabButton = new JButton(this.language.ADD_TAB_BUTTON_LABEL);
-			addTabButton.addActionListener(e -> {
-				String name = PasswordManagerApp.this.guiNewTabNameField.getText();
-				int index = (int) PasswordManagerApp.this.guiNewTabIndexSelector.getValue();
-
-				createTab(name, index);
-			});
-			addTabPanel.add(addTabButton);
-			addTabPanel.setMaximumSize(new Dimension(250, 70));
-
-			//tab panel to center addTabPanel
-			JPanel tabPanel = new JPanel();
-			tabPanel.setLayout(new BoxLayout(tabPanel, BoxLayout.Y_AXIS));
-			tabPanel.add(addTabPanel);
-
-			this.guiDataTabs.addTab("+", tabPanel);
+			initAddTabGUI();
+			this.guiDataTabs.setSelectedIndex(0);
 
 			contentPanel.add(BorderLayout.CENTER, this.guiDataTabs);
 			mainPanel.add(BorderLayout.CENTER, contentPanel);
@@ -566,7 +533,65 @@ public class PasswordManagerApp {
 		// Finish
 		//
 		this.window.add(mainPanel);
+		System.out.println("Making the window visible in 3 2 1 GO!!!");
 		this.window.setVisible(true);
+	}
+	private void initAddTabGUI() {
+		// add tab tab
+		JPanel addTabPanel = new JPanel();
+		addTabPanel.setBorder(GUI_DEFAULT_GAP_BORDER);
+		addTabPanel.setLayout(new GridBagLayout());
+
+		// constrains
+		GridBagConstraints endlConstrains = new GridBagConstraints();
+		endlConstrains.insets    = new Insets(0, 0, GUI_DEFAULT_GAP, 0);
+		endlConstrains.weightx   = 1.0;
+		endlConstrains.weighty   = 1;
+		endlConstrains.fill      = GridBagConstraints.HORIZONTAL;
+		endlConstrains.gridwidth = GridBagConstraints.REMAINDER;
+		GridBagConstraints labelConstrains = new GridBagConstraints();
+		labelConstrains.insets    = new Insets(0, 0, GUI_DEFAULT_GAP, 0);
+		labelConstrains.weightx   = 0.5;
+		labelConstrains.weighty   = 1;
+		labelConstrains.fill      = GridBagConstraints.HORIZONTAL;
+		labelConstrains.gridwidth = 1;
+
+		// info Text
+		addTabPanel.add(new JLabel(this.language.ADD_TAB_INFO_LABEL), endlConstrains);
+
+		// name filed
+		addTabPanel.add(new JLabel(this.language.ADD_TAB_TAB_NAME_LABEL), labelConstrains);
+		JTextField newTabName = new JTextField();
+		addTabPanel.add(newTabName, endlConstrains);
+
+		// index selector
+		addTabPanel.add(new JLabel(this.language.ADD_TAB_INDEX_LABEL), labelConstrains);
+		this.guiNewTabIndexSelector = new JSpinner(
+				new SpinnerNumberModel(this.dataTabs.size(), 0, this.dataTabs.size(), 1));
+		addTabPanel.add(this.guiNewTabIndexSelector, endlConstrains);
+
+		//add button
+		JButton addTabButton = new JButton(this.language.ADD_TAB_BUTTON_LABEL);
+		addTabButton.addActionListener(e -> {
+			String name = newTabName.getText();
+			int index = (int) this.guiNewTabIndexSelector.getValue();
+
+			createTab(name, index);
+
+			newTabName.setText("");
+			this.guiNewTabIndexSelector.setValue(this.dataTabs.size());
+		});
+		endlConstrains.gridwidth = 2;
+		addTabPanel.add(addTabButton, endlConstrains);
+		addTabPanel.setMaximumSize(new Dimension(250, 88 + 20));
+		addTabPanel.setPreferredSize(new Dimension(250, 88 + 20));
+
+		//tab panel to center addTabPanel
+		JPanel tabPanel = new JPanel();
+		tabPanel.setLayout(new BoxLayout(tabPanel, BoxLayout.Y_AXIS));
+		tabPanel.add(addTabPanel);
+
+		this.guiDataTabs.addTab("+", tabPanel);
 	}
 	private void initTabGUI() {
 
@@ -606,7 +631,7 @@ public class PasswordManagerApp {
 		System.out.println("A new Mode was selected! Mode: " + this.language.MODE_BUTTON_LABELS[modeID]);
 	}
 	private DataTab createTab(String name, int index) {
-		if (IsStringInvalid(name)) {
+		if (isStringInvalid(name)) {
 			ShowInfoDialog(this.language.ERROR_STRING_NOT_SUPPORTED, this.window);
 			return null;
 		}
@@ -812,7 +837,7 @@ public class PasswordManagerApp {
 		cpDialog.setAutoRequestFocus(true);
 		cpDialog.setVisible(true);
 	}
-	private static boolean IsStringInvalid(String testString) {
+	private boolean isStringInvalid(String testString) {
 		if (testString.isEmpty())
 			return true;
 
@@ -1236,7 +1261,7 @@ public class PasswordManagerApp {
 					}
 
 					String name = line.substring(1, endIndex);
-					if (IsStringInvalid(name)) {
+					if (isStringInvalid(name)) {
 						continue;
 					}
 					// test if there is already a tab with this name and if so use that tab
@@ -1277,7 +1302,7 @@ public class PasswordManagerApp {
 
 				// get name and validate it
 				String dataName = line.substring(0, nameEnd);
-				if (IsStringInvalid(dataName)) {
+				if (isStringInvalid(dataName)) {
 					continue;
 				}
 				Data data = new Data(dataName, tab);
@@ -1285,7 +1310,7 @@ public class PasswordManagerApp {
 				// read components
 				String[] components = line.substring(nameEnd + 2).split(FORMAT_UNIT_SEPARATOR + "");
 				for (String component : components) {
-					if (IsStringInvalid(component)) {
+					if (isStringInvalid(component)) {
 						continue;
 					}
 
@@ -1651,7 +1676,7 @@ public class PasswordManagerApp {
 				//
 				// Validation
 				//
-				if (IsStringInvalid(titleField.getText())) {
+				if (isStringInvalid(titleField.getText())) {
 					ShowInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
 					return; // couldn't save give the user the option to change the input
 				}
@@ -1663,7 +1688,7 @@ public class PasswordManagerApp {
 						continue; // jup deleted
 					}
 
-					if (IsStringInvalid(dataField.getText())) {
+					if (isStringInvalid(dataField.getText())) {
 						ShowInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
 						return; // couldn't save give the user the option to change the input
 					}

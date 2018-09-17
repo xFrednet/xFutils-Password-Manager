@@ -47,6 +47,7 @@ class Language {
 	final String FILE_MENU_NAME;
 	final String CHANGE_PASSWORD_MENU_NAME;
 	final String BACKUP_MENU_NAME;
+
 	final String SETTINGS_MENU_NAME;
 	final String SETTINGS_FRAME_MENU_NAME;
 	final String SETTINGS_SAVE_POS_MENU_NAME;
@@ -57,11 +58,13 @@ class Language {
 	final String SETTINGS_LANGUAGE_ENG_MENU_NAME = "English";
 	final String SETTINGS_LANGUAGE_DE_MENU_NAME = "Deutsch";
 	final String SETTINGS_RESET_MENU_NAME;
+
+	final String ADD_DATA_MENU_NAME;
+	final String NEW_DATA_DEFAULT_TITLE;
+
 	final String EXTRAS_MENU_NAME;
 	final String EXTRAS_EXPORT_TO_TXT_NAME;
 	final String EXTRAS_IMPORT_FROM_TXT_NAME;
-	final String ADD_DATA_MENU_NAME;
-	final String NEW_DATA_DEFAULT_TITLE;
 	final String EXTRAS_TXT_FILE_DESCRIPTION;
 	final String EXTRAS_IMPORT_FILE_DIALOG_NAME;
 	final String EXTRAS_EXPORT_FILE_DIALOG_NAME;
@@ -83,6 +86,8 @@ class Language {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Add tab panel //
 	/* //////////////////////////////////////////////////////////////////////////////// */
+	final String ADD_TAB_INFO_LABEL;
+	final String ADD_TAB_TAB_NAME_LABEL;
 	final String ADD_TAB_NAME_FIELD_TEXT;
 	final String ADD_TAB_INDEX_LABEL;
 	final String ADD_TAB_BUTTON_LABEL;
@@ -146,10 +151,10 @@ class Language {
 			this.SETTINGS_LANGUAGE_MENU_NAME     = "Sprache";
 			this.SETTINGS_RESET_MENU_NAME        = "Einstellungen zurücksetzen";
 			this.EXTRAS_MENU_NAME                = "Extras";
-			this.EXTRAS_EXPORT_TO_TXT_NAME       = "Exportiere zu Text";
-			this.EXTRAS_IMPORT_FROM_TXT_NAME     = "Importiere von Text";
 			this.ADD_DATA_MENU_NAME              = "Infos hinzufügen";
 			this.NEW_DATA_DEFAULT_TITLE          = "Titel";
+			this.EXTRAS_EXPORT_TO_TXT_NAME       = "Exportiere zu Text";
+			this.EXTRAS_IMPORT_FROM_TXT_NAME     = "Importiere von Text";
 			this.EXTRAS_TXT_FILE_DESCRIPTION     = "Text Datein";
 			this.EXTRAS_IMPORT_FILE_DIALOG_NAME  = "Wähle die Datei die geladen werden soll";
 			this.EXTRAS_EXPORT_FILE_DIALOG_NAME  = "Wähle die Output datei";
@@ -172,6 +177,8 @@ class Language {
 			};
 
 			// Add tab info panel
+			this.ADD_TAB_INFO_LABEL      = "Hier kannst du einen neuen Tab hinzufügen";
+			this.ADD_TAB_TAB_NAME_LABEL  = "Tab Name";
 			this.ADD_TAB_NAME_FIELD_TEXT = "Gebe den neuen Tab einen Namen";
 			this.ADD_TAB_INDEX_LABEL     = "Index:";
 			this.ADD_TAB_BUTTON_LABEL    = "Tab hinzufügen";
@@ -227,10 +234,10 @@ class Language {
 			this.SETTINGS_LANGUAGE_MENU_NAME     = "Language";
 			this.SETTINGS_RESET_MENU_NAME        = "Reset settings";
 			this.EXTRAS_MENU_NAME                = "Extras";
-			this.EXTRAS_EXPORT_TO_TXT_NAME       = "Export to txt file";
-			this.EXTRAS_IMPORT_FROM_TXT_NAME     = "Import from txt file";
 			this.ADD_DATA_MENU_NAME              = "Add data";
 			this.NEW_DATA_DEFAULT_TITLE          = "Title";
+			this.EXTRAS_EXPORT_TO_TXT_NAME       = "Export to txt file";
+			this.EXTRAS_IMPORT_FROM_TXT_NAME     = "Import from txt file";
 			this.EXTRAS_TXT_FILE_DESCRIPTION     = "Text files";
 			this.EXTRAS_IMPORT_FILE_DIALOG_NAME  = "Choose the file to import";
 			this.EXTRAS_EXPORT_FILE_DIALOG_NAME  = "Choose the output file";
@@ -252,6 +259,8 @@ class Language {
 			};
 
 			// Add tab info panel
+			this.ADD_TAB_INFO_LABEL      = "You can add a new tab here.";
+			this.ADD_TAB_TAB_NAME_LABEL  = "Tab name:";
 			this.ADD_TAB_NAME_FIELD_TEXT = "Please enter the name of the new Tab";
 			this.ADD_TAB_INDEX_LABEL     = "Index:";
 			this.ADD_TAB_BUTTON_LABEL    = "Add tab";
