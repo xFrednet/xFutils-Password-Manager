@@ -222,23 +222,61 @@ public class PasswordManagerApp {
 	private void initMenu() {
 		JMenuBar menuBar = new JMenuBar();
 
+		// #######################
+		// # File menu #
+		// #######################
+		menuBar.add(createFileMenu());
+
+		// ##########################
+		// # Tab util Menu #
+		// ##########################
+		menuBar.add(createTabUtilMenu());
+
+		// #######################
+		// # add Data #
+		// #######################
+		this.guiAddDataMItem = new JMenuItem(this.language.ADD_DATA_MENU_NAME);
+		this.guiAddDataMItem.setMnemonic(KeyEvent.VK_A);
+		this.guiAddDataMItem.addActionListener(e -> {
+			int tabIndex = this.guiDataTabs.getSelectedIndex();
+
+			// make sure that the current tab is not the "+" tab
+			if (tabIndex == this.guiDataTabs.getTabCount() - 1) {
+				ShowInfoDialog(this.language.ERROR_PLEASE_SELECT_A_DATA_TAB, this.window);
+				return;
+			}
+
+			this.dataTabs.get(tabIndex).createData();
+
+		});
+		menuBar.add(this.guiAddDataMItem);
+
+		// #######################
+		// # Extras menu #
+		// #######################
+		menuBar.add(createExtrasMenu());
+
+		this.window.setJMenuBar(menuBar);
+	}
+	private JMenu createFileMenu(){
 		// file
 		JMenu fileMenu = new JMenu(this.language.FILE_MENU_NAME);
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 
-		JMenuItem changePassMItem = new JMenuItem(this.language.CHANGE_PASSWORD_MENU_NAME);
-		changePassMItem.addActionListener(e -> {
+		JMenuItem changePassItem = new JMenuItem(this.language.CHANGE_PASSWORD_MENU_NAME);
+		changePassItem.addActionListener(e -> {
 			showChangePasswordDialog();
 		});
-		fileMenu.add(changePassMItem);
+		fileMenu.add(changePassItem);
 		fileMenu.add(new JPopupMenu.Separator());
-		JMenuItem backupMItem = new JMenuItem(this.language.BACKUP_MENU_NAME);
-		backupMItem.addActionListener(e -> {
+
+		JMenuItem backupItem = new JMenuItem(this.language.BACKUP_MENU_NAME);
+		backupItem.addActionListener(e -> {
 			if (createBackup()) {
 				ShowInfoDialog(this.language.INFO_SAVE_BACKUP_OKAY, this.window);
 			}
 		});
-		fileMenu.add(backupMItem);
+		fileMenu.add(backupItem);
 		fileMenu.add(new JPopupMenu.Separator());
 
 		// #######################
@@ -341,6 +379,7 @@ public class PasswordManagerApp {
 		languageMenu.add(langDe);
 		languageMenu.add(langEng);
 		settingsMenu.add(languageMenu);
+		settingsMenu.add(new JPopupMenu.Separator());
 
 		//
 		// reset
@@ -356,30 +395,78 @@ public class PasswordManagerApp {
 		settingsMenu.add(resetMenu);
 
 		fileMenu.add(settingsMenu);
-		menuBar.add(fileMenu);
 
-		// #######################
-		// # add Data #
-		// #######################
-		this.guiAddDataMItem = new JMenuItem(this.language.ADD_DATA_MENU_NAME);
-		this.guiAddDataMItem.setMnemonic(KeyEvent.VK_A);
-		this.guiAddDataMItem.addActionListener(e -> {
-			int tabIndex = this.guiDataTabs.getSelectedIndex();
+		return fileMenu;
+	}
+	private JMenu createTabUtilMenu() {
+		JMenu tabMenu = new JMenu(this.language.MENU_TAB_NAME);
 
-			// make sure that the current tab is not the "+" tab
-			if (tabIndex == this.guiDataTabs.getTabCount() - 1) {
-				ShowInfoDialog(this.language.ERROR_PLEASE_SELECT_A_DATA_TAB, this.window);
-				return;
+		//
+		// rename tab
+		//
+		JMenuItem renameItem = new JMenuItem(this.language.MENU_TAB_RENAME_TAB);
+		renameItem.addActionListener(e -> {
+
+			String newName = JOptionPane.showInputDialog(this.window, this.language.MENU_TAB_RENAME_DIALOG_MESSAGE);
+			if (newName != null) {
+				int tabIndex = this.guiDataTabs.getSelectedIndex();
+				if (tabIndex >= this.dataTabs.size())
+					return; // invalid tab index
+
+				this.dataTabs.get(tabIndex).title = newName;
+				this.guiDataTabs.setTitleAt(tabIndex, newName);
+
+				if (!saveData(SAFE_FILE_NAME)) {
+					ShowInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED, this.window);
+				}
 			}
 
-			this.dataTabs.get(tabIndex).createData();
-
 		});
-		menuBar.add(this.guiAddDataMItem);
+		tabMenu.add(renameItem);
+		tabMenu.add(new JPopupMenu.Separator());
 
-		// #######################
-		// # Extra #
-		// #######################
+		//
+		// move tab left
+		//
+		JMenuItem moveLeftItem = new JMenuItem(this.language.MENU_TAB_MOVE_LEFT_TAB);
+		moveLeftItem.addActionListener(e -> {
+			int tabIndex = this.guiDataTabs.getSelectedIndex();
+			int newTabIndex = tabIndex - 1;
+
+			changeTabIndex(tabIndex, newTabIndex);
+		});
+		tabMenu.add(moveLeftItem);
+
+		//
+		// move right
+		//
+		JMenuItem moveRightItem = new JMenuItem(this.language.MENU_TAB_MOVE_RIGHT_TAB);
+		moveRightItem.addActionListener(e -> {
+			int tabIndex = this.guiDataTabs.getSelectedIndex();
+			int newTabIndex = tabIndex + 1;
+
+			changeTabIndex(tabIndex, newTabIndex);
+		});
+		tabMenu.add(moveRightItem);
+		tabMenu.add(new JPopupMenu.Separator());
+
+		//
+		// remove tab
+		//
+		JMenuItem removeTabMenu = new JMenuItem(this.language.MENU_TAB_REMOVE_TAB);
+		removeTabMenu.addActionListener(e -> {
+			int tabIndex = this.guiDataTabs.getSelectedIndex();
+			int decision = JOptionPane.showConfirmDialog(this.window, this.language.MENU_TAB_REMOVE_CONFIRM_MESSAGE,"", JOptionPane.YES_NO_OPTION);
+
+			if (decision == JOptionPane.OK_OPTION) {
+				removeTab(tabIndex);
+			}
+		});
+		tabMenu.add(removeTabMenu);
+
+		return tabMenu;
+	}
+	private JMenu createExtrasMenu(){
 		JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
 
 		JMenuItem exportToTXTMenu = new JMenuItem(this.language.EXTRAS_EXPORT_TO_TXT_NAME);
@@ -408,10 +495,10 @@ public class PasswordManagerApp {
 		extrasMenu.add(new JPopupMenu.Separator());
 		extrasMenu.add(new JMenuItem("TODO encrypt file"));
 		extrasMenu.add(new JMenuItem("TODO decrypt file"));
-		menuBar.add(extrasMenu);
 
-		this.window.setJMenuBar(menuBar);
+		return extrasMenu;
 	}
+
 	private void initBaseGUI() {
 		//
 		// Layout
@@ -657,6 +744,43 @@ public class PasswordManagerApp {
 		this.guiNewTabIndexSelector.setValue(this.dataTabs.size());
 
 		return tab;
+	}
+	private void changeTabIndex(int index, int newIndex) {
+
+		if (index < 0 || index >= this.dataTabs.size() ||
+			newIndex < 0 || newIndex >= this.dataTabs.size())
+			return; // invalid tab index
+
+		DataTab tab = this.dataTabs.get(index);
+		this.dataTabs.remove(index);
+		this.dataTabs.add(newIndex, tab);
+
+		Component tabGUI = this.guiDataTabs.getComponentAt(index);
+		this.guiDataTabs.remove(index);
+		this.guiDataTabs.add(tabGUI, newIndex);
+		this.guiDataTabs.setTitleAt(newIndex, tab.title);
+		this.guiDataTabs.setSelectedIndex(newIndex);
+
+		if (!saveData(SAFE_FILE_NAME)) {
+			ShowInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED, this.window);
+		}
+	}
+	private void removeTab(int index) {
+		if (index < 0 || index >= this.dataTabs.size()) {
+			ShowInfoDialog(this.language.ERROR_INVALID_TAB_INDEX, this.window);
+			return;
+		}
+
+		this.dataTabs.remove(index);
+		this.guiDataTabs.remove(index);
+
+		if (!saveData(SAFE_FILE_NAME)) {
+			ShowInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED, this.window);
+		}
+
+		// update the addTab panel
+		((SpinnerNumberModel)this.guiNewTabIndexSelector.getModel()).setMaximum(this.dataTabs.size()); // one line wonder or horror
+		this.guiNewTabIndexSelector.setValue(this.dataTabs.size());
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */

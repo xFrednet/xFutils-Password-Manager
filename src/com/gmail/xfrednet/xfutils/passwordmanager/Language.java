@@ -59,6 +59,14 @@ class Language {
 	final String SETTINGS_LANGUAGE_DE_MENU_NAME = "Deutsch";
 	final String SETTINGS_RESET_MENU_NAME;
 
+	final String MENU_TAB_NAME;
+	final String MENU_TAB_RENAME_TAB;
+	final String MENU_TAB_RENAME_DIALOG_MESSAGE;
+	final String MENU_TAB_MOVE_LEFT_TAB;
+	final String MENU_TAB_MOVE_RIGHT_TAB;
+	final String MENU_TAB_REMOVE_TAB;
+	final String MENU_TAB_REMOVE_CONFIRM_MESSAGE;
+
 	final String ADD_DATA_MENU_NAME;
 	final String NEW_DATA_DEFAULT_TITLE;
 
@@ -88,7 +96,6 @@ class Language {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	final String ADD_TAB_INFO_LABEL;
 	final String ADD_TAB_TAB_NAME_LABEL;
-	final String ADD_TAB_NAME_FIELD_TEXT;
 	final String ADD_TAB_INDEX_LABEL;
 	final String ADD_TAB_BUTTON_LABEL;
 
@@ -126,6 +133,7 @@ class Language {
 	final String ERROR_SAVE_BACKUP_FAILED;
 	final String INFO_SAVE_BACKUP_OKAY;
 	final String INFO_RESTART_TO_LOAD_CHANGE;
+	final String ERROR_INVALID_TAB_INDEX;
 
 	static final int ENG = 0;
 	static final int DE = 1;
@@ -142,6 +150,7 @@ class Language {
 			this.FILE_MENU_NAME                  = "Datei";
 			this.CHANGE_PASSWORD_MENU_NAME       = "Passwort ändern";
 			this.BACKUP_MENU_NAME                = "Erstelle ein Backup";
+
 			this.SETTINGS_MENU_NAME              = "Einstellungen";
 			this.SETTINGS_FRAME_MENU_NAME        = "Fenster";
 			this.SETTINGS_SAVE_POS_MENU_NAME     = "Position speichern";
@@ -150,9 +159,19 @@ class Language {
 			this.SETTINGS_BUTTON_COUNT_MENU_NAME = "%d Knöpfe pro Reihe";
 			this.SETTINGS_LANGUAGE_MENU_NAME     = "Sprache";
 			this.SETTINGS_RESET_MENU_NAME        = "Einstellungen zurücksetzen";
+
+			this.MENU_TAB_NAME                   = "Tab";
+			this.MENU_TAB_RENAME_TAB             = "Tab umbennen";
+			this.MENU_TAB_RENAME_DIALOG_MESSAGE  = "Bitte geben Sie den Tab einen neuen Namen:";
+			this.MENU_TAB_MOVE_LEFT_TAB          = "Nach links schieben";
+			this.MENU_TAB_MOVE_RIGHT_TAB         = "Nach rechts schieben";
+			this.MENU_TAB_REMOVE_TAB             = "Tab löschen";
+			this.MENU_TAB_REMOVE_CONFIRM_MESSAGE = "Sind Sie sich sicher, dass der Tab gelöscht werden soll?";
+
 			this.EXTRAS_MENU_NAME                = "Extras";
 			this.ADD_DATA_MENU_NAME              = "Infos hinzufügen";
 			this.NEW_DATA_DEFAULT_TITLE          = "Titel";
+
 			this.EXTRAS_EXPORT_TO_TXT_NAME       = "Exportiere zu Text";
 			this.EXTRAS_IMPORT_FROM_TXT_NAME     = "Importiere von Text";
 			this.EXTRAS_TXT_FILE_DESCRIPTION     = "Text Datein";
@@ -179,7 +198,6 @@ class Language {
 			// Add tab info panel
 			this.ADD_TAB_INFO_LABEL      = "Hier kannst du einen neuen Tab hinzufügen";
 			this.ADD_TAB_TAB_NAME_LABEL  = "Tab Name";
-			this.ADD_TAB_NAME_FIELD_TEXT = "Gebe den neuen Tab einen Namen";
 			this.ADD_TAB_INDEX_LABEL     = "Index:";
 			this.ADD_TAB_BUTTON_LABEL    = "Tab hinzufügen";
 
@@ -211,6 +229,7 @@ class Language {
 			this.ERROR_SAVE_BACKUP_FAILED       = "Das Backup konnte leider nicht gespeichert werden";
 			this.INFO_SAVE_BACKUP_OKAY          = "Das Backup wurde erfolgreich erstellt";
 			this.INFO_RESTART_TO_LOAD_CHANGE    = "Restarte bitte die Anwendung um die Änderungen zu laden";
+			this.ERROR_INVALID_TAB_INDEX        = "Der gewählte tab index ist leider ungültig";
 
 			break;
 
@@ -225,6 +244,7 @@ class Language {
 			this.FILE_MENU_NAME                  = "File";
 			this.CHANGE_PASSWORD_MENU_NAME       = "Change password";
 			this.BACKUP_MENU_NAME                = "Make Backup";
+
 			this.SETTINGS_MENU_NAME              = "Settings";
 			this.SETTINGS_FRAME_MENU_NAME        = "Window";
 			this.SETTINGS_SAVE_POS_MENU_NAME     = "Save position";
@@ -233,9 +253,19 @@ class Language {
 			this.SETTINGS_BUTTON_COUNT_MENU_NAME = "%d buttons per row";
 			this.SETTINGS_LANGUAGE_MENU_NAME     = "Language";
 			this.SETTINGS_RESET_MENU_NAME        = "Reset settings";
+
+			this.MENU_TAB_NAME                   = "Tab";
+			this.MENU_TAB_RENAME_TAB             = "Rename tab";
+			this.MENU_TAB_RENAME_DIALOG_MESSAGE  = "Please enter the new tab name:";
+			this.MENU_TAB_MOVE_LEFT_TAB          = "Move left";
+			this.MENU_TAB_MOVE_RIGHT_TAB         = "Move right";
+			this.MENU_TAB_REMOVE_TAB             = "Remove tab";
+			this.MENU_TAB_REMOVE_CONFIRM_MESSAGE = "Are you sure you want to delete this tab?";
+
 			this.EXTRAS_MENU_NAME                = "Extras";
 			this.ADD_DATA_MENU_NAME              = "Add data";
 			this.NEW_DATA_DEFAULT_TITLE          = "Title";
+
 			this.EXTRAS_EXPORT_TO_TXT_NAME       = "Export to txt file";
 			this.EXTRAS_IMPORT_FROM_TXT_NAME     = "Import from txt file";
 			this.EXTRAS_TXT_FILE_DESCRIPTION     = "Text files";
@@ -261,7 +291,6 @@ class Language {
 			// Add tab info panel
 			this.ADD_TAB_INFO_LABEL      = "You can add a new tab here.";
 			this.ADD_TAB_TAB_NAME_LABEL  = "Tab name:";
-			this.ADD_TAB_NAME_FIELD_TEXT = "Please enter the name of the new Tab";
 			this.ADD_TAB_INDEX_LABEL     = "Index:";
 			this.ADD_TAB_BUTTON_LABEL    = "Add tab";
 
@@ -293,6 +322,7 @@ class Language {
 			this.ERROR_SAVE_BACKUP_FAILED       = "The backup couldn't be saved.";
 			this.INFO_SAVE_BACKUP_OKAY          = "The backup was saved!";
 			this.INFO_RESTART_TO_LOAD_CHANGE    = "Please restart the application to load the changes";
+			this.ERROR_INVALID_TAB_INDEX        = "The chosen tab index is sadly invalid!";
 
 			break;
 
