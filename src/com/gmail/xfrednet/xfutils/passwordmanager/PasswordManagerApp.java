@@ -133,6 +133,9 @@ public class PasswordManagerApp {
 	private JFrame window;
 
 	private JMenuItem guiAddDataMItem;
+	private JMenu guiTabUtilMenu;
+	private JMenuItem guiMenuMoveTabLeft;
+	private JMenuItem guiMenuMoveTabRight;
 
 	private JTextPane[] guiDataInfoPanes;
 
@@ -399,7 +402,7 @@ public class PasswordManagerApp {
 		return fileMenu;
 	}
 	private JMenu createTabUtilMenu() {
-		JMenu tabMenu = new JMenu(this.language.MENU_TAB_NAME);
+		this.guiTabUtilMenu = new JMenu(this.language.MENU_TAB_NAME);
 
 		//
 		// rename tab
@@ -422,33 +425,33 @@ public class PasswordManagerApp {
 			}
 
 		});
-		tabMenu.add(renameItem);
-		tabMenu.add(new JPopupMenu.Separator());
+		this.guiTabUtilMenu.add(renameItem);
+		this.guiTabUtilMenu.addSeparator();
 
 		//
 		// move tab left
 		//
-		JMenuItem moveLeftItem = new JMenuItem(this.language.MENU_TAB_MOVE_LEFT_TAB);
-		moveLeftItem.addActionListener(e -> {
+		this.guiMenuMoveTabLeft = new JMenuItem(this.language.MENU_TAB_MOVE_LEFT_TAB);
+		this.guiMenuMoveTabLeft.addActionListener(e -> {
 			int tabIndex = this.guiDataTabs.getSelectedIndex();
 			int newTabIndex = tabIndex - 1;
 
 			changeTabIndex(tabIndex, newTabIndex);
 		});
-		tabMenu.add(moveLeftItem);
+		this.guiTabUtilMenu.add(this.guiMenuMoveTabLeft);
 
 		//
 		// move right
 		//
-		JMenuItem moveRightItem = new JMenuItem(this.language.MENU_TAB_MOVE_RIGHT_TAB);
-		moveRightItem.addActionListener(e -> {
+		this.guiMenuMoveTabRight = new JMenuItem(this.language.MENU_TAB_MOVE_RIGHT_TAB);
+		this.guiMenuMoveTabRight.addActionListener(e -> {
 			int tabIndex = this.guiDataTabs.getSelectedIndex();
 			int newTabIndex = tabIndex + 1;
 
 			changeTabIndex(tabIndex, newTabIndex);
 		});
-		tabMenu.add(moveRightItem);
-		tabMenu.add(new JPopupMenu.Separator());
+		this.guiTabUtilMenu.add(this.guiMenuMoveTabRight);
+		this.guiTabUtilMenu.addSeparator();
 
 		//
 		// remove tab
@@ -462,9 +465,9 @@ public class PasswordManagerApp {
 				removeTab(tabIndex);
 			}
 		});
-		tabMenu.add(removeTabMenu);
+		this.guiTabUtilMenu.add(removeTabMenu);
 
-		return tabMenu;
+		return this.guiTabUtilMenu;
 	}
 	private JMenu createExtrasMenu(){
 		JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
@@ -611,6 +614,21 @@ public class PasswordManagerApp {
 
 			initAddTabGUI();
 			this.guiDataTabs.setSelectedIndex(0);
+			this.guiDataTabs.addChangeListener(l -> {
+
+				// ie. if the "+" tab is selected
+				int selectedIndex = this.guiDataTabs.getSelectedIndex();
+				if (selectedIndex == this.guiDataTabs.getTabCount() - 1) {
+					this.guiAddDataMItem.setEnabled(false);
+					this.guiTabUtilMenu.setEnabled(false);
+				} else {
+					this.guiAddDataMItem.setEnabled(true);
+					this.guiTabUtilMenu.setEnabled(true);
+
+					this.guiMenuMoveTabLeft.setEnabled(selectedIndex != 0);
+					this.guiMenuMoveTabRight.setEnabled(selectedIndex != this.dataTabs.size() - 1);
+				}
+			});
 
 			contentPanel.add(BorderLayout.CENTER, this.guiDataTabs);
 			mainPanel.add(BorderLayout.CENTER, contentPanel);

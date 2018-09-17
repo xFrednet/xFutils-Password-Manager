@@ -4,5 +4,5 @@ frameWidth=800
 frameHeight=600
 buttonsPerRow=3
 lastBackup=1537124988035
-languageID=0
+languageID=1
 copyCloseKey=16

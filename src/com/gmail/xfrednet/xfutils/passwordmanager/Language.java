@@ -163,8 +163,8 @@ class Language {
 			this.MENU_TAB_NAME                   = "Tab";
 			this.MENU_TAB_RENAME_TAB             = "Tab umbennen";
 			this.MENU_TAB_RENAME_DIALOG_MESSAGE  = "Bitte geben Sie den Tab einen neuen Namen:";
-			this.MENU_TAB_MOVE_LEFT_TAB          = "Nach links schieben";
-			this.MENU_TAB_MOVE_RIGHT_TAB         = "Nach rechts schieben";
+			this.MENU_TAB_MOVE_LEFT_TAB          = "<-- Nach links schieben";
+			this.MENU_TAB_MOVE_RIGHT_TAB         = "--> Nach rechts schieben";
 			this.MENU_TAB_REMOVE_TAB             = "Tab löschen";
 			this.MENU_TAB_REMOVE_CONFIRM_MESSAGE = "Sind Sie sich sicher, dass der Tab gelöscht werden soll?";
 
@@ -257,8 +257,8 @@ class Language {
 			this.MENU_TAB_NAME                   = "Tab";
 			this.MENU_TAB_RENAME_TAB             = "Rename tab";
 			this.MENU_TAB_RENAME_DIALOG_MESSAGE  = "Please enter the new tab name:";
-			this.MENU_TAB_MOVE_LEFT_TAB          = "Move left";
-			this.MENU_TAB_MOVE_RIGHT_TAB         = "Move right";
+			this.MENU_TAB_MOVE_LEFT_TAB          = "<-- Move left";
+			this.MENU_TAB_MOVE_RIGHT_TAB         = "--> Move right";
 			this.MENU_TAB_REMOVE_TAB             = "Remove tab";
 			this.MENU_TAB_REMOVE_CONFIRM_MESSAGE = "Are you sure you want to delete this tab?";
 
