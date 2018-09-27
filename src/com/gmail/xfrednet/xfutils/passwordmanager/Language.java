@@ -141,6 +141,9 @@ class Language {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Error/Warning/Info popup messages //
 	/* //////////////////////////////////////////////////////////////////////////////// */
+	final String ERROR_DIALOG_COPY_ERROR;
+	final String ERROR_GENERAL_ERROR_INFO;
+	final String ERROR_WRONG_PASSWORD;
 	final String ERROR_STRING_NOT_SUPPORTED;
 	final String ERROR_DATA_0_ENTRIES;
 	final String ERROR_PLEASE_SELECT_A_DATA_TAB;
@@ -248,6 +251,9 @@ class Language {
 			this.CHANGE_PASS_ALL_GOOD             = "Das Passwort wurde erfolgreich geändert";
 
 			// Error/Warning/Info popup messages
+			this.ERROR_DIALOG_COPY_ERROR        = "Error Koppieren";
+			this.ERROR_GENERAL_ERROR_INFO       = "Leider ist ein Fehler aufgetreten, versuchen sie die Aktion erneut, sollte es trotzdem nicht funktionieren, koppieren Sie den Error und leiten Ihn an xFrednet weiter";
+			this.ERROR_WRONG_PASSWORD           = "Das eingegebene Passwort schein falsch zu sein!";
 			this.ERROR_STRING_NOT_SUPPORTED     = "Der eingegebene Text wird leider nicht unterstützt";
 			this.ERROR_DATA_0_ENTRIES           = "Es muss zumindest eine Info zum Titel gespeichert werden";
 			this.ERROR_PLEASE_SELECT_A_DATA_TAB = "Bitte wähle einen anderen Tab aus um eine Info hinzuzufügen";
@@ -353,6 +359,9 @@ class Language {
 			this.CHANGE_PASS_ALL_GOOD             = "The password was changed successfully";
 
 			// Error/Warning/Info popup messages
+			this.ERROR_DIALOG_COPY_ERROR        = "Copy Error";
+			this.ERROR_GENERAL_ERROR_INFO       = "Well you broke something!!! Retry this action or copy and analyze the error!";
+			this.ERROR_WRONG_PASSWORD           = "The entered Password seams to be wrong!!!";
 			this.ERROR_STRING_NOT_SUPPORTED     = "The entered string contains unsupported characters";
 			this.ERROR_DATA_0_ENTRIES           = "This title has to have at least 1 string associated with it";
 			this.ERROR_PLEASE_SELECT_A_DATA_TAB = "Please select a data tab to add data to";

@@ -175,7 +175,6 @@ public class PasswordManagerApp {
 			System.out.println("GetDecryptionKey failed or was terminated. The program will also terminate!");
 			return;
 		}
-		System.out.println("Password: " + this.password);
 
 		//
 		// Load data
@@ -249,7 +248,7 @@ public class PasswordManagerApp {
 
 			// make sure that the current tab is not the "+" tab
 			if (tabIndex == this.guiDataTabs.getTabCount() - 1) {
-				ShowInfoDialog(this.language.ERROR_PLEASE_SELECT_A_DATA_TAB, this.window);
+				showInfoDialog(this.language.ERROR_PLEASE_SELECT_A_DATA_TAB);
 				return;
 			}
 
@@ -280,7 +279,7 @@ public class PasswordManagerApp {
 		JMenuItem backupItem = new JMenuItem(this.language.BACKUP_MENU_NAME);
 		backupItem.addActionListener(e -> {
 			if (createBackup()) {
-				ShowInfoDialog(this.language.INFO_SAVE_BACKUP_OKAY, this.window);
+				showInfoDialog(this.language.INFO_SAVE_BACKUP_OKAY);
 			}
 		});
 		fileMenu.add(backupItem);
@@ -371,7 +370,7 @@ public class PasswordManagerApp {
 			this.settings.save(SETTINGS_FILE_NAME);
 			langEng.setState(false);
 
-			ShowInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE, this.window);
+			showInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE);
 		});
 		langEng.addActionListener(e -> {
 			if (this.settings.languageID == Language.ENG)
@@ -381,7 +380,7 @@ public class PasswordManagerApp {
 			this.settings.save(SETTINGS_FILE_NAME);
 			langDe.setState(false);
 
-			ShowInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE, this.window);
+			showInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE);
 		});
 		languageMenu.add(langDe);
 		languageMenu.add(langEng);
@@ -397,7 +396,7 @@ public class PasswordManagerApp {
 			this.settings.save(SETTINGS_FILE_NAME);
 			updateTabGUIs();
 
-			ShowInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE, this.window);
+			showInfoDialog(this.language.INFO_RESTART_TO_LOAD_CHANGE);
 		});
 		settingsMenu.add(resetMenu);
 
@@ -424,7 +423,7 @@ public class PasswordManagerApp {
 				this.guiDataTabs.setTitleAt(tabIndex, newName);
 
 				if (!saveData(SAFE_FILE_NAME)) {
-					ShowInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED, this.window);
+					showInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED);
 				}
 			}
 
@@ -480,10 +479,10 @@ public class PasswordManagerApp {
 		exportToTXTMenu.addActionListener(e -> {
 
 			String input = askForPassword();
-			if (ComparePasswords(input, this.password, this.salt) && exportToTXT()) {
-				ShowInfoDialog(this.language.EXTRAS_EXPORT_COMPLETE_INFO, this.window);
+			if (comparePasswords(input, this.password, this.salt) && exportToTXT()) {
+				showInfoDialog(this.language.EXTRAS_EXPORT_COMPLETE_INFO);
 			} else {
-				ShowInfoDialog(this.language.EXTRAS_EXPORT_FAILED_INFO, this.window);
+				showInfoDialog(this.language.EXTRAS_EXPORT_FAILED_INFO);
 			}
 
 		});
@@ -492,9 +491,9 @@ public class PasswordManagerApp {
 		importFromTextMenu.addActionListener(e -> {
 
 			if (importFromTXT()) {
-				ShowInfoDialog(this.language.EXTRAS_IMPORT_COMPLETE_INFO, this.window);
+				showInfoDialog(this.language.EXTRAS_IMPORT_COMPLETE_INFO);
 			} else {
-				ShowInfoDialog(this.language.EXTRAS_IMPORT_FAILED_INFO, this.window);
+				showInfoDialog(this.language.EXTRAS_IMPORT_FAILED_INFO);
 			}
 		});
 		extrasMenu.add(importFromTextMenu);
@@ -504,9 +503,9 @@ public class PasswordManagerApp {
 		encryptFileMenu.addActionListener(e -> {
 			boolean result = encryptFile();
 			if (result) {
-				ShowInfoDialog(this.language.MENU_EXTRAS_ENCRYPT_SUCCESSFUL, this.window);
+				showInfoDialog(this.language.MENU_EXTRAS_ENCRYPT_SUCCESSFUL);
 			} else {
-				ShowInfoDialog(this.language.MENU_EXTRAS_ENCRYPT_FAILED, this.window);
+				showInfoDialog(this.language.MENU_EXTRAS_ENCRYPT_FAILED);
 			}
 		});
 		extrasMenu.add(encryptFileMenu);
@@ -515,9 +514,9 @@ public class PasswordManagerApp {
 			boolean result = decryptFile();
 
 			if (result) {
-				ShowInfoDialog(this.language.MENU_EXTRAS_DECRYPT_SUCCESSFUL, this.window);
+				showInfoDialog(this.language.MENU_EXTRAS_DECRYPT_SUCCESSFUL);
 			} else {
-				ShowInfoDialog(this.language.MENU_EXTRAS_DECRYPT_FAILED, this.window);
+				showInfoDialog(this.language.MENU_EXTRAS_DECRYPT_FAILED);
 			}
 		});
 		extrasMenu.add(decryptFileMenu);
@@ -759,7 +758,7 @@ public class PasswordManagerApp {
 	}
 	private DataTab createTab(String name, int index) {
 		if (isStringInvalid(name)) {
-			ShowInfoDialog(this.language.ERROR_STRING_NOT_SUPPORTED, this.window);
+			showInfoDialog(this.language.ERROR_STRING_NOT_SUPPORTED);
 			return null;
 		}
 
@@ -767,7 +766,7 @@ public class PasswordManagerApp {
 		this.dataTabs.add(index, tab);
 
 		if (!saveData(SAFE_FILE_NAME)) {
-			ShowInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED, this.window);
+			showInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED);
 			this.dataTabs.remove(index);
 			return null;
 		}
@@ -802,12 +801,12 @@ public class PasswordManagerApp {
 		this.guiDataTabs.setSelectedIndex(newIndex);
 
 		if (!saveData(SAFE_FILE_NAME)) {
-			ShowInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED, this.window);
+			showInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED);
 		}
 	}
 	private void removeTab(int index) {
 		if (index < 0 || index >= this.dataTabs.size()) {
-			ShowInfoDialog(this.language.ERROR_INVALID_TAB_INDEX, this.window);
+			showInfoDialog(this.language.ERROR_INVALID_TAB_INDEX);
 			return;
 		}
 
@@ -815,7 +814,7 @@ public class PasswordManagerApp {
 		this.guiDataTabs.remove(index);
 
 		if (!saveData(SAFE_FILE_NAME)) {
-			ShowInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED, this.window);
+			showInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED);
 		}
 
 		// update the addTab panel
@@ -944,7 +943,7 @@ public class PasswordManagerApp {
 			// check old pass
 			String oldPass = new String(oldPassField.getPassword());
 			if (oldPass.isEmpty() ||
-				!ComparePasswords(this.password, oldPass, this.salt)) {
+				!comparePasswords(this.password, oldPass, this.salt)) {
 				isInputCorrect = false;
 			}
 
@@ -953,13 +952,13 @@ public class PasswordManagerApp {
 			String newPass2 = new String(againNewPassField.getPassword());
 			byte[] newSalt = CreateRandomArray(CIPHER_SALT_SIZE);
 			if (newPass1.isEmpty() || newPass2.isEmpty() ||
-				!ComparePasswords(newPass1, newPass2, newSalt)) {
+				!comparePasswords(newPass1, newPass2, newSalt)) {
 				isInputCorrect = false;
 			}
 
 			// invalid input
 			if (!isInputCorrect) {
-				ShowInfoDialog(this.language.CHANGE_PASS_INVALID_INPUT_LABEL, cpDialog);
+				showInfoDialog(this.language.CHANGE_PASS_INVALID_INPUT_LABEL, cpDialog);
 				return;
 			}
 
@@ -976,12 +975,12 @@ public class PasswordManagerApp {
 				this.password         = oldPass;
 				this.salt             = oldSalt;
 				this.cipherInitVector = oldInitVec;
-				ShowInfoDialog(this.language.CHANGE_PASS_CHANGE_PASS_FAILED, cpDialog);
+				showInfoDialog(this.language.CHANGE_PASS_CHANGE_PASS_FAILED, cpDialog);
 				return;
 			}
 
 			// dispose is everything worked
-			ShowInfoDialog(this.language.CHANGE_PASS_ALL_GOOD, cpDialog);
+			showInfoDialog(this.language.CHANGE_PASS_ALL_GOOD, cpDialog);
 			cpDialog.dispose();
 		});
 		cpDialog.getRootPane().setDefaultButton(changePWButton);
@@ -1020,7 +1019,7 @@ public class PasswordManagerApp {
 		return false;
 	}
 
-	private static byte[] HashPassword(String password, byte[] salt) {
+	private byte[] hashPassword(String password, byte[] salt) {
 
 		PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, CIPHER_PWHASH_ITERATIONS, CIPHER_PWHASH_SIZE * 8);
 
@@ -1028,7 +1027,7 @@ public class PasswordManagerApp {
 			SecretKeyFactory skf = SecretKeyFactory.getInstance(CIPHER_PWHASH_ALGORITHM);
 			return skf.generateSecret(spec).getEncoded();
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-			e.printStackTrace();
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 		}
 
 		return null;
@@ -1040,7 +1039,7 @@ public class PasswordManagerApp {
 
 		return bytes;
 	}
-	private static Cipher CreateCipher(int cipherMode, byte[] keyBytes, byte[] initVector) {
+	private Cipher createCipher(int cipherMode, byte[] keyBytes, byte[] initVector) {
 		try {
 			Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
 			cipher.init(cipherMode, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(initVector));
@@ -1049,7 +1048,7 @@ public class PasswordManagerApp {
 
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
 				InvalidAlgorithmParameterException e) {
-			e.printStackTrace();
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 		}
 
 		return null;
@@ -1081,15 +1080,42 @@ public class PasswordManagerApp {
 
 		return buffer;
 	}
-	private static void ShowInfoDialog(String infoString, Component parent) {
-		Object[] options = {"OK"};
-		JOptionPane.showOptionDialog(parent,
-				infoString,TITLE,
+	private void showInfoDialog(String infoString, Component parent, Exception err) {
+		Object[] options;
+		if (err != null)
+			options = new Object[]{this.language.ERROR_DIALOG_COPY_ERROR, "OK"};
+		else
+			options = new Object[]{"OK"};
+
+		int result = JOptionPane.showOptionDialog(parent,
+				infoString, TITLE,
 				JOptionPane.DEFAULT_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
 				null,
 				options,
 				options[0]);
+
+		if (err != null && result == 0) {
+			StringWriter writer = new StringWriter();
+			PrintWriter printWriter= new PrintWriter(writer);
+			err.printStackTrace(printWriter);
+
+			String errString = writer.toString();
+
+			int lastXFTracePos = errString.lastIndexOf("xfrednet.xfutils");
+			String trimmedStack = errString.substring(0, errString.indexOf(")", lastXFTracePos) + 1);
+
+			CopyToClipboard(trimmedStack);
+		}
+	}
+	private void showInfoDialog(String infoString, Exception e) {
+		showInfoDialog(infoString, this.window, e);
+	}
+	private void showInfoDialog(String infoString, Component parent) {
+		showInfoDialog(infoString, parent, null);
+	}
+	private void showInfoDialog(String infoString) {
+		showInfoDialog(infoString, this.window);
 	}
 	private static JTextPane CreateSelectableText() {
 
@@ -1105,7 +1131,7 @@ public class PasswordManagerApp {
 	private static void CopyToClipboard(String text) {
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
 	}
-	private static boolean ComparePasswords(String password1, String password2, byte[] salt) {
+	private boolean comparePasswords(String password1, String password2, byte[] salt) {
 
 		// Why do I hash the passwords, well just to be more correct and not have
 		// different timings if the password have different lengths. Is this necessary
@@ -1113,8 +1139,8 @@ public class PasswordManagerApp {
 		// was entered before so a keylogger would be a way better attack.
 
 		// hash
-		byte[] pass1Hash = HashPassword(password1, salt);
-		byte[] pass2Hash = HashPassword(password2, salt);
+		byte[] pass1Hash = hashPassword(password1, salt);
+		byte[] pass2Hash = hashPassword(password2, salt);
 		if (pass1Hash == null || pass2Hash == null)
 			return false; // well nothing to compare
 
@@ -1147,7 +1173,7 @@ public class PasswordManagerApp {
 			return false; // salt or init vector to long
 
 		String saveString = getDataTabGroupSaveString(this.dataTabs);
-		Cipher cipher = CreateCipher(Cipher.ENCRYPT_MODE, HashPassword(this.password, this.salt), this.cipherInitVector);
+		Cipher cipher = createCipher(Cipher.ENCRYPT_MODE, hashPassword(this.password, this.salt), this.cipherInitVector);
 		if (cipher == null)
 			return false;
 
@@ -1155,7 +1181,7 @@ public class PasswordManagerApp {
 		try {
 			encryptedData = cipher.doFinal(saveString.getBytes());
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			e.printStackTrace();
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 			return false; // no data to save
 		}
 
@@ -1179,7 +1205,7 @@ public class PasswordManagerApp {
 
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 		}
 
 		return false;
@@ -1240,15 +1266,18 @@ public class PasswordManagerApp {
 				//
 				// decrypt
 				//
-				Cipher cipher = CreateCipher(Cipher.DECRYPT_MODE, HashPassword(this.password, this.salt), this.cipherInitVector);
+				Cipher cipher = createCipher(Cipher.DECRYPT_MODE, hashPassword(this.password, this.salt), this.cipherInitVector);
 				if (cipher == null) {
 					break;
 				}
 				String saveString;
 				try {
 					saveString = new String(cipher.doFinal(encryptedDataBuffer));
-				} catch (IllegalBlockSizeException | BadPaddingException e) {
-					e.printStackTrace();
+				} catch (IllegalBlockSizeException e) {
+					showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
+					break;
+				} catch (BadPaddingException e) {
+					showInfoDialog(this.language.ERROR_WRONG_PASSWORD);
 					break;
 				}
 
@@ -1266,7 +1295,7 @@ public class PasswordManagerApp {
 			fileStream.close();
 			return false;
 		} catch (IOException e) {
-			e.printStackTrace();
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 		}
 
 		return false;
@@ -1281,7 +1310,7 @@ public class PasswordManagerApp {
 
 			return true;
 		} else {
-			ShowInfoDialog(this.language.ERROR_SAVE_BACKUP_FAILED, this.window);
+			showInfoDialog(this.language.ERROR_SAVE_BACKUP_FAILED);
 			return false;
 		}
 
@@ -1376,7 +1405,7 @@ public class PasswordManagerApp {
 
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 		}
 
 		return false;
@@ -1497,7 +1526,7 @@ public class PasswordManagerApp {
 
 			return true;
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 		}
 
 		return false;
@@ -1534,10 +1563,12 @@ public class PasswordManagerApp {
 			writer.write(cipher.doFinal());
 
 			return true;
-		} catch (IOException | BadPaddingException | IllegalBlockSizeException e) {
-			e.printStackTrace();
-			return false;
+		} catch (IOException | IllegalBlockSizeException e) {
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
+		} catch (BadPaddingException e) {
+			showInfoDialog(this.language.ERROR_WRONG_PASSWORD);
 		}
+		return false;
 	}
 	private boolean encryptFile() {
 
@@ -1563,7 +1594,7 @@ public class PasswordManagerApp {
 			return false;
 		byte[] salt = CreateRandomArray(CIPHER_SALT_SIZE);
 		byte[] initVec = CreateRandomArray(CIPHER_INIT_VEC_SIZE);
-		byte[] passHash = HashPassword(pass, salt);
+		byte[] passHash = hashPassword(pass, salt);
 
 		if (salt.length > Byte.MAX_VALUE || initVec.length > Byte.MAX_VALUE)
 			return false; // salt or init vector to long
@@ -1571,7 +1602,7 @@ public class PasswordManagerApp {
 		//
 		// encrypt
 		//
-		Cipher cipher = CreateCipher(Cipher.ENCRYPT_MODE, passHash, initVec);
+		Cipher cipher = createCipher(Cipher.ENCRYPT_MODE, passHash, initVec);
 		if (cipher == null)
 			return false;
 
@@ -1598,7 +1629,7 @@ public class PasswordManagerApp {
 
 			return result;
 		} catch (IOException e) {
-			e.printStackTrace();
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 
 			return false;
 		}
@@ -1663,8 +1694,8 @@ public class PasswordManagerApp {
 				}
 
 				// create cipher
-				byte[] passHash = HashPassword(pass, salt);;
-				Cipher cipher = CreateCipher(Cipher.DECRYPT_MODE, passHash, initVec);
+				byte[] passHash = hashPassword(pass, salt);;
+				Cipher cipher = createCipher(Cipher.DECRYPT_MODE, passHash, initVec);
 				if (!cipherFile(cipher, writer, reader)){
 					break;
 				}
@@ -1679,7 +1710,7 @@ public class PasswordManagerApp {
 			return result;
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 		}
 
 		return false;
@@ -1727,7 +1758,7 @@ public class PasswordManagerApp {
 			this.dataList.add(data);
 
 			if (!saveData(SAFE_FILE_NAME)) {
-				ShowInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED, PasswordManagerApp.this.window);
+				showInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED);
 				this.dataList.remove(data);
 				return; // saving failed
 			}
@@ -1866,7 +1897,7 @@ public class PasswordManagerApp {
 
 			if (!saveData(SAFE_FILE_NAME)) {
 				this.dataList.add(index, data); // readd it since it wasn't really killed
-				ShowInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED, PasswordManagerApp.this.window);
+				showInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED);
 			} else {
 				updateGUI();
 			}
@@ -2023,7 +2054,7 @@ public class PasswordManagerApp {
 				// Validation
 				//
 				if (isStringInvalid(titleField.getText())) {
-					ShowInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
+					showInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
 					return; // couldn't save give the user the option to change the input
 				}
 				int dataCount = 0;
@@ -2035,13 +2066,13 @@ public class PasswordManagerApp {
 					}
 
 					if (isStringInvalid(dataField.getText())) {
-						ShowInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
+						showInfoDialog(language.ERROR_STRING_NOT_SUPPORTED, dialog);
 						return; // couldn't save give the user the option to change the input
 					}
 					dataCount++;
 				}
 				if (dataCount == 0) {
-					ShowInfoDialog(language.ERROR_DATA_0_ENTRIES, dialog);
+					showInfoDialog(language.ERROR_DATA_0_ENTRIES, dialog);
 					return; // couldn't save give the user the option to change the input
 				}
 
@@ -2078,7 +2109,7 @@ public class PasswordManagerApp {
 				//
 				if (!newlyCreated){
 					if (!saveData(SAFE_FILE_NAME)) {
-						ShowInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED, PasswordManagerApp.this.window);
+						showInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED);
 						return;
 					}
 				}
