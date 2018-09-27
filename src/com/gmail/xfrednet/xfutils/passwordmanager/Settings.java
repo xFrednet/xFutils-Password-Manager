@@ -47,7 +47,6 @@ class Settings {
 	int buttonsPerRow;
 	long lastBackup;
 	int languageID;
-	int copyCloseKey;
 
 	static Settings InitDefault() {
 		Settings settings = new Settings();
@@ -61,7 +60,6 @@ class Settings {
 		settings.buttonsPerRow = 3;
 		settings.lastBackup    = 0;
 		settings.languageID    = Language.ENG;
-		settings.copyCloseKey  = KeyEvent.VK_SHIFT;
 
 		return settings;
 	}
@@ -97,9 +95,6 @@ class Settings {
 				return true;
 			case "languageID":
 				this.languageID = Integer.parseInt(value);
-				return true;
-			case "copyCloseKey":
-				this.copyCloseKey = Integer.parseInt(value);
 				return true;
 			default:
 				return false;
@@ -157,7 +152,6 @@ class Settings {
 			writer.write("buttonsPerRow=" + this.buttonsPerRow + "\n");
 			writer.write("lastBackup="    + this.lastBackup    + "\n");
 			writer.write("languageID="    + this.languageID    + "\n");
-			writer.write("copyCloseKey="  + this.copyCloseKey);
 
 			writer.close();
 			return true;

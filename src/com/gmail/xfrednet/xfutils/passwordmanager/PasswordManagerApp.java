@@ -101,6 +101,7 @@ public class PasswordManagerApp {
 	private static final Dimension GUI_ICON_BUTTON_DIMENSIONS        = new Dimension(24, 24);
 	private static final int       GUI_CHANGE_DATA_GUI_DEFAULT_WIDTH = 500;
 	private static final int[]     GUI_SETTINGS_BUTTONS_PER_ROW_OPTIONS = new int[]{1, 3, 5};
+	private static final Dimension GUI_WINDOW_MIN_SIZE               = new Dimension(900, 500);
 
 	private static final ImageIcon GUI_EDIT_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("edit_icon.png")));
 	private static final ImageIcon GUI_COPY_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("copy_icon.png")));
@@ -220,7 +221,7 @@ public class PasswordManagerApp {
 		// JFrame
 		//
 		this.window = new JFrame(TITLE);
-		this.window.setMinimumSize(new Dimension(900, 500));
+		this.window.setMinimumSize(new Dimension(GUI_WINDOW_MIN_SIZE));
 		this.window.setBounds(this.settings.frameX, this.settings.frameY, this.settings.frameWidth, this.settings.frameHeight);
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.window.setResizable(true);
