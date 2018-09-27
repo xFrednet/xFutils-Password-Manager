@@ -5,7 +5,7 @@
 
 #0.
 <-- unencrypted salt, $salt_size$ is given in bytes  -->
-[1 bytes: $salt_size$][&salt_size& bytes: $salt$]
+[1 bytes: $salt_size$][$salt_size$ bytes: $salt$]
 
 #1.
 <-- unencrypted, cipher information, $init_vec_size$ is given in bytes      -->

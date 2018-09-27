@@ -54,7 +54,7 @@ class Settings {
 
 		// JFrame Position
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		settings.frameWidth    = 800;
+		settings.frameWidth    = 900;
 		settings.frameHeight   = 600;
 		settings.frameX        = screenSize.width / 2  - settings.frameWidth / 2;
 		settings.frameY        = screenSize.height / 2 - settings.frameHeight / 2;

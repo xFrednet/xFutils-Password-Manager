@@ -59,7 +59,7 @@ import static javafx.application.Platform.exit;
 
 public class PasswordManagerApp {
 
-	private static final boolean JUMP_ASK = true;
+	private static final boolean JUMP_ASK = false;
 
 	private static final String TITLE                = "xFutils Password Manager";
 	private static final String TIME_STAMP_FORMAT    = "yyyy.MM.dd.HH.mm.ss";
@@ -72,7 +72,8 @@ public class PasswordManagerApp {
 	private static final byte FORMAT_DATA_SEPARATOR = 0x1E;
 	private static final byte FORMAT_UNIT_SEPARATOR = 0x1F;
 
-	private static final String SAFE_FILE_NAME       = "save.XFCRYPT";
+	private static final String CRYPT_FILE_EXTENSION = ".XFCRYPT";
+	private static final String SAFE_FILE_NAME       = "save" + CRYPT_FILE_EXTENSION;
 	private static final String BACKUP_FILE_NAME     = "backup\\backup%s.XFCRYPT";
 	private static final String SETTINGS_FILE_NAME   = "settings.txt";
 	private static final String TXT_EXPORT_FILE_NAME = "Password Manager Export.txt";
@@ -83,6 +84,7 @@ public class PasswordManagerApp {
 	private static final String CIPHER_ALGORITHM         = "AES/CBC/PKCS5Padding";
 	private static final int    CIPHER_INIT_VEC_SIZE     = 16;
 	private static final int    CIPHER_SALT_SIZE         = 256 / 8;
+	private static final int    CIPHER_FILE_BUFFER_SIZE  = 1024;
 
 	//
 	// GUI
@@ -218,6 +220,7 @@ public class PasswordManagerApp {
 		// JFrame
 		//
 		this.window = new JFrame(TITLE);
+		this.window.setMinimumSize(new Dimension(900, 500));
 		this.window.setBounds(this.settings.frameX, this.settings.frameY, this.settings.frameWidth, this.settings.frameHeight);
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.window.setResizable(true);
@@ -494,10 +497,29 @@ public class PasswordManagerApp {
 			}
 		});
 		extrasMenu.add(importFromTextMenu);
-
 		extrasMenu.add(new JPopupMenu.Separator());
-		extrasMenu.add(new JMenuItem("TODO encrypt file"));
-		extrasMenu.add(new JMenuItem("TODO decrypt file"));
+
+		JMenuItem encryptFileMenu = new JMenuItem(this.language.MENU_EXTRAS_ENCRYPT_FILE_LABEL);
+		encryptFileMenu.addActionListener(e -> {
+			boolean result = encryptFile();
+			if (result) {
+				ShowInfoDialog(this.language.MENU_EXTRAS_ENCRYPT_SUCCESSFUL, this.window);
+			} else {
+				ShowInfoDialog(this.language.MENU_EXTRAS_ENCRYPT_FAILED, this.window);
+			}
+		});
+		extrasMenu.add(encryptFileMenu);
+		JMenuItem decryptFileMenu = new JMenuItem(this.language.MENU_EXTRAS_DECRYPT_FILE_LABEL);
+		decryptFileMenu.addActionListener(e -> {
+			boolean result = decryptFile();
+
+			if (result) {
+				ShowInfoDialog(this.language.MENU_EXTRAS_DECRYPT_SUCCESSFUL, this.window);
+			} else {
+				ShowInfoDialog(this.language.MENU_EXTRAS_DECRYPT_FAILED, this.window);
+			}
+		});
+		extrasMenu.add(decryptFileMenu);
 
 		return extrasMenu;
 	}
@@ -528,7 +550,6 @@ public class PasswordManagerApp {
 					BorderFactory.createLineBorder(GUI_BORDER_COLOR),
 					GUI_DEFAULT_GAP_BORDER));
 			infoPanel.add(guiDataInfoPanel);
-
 
 			JLabel[] labels = new JLabel[GUI_DATA_INFO_PANE_COUNT];
 			this.guiDataInfoPanes = new JTextPane[GUI_DATA_INFO_PANE_COUNT];
@@ -1475,6 +1496,188 @@ public class PasswordManagerApp {
 
 			return true;
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	private boolean cipherFile(Cipher cipher, OutputStream writer, InputStream reader) {
+		try {
+
+			/*
+			* Validation
+			* */
+			if (cipher == null || reader == null || writer == null) {
+				return false;
+			}
+
+			/*
+			* ciphering
+			* */
+			byte[] buffer = new byte[CIPHER_FILE_BUFFER_SIZE];
+			while (true) {
+
+				// read
+				for (int index = 0; index < CIPHER_FILE_BUFFER_SIZE; index++) {
+					buffer[index] = 0;
+				}
+				int bytesRead = reader.read(buffer);
+				if (bytesRead < 0) {
+					break;
+				}
+
+				// cipher
+				writer.write(cipher.update(buffer, 0, bytesRead));
+			}
+
+			writer.write(cipher.doFinal());
+
+			return true;
+		} catch (IOException | BadPaddingException | IllegalBlockSizeException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	private boolean encryptFile() {
+
+		//
+		// selected file
+		//
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setCurrentDirectory(new File("E:\\Temp\\Temp"));
+		fileChooser.setDialogTitle(this.language.MENU_EXTRAS_ENCRYPT_FILE_DIALOG);
+		int fileSelectorRes = fileChooser.showOpenDialog(this.window);
+		if (fileSelectorRes != JFileChooser.APPROVE_OPTION)
+			return false;
+
+		File fileIn = fileChooser.getSelectedFile();
+		File fileOut = new File(fileIn.getPath() + CRYPT_FILE_EXTENSION);
+		System.out.println("encryptFile: The following file was selected: " + fileIn.getAbsolutePath());
+
+		//
+		// get password
+		//
+		String pass = askForPassword();
+		if (pass == null || pass.isEmpty())
+			return false;
+		byte[] salt = CreateRandomArray(CIPHER_SALT_SIZE);
+		byte[] initVec = CreateRandomArray(CIPHER_INIT_VEC_SIZE);
+		byte[] passHash = HashPassword(pass, salt);
+
+		if (salt.length > Byte.MAX_VALUE || initVec.length > Byte.MAX_VALUE)
+			return false; // salt or init vector to long
+
+		//
+		// encrypt
+		//
+		Cipher cipher = CreateCipher(Cipher.ENCRYPT_MODE, passHash, initVec);
+		if (cipher == null)
+			return false;
+
+		try {
+			OutputStream writer = new FileOutputStream(fileOut);
+			InputStream reader  = new FileInputStream(fileIn);
+
+			//salt
+			writer.write((byte)salt.length);
+			writer.write(salt);
+
+			// init vector
+			writer.write((byte)initVec.length);
+			writer.write(initVec);
+
+			boolean result = true;
+			if (!cipherFile(cipher, writer, reader)) {
+				result = false;
+			}
+
+			writer.flush();
+			writer.close();
+			reader.close();
+
+			return result;
+		} catch (IOException e) {
+			e.printStackTrace();
+
+			return false;
+		}
+
+	}
+	private boolean decryptFile() {
+
+		//
+		// selected file
+		//
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setCurrentDirectory(new File("E:\\Temp\\Temp"));
+		fileChooser.setFileFilter(new FileNameExtensionFilter(this.language.FILE_CHOOSER_XFCRYPT_FILE_DESC, CRYPT_FILE_EXTENSION.substring(1)));
+		fileChooser.setDialogTitle(this.language.MENU_EXTRAS_ENCRYPT_FILE_DIALOG);
+		int fileSelectorRes = fileChooser.showOpenDialog(this.window);
+		if (fileSelectorRes != JFileChooser.APPROVE_OPTION)
+			return false;
+
+		//
+		// output file
+		//
+		File fileIn = fileChooser.getSelectedFile();
+		if (!fileIn.getName().endsWith(CRYPT_FILE_EXTENSION))
+			return false; // wrong file format
+		String fileInPath = fileIn.getPath();
+		File fileOut = new File(fileInPath.substring(0, fileInPath.lastIndexOf(CRYPT_FILE_EXTENSION)));
+		System.out.println("decryptFile: The following file was selected: " + fileIn.getAbsolutePath());
+
+		//
+		// ask for password
+		//
+		String pass = askForPassword();
+		if (pass == null || pass.isEmpty())
+			return false;
+
+		//
+		// read file
+		//
+		try {
+			boolean result = false;
+			InputStream reader = new FileInputStream(fileIn);
+			OutputStream writer = new FileOutputStream(fileOut);
+			//noinspection ConstantConditions
+			do {
+
+				// salt
+				int saltSize = reader.read();
+				if (saltSize < 0)
+					break;
+				byte[] salt = new byte[saltSize];
+				if (reader.read(salt) != saltSize) {
+					break;
+				}
+
+				// init vec
+				int initVecSize = reader.read();
+				if (initVecSize < 0)
+					break;
+				byte[] initVec = new byte[initVecSize];
+				if (reader.read(initVec) != initVecSize) {
+					break;
+				}
+
+				// create cipher
+				byte[] passHash = HashPassword(pass, salt);;
+				Cipher cipher = CreateCipher(Cipher.DECRYPT_MODE, passHash, initVec);
+				if (!cipherFile(cipher, writer, reader)){
+					break;
+				}
+
+				result = true;
+			} while (false);
+
+			writer.flush();
+			writer.close();
+			reader.close();
+
+			return result;
+
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 

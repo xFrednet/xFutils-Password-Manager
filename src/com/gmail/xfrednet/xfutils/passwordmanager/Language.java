@@ -35,6 +35,11 @@ package com.gmail.xfrednet.xfutils.passwordmanager;
 class Language {
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
+	// // General //
+	/* //////////////////////////////////////////////////////////////////////////////// */
+	final String FILE_CHOOSER_XFCRYPT_FILE_DESC;
+
+	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Enter password dialog //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	final String ENTER_PASSWORD_INFO_LABEL;
@@ -81,6 +86,16 @@ class Language {
 	final String EXTRAS_EXPORT_FAILED_INFO;
 	final String EXTRAS_IMPORT_COMPLETE_INFO;
 	final String EXTRAS_IMPORT_FAILED_INFO;
+
+	final String MENU_EXTRAS_ENCRYPT_FILE_LABEL;
+	final String MENU_EXTRAS_ENCRYPT_FILE_DIALOG;
+	final String MENU_EXTRAS_ENCRYPT_FAILED;
+	final String MENU_EXTRAS_ENCRYPT_SUCCESSFUL;
+
+	final String MENU_EXTRAS_DECRYPT_FILE_LABEL;
+	final String MENU_EXTRAS_DECRYPT_FILE_DIALOG;
+	final String MENU_EXTRAS_DECRYPT_FAILED;
+	final String MENU_EXTRAS_DECRYPT_SUCCESSFUL;
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Info panel //
@@ -141,6 +156,9 @@ class Language {
 	Language(int lang) {
 		switch (lang) {
 		case DE:
+			// General
+			this.FILE_CHOOSER_XFCRYPT_FILE_DESC     = "XFCRYPT Datein";
+
 			// Enter password dialog
 			this.ENTER_PASSWORD_INFO_LABEL          = "Gebe bitte dein Passwort ein: ";
 			this.ENTER_PASSWORD_CANCEL_BUTTON_LABEL = "Abbrechen";
@@ -163,8 +181,8 @@ class Language {
 			this.MENU_TAB_NAME                   = "Tab";
 			this.MENU_TAB_RENAME_TAB             = "Tab umbennen";
 			this.MENU_TAB_RENAME_DIALOG_MESSAGE  = "Bitte geben Sie den Tab einen neuen Namen:";
-			this.MENU_TAB_MOVE_LEFT_TAB          = "<-- Nach links schieben";
-			this.MENU_TAB_MOVE_RIGHT_TAB         = "--> Nach rechts schieben";
+			this.MENU_TAB_MOVE_LEFT_TAB          = "<== Nach links schieben";
+			this.MENU_TAB_MOVE_RIGHT_TAB         = "==> Nach rechts schieben";
 			this.MENU_TAB_REMOVE_TAB             = "Tab löschen";
 			this.MENU_TAB_REMOVE_CONFIRM_MESSAGE = "Sind Sie sich sicher, dass der Tab gelöscht werden soll?";
 
@@ -183,6 +201,14 @@ class Language {
 			this.EXTRAS_IMPORT_COMPLETE_INFO     = "Die Datei wurde erfolgreich importiert";
 			this.EXTRAS_IMPORT_FAILED_INFO       = "Leider konnte die Datei nicht richtig importiert werden";
 
+			this.MENU_EXTRAS_ENCRYPT_FILE_LABEL  = "Datei verschlüsseln";
+			this.MENU_EXTRAS_ENCRYPT_FILE_DIALOG = "Wähle eine Datei zum verschlüsseln aus";
+			this.MENU_EXTRAS_ENCRYPT_FAILED      = "Wärend der verschlüsselung ist etwas fehlgeschlagen";
+			this.MENU_EXTRAS_ENCRYPT_SUCCESSFUL = "Die verschlüsselung war erfolgreich!";
+			this.MENU_EXTRAS_DECRYPT_FILE_LABEL  = "Datei entschlüsseln";
+			this.MENU_EXTRAS_DECRYPT_FILE_DIALOG = "Wähle eine Datei zum entschlüsseln aus";
+			this.MENU_EXTRAS_DECRYPT_FAILED      = "Wärend der entschlüsselung ist etwas fehlgeschlagen";
+			this.MENU_EXTRAS_DECRYPT_SUCCESSFUL  = "Die entschlüsselung war erfolgreich!";
 
 			// Info panel
 			this.INFO_PANEL_TITLE_LABEL = "Name: ";
@@ -235,6 +261,9 @@ class Language {
 
 		default:
 		case ENG:
+			// General
+			this.FILE_CHOOSER_XFCRYPT_FILE_DESC     = "XFCRYPT Files";
+
 			// Enter password dialog
 			this.ENTER_PASSWORD_INFO_LABEL          = "Please enter your Password: ";
 			this.ENTER_PASSWORD_CANCEL_BUTTON_LABEL = "Cancel";
@@ -257,8 +286,8 @@ class Language {
 			this.MENU_TAB_NAME                   = "Tab";
 			this.MENU_TAB_RENAME_TAB             = "Rename tab";
 			this.MENU_TAB_RENAME_DIALOG_MESSAGE  = "Please enter the new tab name:";
-			this.MENU_TAB_MOVE_LEFT_TAB          = "<-- Move left";
-			this.MENU_TAB_MOVE_RIGHT_TAB         = "--> Move right";
+			this.MENU_TAB_MOVE_LEFT_TAB          = "<== Move left";
+			this.MENU_TAB_MOVE_RIGHT_TAB         = "==> Move right";
 			this.MENU_TAB_REMOVE_TAB             = "Remove tab";
 			this.MENU_TAB_REMOVE_CONFIRM_MESSAGE = "Are you sure you want to delete this tab?";
 
@@ -276,6 +305,15 @@ class Language {
 			this.EXTRAS_EXPORT_FAILED_INFO       = "Something failed during the export process";
 			this.EXTRAS_IMPORT_COMPLETE_INFO     = "The file was successfully imported";
 			this.EXTRAS_IMPORT_FAILED_INFO       = "Something failed during the import process";
+
+			this.MENU_EXTRAS_ENCRYPT_FILE_LABEL  = "Encrypt file";
+			this.MENU_EXTRAS_ENCRYPT_FILE_DIALOG = "Select a file to encrypt";
+			this.MENU_EXTRAS_ENCRYPT_FAILED      = "Something failed during the encryption";
+			this.MENU_EXTRAS_ENCRYPT_SUCCESSFUL = "The encryption was successful";
+			this.MENU_EXTRAS_DECRYPT_FILE_LABEL  = "Decrypt file";
+			this.MENU_EXTRAS_DECRYPT_FILE_DIALOG = "Select a file to decrypt";
+			this.MENU_EXTRAS_DECRYPT_FAILED      = "Something failed during the decryption";
+			this.MENU_EXTRAS_DECRYPT_SUCCESSFUL = "The decryption was successful";
 
 			// Info panel
 			this.INFO_PANEL_TITLE_LABEL = "Name: ";
