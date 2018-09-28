@@ -1060,35 +1060,19 @@ public class PasswordManagerApp {
 	private static String GetTimeStamp() {
 		return new SimpleDateFormat(TIME_STAMP_FORMAT).format(new Date());
 	}
-	private static String ArrayToHex(byte[] data) {
-		StringBuilder sb = new StringBuilder();
-
-		for (byte b : data) {
-			sb.append(String.format("%02X", b));
-		}
-
-		return sb.toString();
-	}
-	private static byte[] HexToArray(String hex) {
-		int hexLen = hex.length();
-		byte[] buffer = new byte[hexLen / 2];
-
-		for (int hexNo = 0; hexNo < hexLen; hexNo += 2) {
-			buffer[hexNo / 2] =  (byte)(Character.digit(hex.charAt(hexNo), 16) << 4);
-			buffer[hexNo / 2] += (byte)(Character.digit(hex.charAt(hexNo + 1), 16));
-		}
-
-		return buffer;
-	}
 	private void showInfoDialog(String infoString, Component parent, Exception err) {
 		Object[] options;
-		if (err != null)
+		String title;
+		if (err != null) {
 			options = new Object[]{this.language.ERROR_DIALOG_COPY_ERROR, "OK"};
-		else
+			title = TITLE + "(" + err.toString() + ")";
+		} else {
 			options = new Object[]{"OK"};
+			title = TITLE;
+		}
 
 		int result = JOptionPane.showOptionDialog(parent,
-				infoString, TITLE,
+				infoString, title,
 				JOptionPane.DEFAULT_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
 				null,
@@ -1694,7 +1678,7 @@ public class PasswordManagerApp {
 				}
 
 				// create cipher
-				byte[] passHash = hashPassword(pass, salt);;
+				byte[] passHash = hashPassword(pass, salt);
 				Cipher cipher = createCipher(Cipher.DECRYPT_MODE, passHash, initVec);
 				if (!cipherFile(cipher, writer, reader)){
 					break;

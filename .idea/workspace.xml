@@ -36,8 +36,8 @@
             <file pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Language.java">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="278">
-                    <caret line="363" column="37" selection-start-line="363" selection-start-column="17" selection-end-line="363" selection-end-column="37" />
+                  <state relative-caret-position="261">
+                    <caret line="363" column="55" selection-start-line="363" selection-start-column="55" selection-end-line="363" selection-end-column="55" />
                     <folding>
                       <element signature="n#!!doc" expanded="true" />
                     </folding>
@@ -88,24 +88,24 @@
     <session id="-1634900122">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="26" />
+          <entry key="project.closed" value="27" />
           <entry key="project.open.time.10" value="6" />
           <entry key="project.open.time.11" value="4" />
           <entry key="project.open.time.12" value="2" />
           <entry key="project.open.time.7" value="5" />
           <entry key="project.open.time.8" value="8" />
-          <entry key="project.open.time.9" value="5" />
-          <entry key="project.opened" value="30" />
+          <entry key="project.open.time.9" value="6" />
+          <entry key="project.opened" value="31" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="57440" />
+          <entry key="java" value="57594" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="57440" />
+          <entry key="JAVA" value="57594" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -131,136 +131,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="209">
-              <caret line="176" column="9" selection-start-line="176" selection-start-column="9" selection-end-line="176" selection-end-column="9" />
+            <state relative-caret-position="15283">
+              <caret line="1202" lean-forward="true" selection-start-line="1202" selection-end-line="1202" />
               <folding>
-                <element signature="e#7712#7714#0" />
-                <element signature="e#7888#7890#0" />
-                <element signature="e#8153#8155#0" />
-                <element signature="e#8334#8336#0" />
-                <element signature="e#8595#9057#0" />
-                <element signature="e#9059#9364#0" />
-                <element signature="e#9089#9091#0" />
-                <element signature="e#9432#9458#0" />
-                <element signature="e#9543#9572#0" />
-                <element signature="e#9667#9693#0" />
-                <element signature="e#9907#10229#0" expanded="true" />
-                <element signature="e#10272#10298#0" />
-                <element signature="e#10911#11021#0" expanded="true" />
-                <element signature="e#11099#11125#0" />
-                <element signature="e#11244#11246#0" />
-                <element signature="e#11953#11955#0" />
-                <element signature="e#13285#13287#0" />
-                <element signature="e#13735#13996#0" expanded="true" />
-                <element signature="e#14027#14289#0" expanded="true" />
-                <element signature="e#14434#14436#0" />
-                <element signature="e#14562#14754#0" expanded="true" />
-                <element signature="e#14946#14948#0" />
-                <element signature="e#15076#15580#0" expanded="true" />
-                <element signature="e#15663#15665#0" />
-                <element signature="e#16016#16018#0" />
-                <element signature="e#16408#16410#0" />
-                <element signature="e#17124#17416#0" expanded="true" />
-                <element signature="e#17584#17788#0" expanded="true" />
-                <element signature="e#18003#18236#0" expanded="true" />
-                <element signature="e#18401#18635#0" expanded="true" />
-                <element signature="e#18700#23441#0" />
-                <element signature="e#18731#18733#0" />
-                <element signature="e#18899#18901#0" />
-                <element signature="e#19201#19203#0" />
-                <element signature="e#20773#20775#0" />
-                <element signature="e#22279#22281#0" />
-                <element signature="e#23291#23293#0" />
-                <element signature="e#23443#25601#0" />
-                <element signature="e#25603#26001#0" />
-                <element signature="e#26003#26098#0" />
-                <element signature="e#26101#26719#0" />
-                <element signature="e#28889#31098#0" />
-                <element signature="e#33017#34453#0" expanded="true" />
-                <element signature="e#35007#35426#0" />
-                <element signature="e#35867#36011#0" />
-                <element signature="e#36768#36954#0" />
-                <element signature="e#36956#37302#0" />
-                <element signature="e#38628#38629#0" expanded="true" />
-                <element signature="e#38677#38678#0" expanded="true" />
-                <element signature="e#38745#38746#0" expanded="true" />
-                <element signature="e#38792#38793#0" expanded="true" />
-                <element signature="e#38842#38843#0" expanded="true" />
-                <element signature="e#38888#38889#0" expanded="true" />
-                <element signature="e#37578#37975#0" />
-                <element signature="e#37977#38127#0" />
-                <element signature="e#38223#38296#0" />
-                <element signature="e#38941#39097#0" />
-                <element signature="e#39099#40466#0" />
-                <element signature="e#40761#40763#0" />
-                <element signature="e#41133#41135#0" />
-                <element signature="e#41504#41506#0" />
-                <element signature="e#41835#41837#0" />
-                <element signature="e#42237#42239#0" />
-                <element signature="e#42586#43002#0" />
-                <element signature="e#43004#43373#0" />
-                <element signature="e#43375#43956#0" />
-                <element signature="e#43959#45586#0" />
-                <element signature="e#44187#44207#0" />
-                <element signature="e#44780#44800#0" />
-                <element signature="e#45624#45644#0" />
-                <element signature="e#46252#46272#0" />
-                <element signature="e#46340#46356#0" />
-                <element signature="e#46647#46663#0" />
-                <element signature="e#47420#47435#0" />
-                <element signature="e#49264#50860#0" />
-                <element signature="e#49299#49301#0" />
-                <element signature="e#49806#49808#0" />
-                <element signature="e#50203#50205#0" />
-                <element signature="e#50897#50899#0" />
-                <element signature="e#51328#51330#0" />
-                <element signature="e#51734#51736#0" />
-                <element signature="e#51856#51858#0" />
-                <element signature="e#53666#53758#0" />
-                <element signature="e#53965#54470#0" />
-                <element signature="e#54473#54788#0" />
-                <element signature="e#54791#56761#0" />
-                <element signature="e#55007#55055#0" />
-                <element signature="e#56527#56580#0" />
-                <element signature="e#56765#57282#0" />
-                <element signature="e#57285#57849#0" />
-                <element signature="e#57853#58298#0" />
-                <element signature="e#58303#76104#0" expanded="true" />
-                <element signature="e#58438#58544#0" />
-                <element signature="e#58547#58654#0" />
-                <element signature="e#58658#59570#0" />
-                <element signature="e#59574#60195#0" />
-                <element signature="e#60199#65066#0" />
-                <element signature="e#60506#60508#0" />
-                <element signature="e#60734#60736#0" />
-                <element signature="e#60940#60942#0" />
-                <element signature="e#61228#61230#0" />
-                <element signature="e#61588#61590#0" />
-                <element signature="e#62668#62670#0" />
-                <element signature="e#63501#63503#0" />
-                <element signature="e#64183#64185#0" />
-                <element signature="e#64421#64423#0" />
-                <element signature="e#64738#64740#0" />
-                <element signature="e#65069#69047#0" />
-                <element signature="e#65410#65412#0" />
-                <element signature="e#65849#65851#0" />
-                <element signature="e#67254#67256#0" />
-                <element signature="e#67599#67601#0" />
-                <element signature="e#67903#67905#0" />
-                <element signature="e#68488#68490#0" />
-                <element signature="e#69050#74859#0" />
-                <element signature="e#69200#69202#0" />
-                <element signature="e#69522#69524#0" />
-                <element signature="e#70724#70726#0" />
-                <element signature="e#71377#71379#0" />
-                <element signature="e#71921#71923#0" />
-                <element signature="e#72260#72262#0" />
-                <element signature="e#72560#72562#0" />
-                <element signature="e#73148#73150#0" />
-                <element signature="e#73867#73869#0" />
-                <element signature="e#74309#74311#0" />
-                <element signature="e#74863#75512#0" />
-                <element signature="e#75515#76100#0" />
+                <element signature="e#38120#38121#0" expanded="true" />
+                <element signature="e#38169#38170#0" expanded="true" />
+                <element signature="e#59759#77528#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -269,7 +145,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Settings.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="646">
+            <state relative-caret-position="1870">
               <caret line="153" column="71" selection-start-line="153" selection-start-column="71" selection-end-line="153" selection-end-column="71" />
               <folding>
                 <element signature="method#LoadSettings#0;class#Settings#0" />
@@ -302,6 +178,7 @@
       <find>showInfoDialog(this.language.ERROR_WRONG_PASSWORD</find>
       <find>ShowInfoDialog</find>
       <find>System.out.println(&quot;Pas</find>
+      <find>thr</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -369,24 +246,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="xFutils Password Manager" type="58d84e3e:PackageViewProjectNode" />
-              <item name="xFutils Password Manager" type="616d4139:PackageViewModuleNode" />
-            </path>
-            <path>
-              <item name="xFutils Password Manager" type="58d84e3e:PackageViewProjectNode" />
-              <item name="xFutils Password Manager" type="616d4139:PackageViewModuleNode" />
-              <item name="com.gmail.xfrednet.xfutils.passwordmanager" type="1f31426a:PackageElementNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -418,12 +277,30 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="xFutils Password Manager" type="58d84e3e:PackageViewProjectNode" />
+              <item name="xFutils Password Manager" type="616d4139:PackageViewModuleNode" />
+            </path>
+            <path>
+              <item name="xFutils Password Manager" type="58d84e3e:PackageViewProjectNode" />
+              <item name="xFutils Password Manager" type="616d4139:PackageViewModuleNode" />
+              <item name="com.gmail.xfrednet.xfutils.passwordmanager" type="1f31426a:PackageElementNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538081794045" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538130319701" />
     <property name="last_opened_file_path" value="E:/Temp/Temp/New Text Document.txt.XFCRYPT" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -512,18 +389,19 @@
       <workItem from="1537692628057" duration="597000" />
       <workItem from="1537878419133" duration="2812000" />
       <workItem from="1537949274787" duration="6061000" />
-      <workItem from="1538036093733" duration="16190000" />
+      <workItem from="1538036093733" duration="16285000" />
+      <workItem from="1538114472831" duration="2678000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="337724000" />
+    <option name="totallyTimeSpent" value="340497000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="22" width="1936" height="1066" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.45604396" visible="true" weight="0.23294243" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.45604396" visible="true" weight="0.23560767" />
       <window_info id="Image Layers" order="1" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
@@ -776,10 +654,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2380">
           <caret line="165" column="49" selection-start-line="165" selection-start-column="37" selection-end-line="165" selection-end-column="49" />
-          <folding>
-            <element signature="e#1176#1177#0" expanded="true" />
-            <element signature="e#1200#1201#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -804,16 +678,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Settings.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
-          <caret line="153" column="71" selection-start-line="153" selection-start-column="71" selection-end-line="153" selection-end-column="71" />
-          <folding>
-            <element signature="method#LoadSettings#0;class#Settings#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_144/src.zip!/javax/swing/BoxLayout.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="707">
@@ -825,10 +689,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Settings.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1870">
+          <caret line="153" column="71" selection-start-line="153" selection-start-column="71" selection-end-line="153" selection-end-column="71" />
+          <folding>
+            <element signature="method#LoadSettings#0;class#Settings#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Language.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="278">
-          <caret line="363" column="37" selection-start-line="363" selection-start-column="17" selection-end-line="363" selection-end-column="37" />
+        <state relative-caret-position="261">
+          <caret line="363" column="55" selection-start-line="363" selection-start-column="55" selection-end-line="363" selection-end-column="55" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
@@ -837,136 +711,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="176" column="9" selection-start-line="176" selection-start-column="9" selection-end-line="176" selection-end-column="9" />
+        <state relative-caret-position="15283">
+          <caret line="1202" lean-forward="true" selection-start-line="1202" selection-end-line="1202" />
           <folding>
-            <element signature="e#7712#7714#0" />
-            <element signature="e#7888#7890#0" />
-            <element signature="e#8153#8155#0" />
-            <element signature="e#8334#8336#0" />
-            <element signature="e#8595#9057#0" />
-            <element signature="e#9059#9364#0" />
-            <element signature="e#9089#9091#0" />
-            <element signature="e#9432#9458#0" />
-            <element signature="e#9543#9572#0" />
-            <element signature="e#9667#9693#0" />
-            <element signature="e#9907#10229#0" expanded="true" />
-            <element signature="e#10272#10298#0" />
-            <element signature="e#10911#11021#0" expanded="true" />
-            <element signature="e#11099#11125#0" />
-            <element signature="e#11244#11246#0" />
-            <element signature="e#11953#11955#0" />
-            <element signature="e#13285#13287#0" />
-            <element signature="e#13735#13996#0" expanded="true" />
-            <element signature="e#14027#14289#0" expanded="true" />
-            <element signature="e#14434#14436#0" />
-            <element signature="e#14562#14754#0" expanded="true" />
-            <element signature="e#14946#14948#0" />
-            <element signature="e#15076#15580#0" expanded="true" />
-            <element signature="e#15663#15665#0" />
-            <element signature="e#16016#16018#0" />
-            <element signature="e#16408#16410#0" />
-            <element signature="e#17124#17416#0" expanded="true" />
-            <element signature="e#17584#17788#0" expanded="true" />
-            <element signature="e#18003#18236#0" expanded="true" />
-            <element signature="e#18401#18635#0" expanded="true" />
-            <element signature="e#18700#23441#0" />
-            <element signature="e#18731#18733#0" />
-            <element signature="e#18899#18901#0" />
-            <element signature="e#19201#19203#0" />
-            <element signature="e#20773#20775#0" />
-            <element signature="e#22279#22281#0" />
-            <element signature="e#23291#23293#0" />
-            <element signature="e#23443#25601#0" />
-            <element signature="e#25603#26001#0" />
-            <element signature="e#26003#26098#0" />
-            <element signature="e#26101#26719#0" />
-            <element signature="e#28889#31098#0" />
-            <element signature="e#33017#34453#0" expanded="true" />
-            <element signature="e#35007#35426#0" />
-            <element signature="e#35867#36011#0" />
-            <element signature="e#36768#36954#0" />
-            <element signature="e#36956#37302#0" />
-            <element signature="e#38628#38629#0" expanded="true" />
-            <element signature="e#38677#38678#0" expanded="true" />
-            <element signature="e#38745#38746#0" expanded="true" />
-            <element signature="e#38792#38793#0" expanded="true" />
-            <element signature="e#38842#38843#0" expanded="true" />
-            <element signature="e#38888#38889#0" expanded="true" />
-            <element signature="e#37578#37975#0" />
-            <element signature="e#37977#38127#0" />
-            <element signature="e#38223#38296#0" />
-            <element signature="e#38941#39097#0" />
-            <element signature="e#39099#40466#0" />
-            <element signature="e#40761#40763#0" />
-            <element signature="e#41133#41135#0" />
-            <element signature="e#41504#41506#0" />
-            <element signature="e#41835#41837#0" />
-            <element signature="e#42237#42239#0" />
-            <element signature="e#42586#43002#0" />
-            <element signature="e#43004#43373#0" />
-            <element signature="e#43375#43956#0" />
-            <element signature="e#43959#45586#0" />
-            <element signature="e#44187#44207#0" />
-            <element signature="e#44780#44800#0" />
-            <element signature="e#45624#45644#0" />
-            <element signature="e#46252#46272#0" />
-            <element signature="e#46340#46356#0" />
-            <element signature="e#46647#46663#0" />
-            <element signature="e#47420#47435#0" />
-            <element signature="e#49264#50860#0" />
-            <element signature="e#49299#49301#0" />
-            <element signature="e#49806#49808#0" />
-            <element signature="e#50203#50205#0" />
-            <element signature="e#50897#50899#0" />
-            <element signature="e#51328#51330#0" />
-            <element signature="e#51734#51736#0" />
-            <element signature="e#51856#51858#0" />
-            <element signature="e#53666#53758#0" />
-            <element signature="e#53965#54470#0" />
-            <element signature="e#54473#54788#0" />
-            <element signature="e#54791#56761#0" />
-            <element signature="e#55007#55055#0" />
-            <element signature="e#56527#56580#0" />
-            <element signature="e#56765#57282#0" />
-            <element signature="e#57285#57849#0" />
-            <element signature="e#57853#58298#0" />
-            <element signature="e#58303#76104#0" expanded="true" />
-            <element signature="e#58438#58544#0" />
-            <element signature="e#58547#58654#0" />
-            <element signature="e#58658#59570#0" />
-            <element signature="e#59574#60195#0" />
-            <element signature="e#60199#65066#0" />
-            <element signature="e#60506#60508#0" />
-            <element signature="e#60734#60736#0" />
-            <element signature="e#60940#60942#0" />
-            <element signature="e#61228#61230#0" />
-            <element signature="e#61588#61590#0" />
-            <element signature="e#62668#62670#0" />
-            <element signature="e#63501#63503#0" />
-            <element signature="e#64183#64185#0" />
-            <element signature="e#64421#64423#0" />
-            <element signature="e#64738#64740#0" />
-            <element signature="e#65069#69047#0" />
-            <element signature="e#65410#65412#0" />
-            <element signature="e#65849#65851#0" />
-            <element signature="e#67254#67256#0" />
-            <element signature="e#67599#67601#0" />
-            <element signature="e#67903#67905#0" />
-            <element signature="e#68488#68490#0" />
-            <element signature="e#69050#74859#0" />
-            <element signature="e#69200#69202#0" />
-            <element signature="e#69522#69524#0" />
-            <element signature="e#70724#70726#0" />
-            <element signature="e#71377#71379#0" />
-            <element signature="e#71921#71923#0" />
-            <element signature="e#72260#72262#0" />
-            <element signature="e#72560#72562#0" />
-            <element signature="e#73148#73150#0" />
-            <element signature="e#73867#73869#0" />
-            <element signature="e#74309#74311#0" />
-            <element signature="e#74863#75512#0" />
-            <element signature="e#75515#76100#0" />
+            <element signature="e#38120#38121#0" expanded="true" />
+            <element signature="e#38169#38170#0" expanded="true" />
+            <element signature="e#59759#77528#0" expanded="true" />
           </folding>
         </state>
       </provider>
