@@ -64,7 +64,6 @@ public class PasswordManagerApp {
 	private static final String TITLE                = "xFutils Password Manager";
 	private static final String TIME_STAMP_FORMAT    = "yyyy.MM.dd.HH.mm.ss";
 
-
 	//
 	// cipher & saving
 	//
@@ -108,6 +107,7 @@ public class PasswordManagerApp {
 	private static final ImageIcon GUI_DELETE_ICON = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("delete_icon.png")));
 	private static final ImageIcon GUI_CHECK_ICON  = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("check_icon.png")));
 	private static final ImageIcon GUI_UNDO_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("undo_icon.png")));
+	private static final ImageIcon GUI_WINDOW_ICON = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("main_icon.png")));
 
 	//
 	// Modes
@@ -220,6 +220,7 @@ public class PasswordManagerApp {
 		// JFrame
 		//
 		this.window = new JFrame(TITLE);
+		//this.window.setIconImage(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("main_icon.png")));
 		this.window.setMinimumSize(new Dimension(GUI_WINDOW_MIN_SIZE));
 		this.window.setBounds(this.settings.frameX, this.settings.frameY, this.settings.frameWidth, this.settings.frameHeight);
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
