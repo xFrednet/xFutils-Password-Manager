@@ -153,6 +153,7 @@ class Language {
 	final String INFO_SAVE_BACKUP_OKAY;
 	final String INFO_RESTART_TO_LOAD_CHANGE;
 	final String ERROR_INVALID_TAB_INDEX;
+	final String[] ERROR_DATA_LOADING_FAILES;
 
 	static final int ENG = 0;
 	static final int DE = 1;
@@ -264,6 +265,14 @@ class Language {
 			this.INFO_SAVE_BACKUP_OKAY          = "Das Backup wurde erfolgreich erstellt";
 			this.INFO_RESTART_TO_LOAD_CHANGE    = "Restarte bitte die Anwendung um die Änderungen zu laden";
 			this.ERROR_INVALID_TAB_INDEX        = "Der gewählte tab index ist leider ungültig";
+			this.ERROR_DATA_LOADING_FAILES      = new String[] {
+					"Es konnte kein speicher gefunden worden, es wird ein neuer Speicher erstellt!",
+					"Die Datei konnte nicht geöffnet werden!",
+					"Beim Lesen der Daten ist ein Fehler aufgetreten!",
+					"Die Entschlüsselung ist fehlgeschlafen!",
+					this.ERROR_WRONG_PASSWORD,
+					"Die geladenen Daten konnten nicht interpretiert werden!"
+			};
 
 			break;
 
@@ -373,6 +382,14 @@ class Language {
 			this.INFO_SAVE_BACKUP_OKAY          = "The backup was saved!";
 			this.INFO_RESTART_TO_LOAD_CHANGE    = "Please restart the application to load the changes";
 			this.ERROR_INVALID_TAB_INDEX        = "The chosen tab index is sadly invalid!";
+			this.ERROR_DATA_LOADING_FAILES      = new String[] {
+				"No save file could be found a new save will be created!",
+				"The file could not be opened!",
+				"An error occurred during the file reading!",
+				"The decryption failed!",
+				this.ERROR_WRONG_PASSWORD,
+				"The loaded data could not be interpreted!"
+			};
 
 			break;
 

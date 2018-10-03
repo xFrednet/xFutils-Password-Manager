@@ -59,7 +59,7 @@ import static javafx.application.Platform.exit;
 
 public class PasswordManagerApp {
 
-	private static final boolean JUMP_ASK = true;
+	private static final boolean JUMP_ASK = false;
 
 	private static final String TITLE                = "xFutils Password Manager";
 	private static final String TIME_STAMP_FORMAT    = "yyyy.MM.dd.HH.mm.ss";
@@ -182,8 +182,14 @@ public class PasswordManagerApp {
 		//
 		// Load data
 		//
-		if (!loadData(SAFE_FILE_NAME)) {
+		int loadDataResult = loadData(SAFE_FILE_NAME);
+		if (loadDataResult == 0) {
+			showInfoDialog(this.language.ERROR_DATA_LOADING_FAILES[0]);
 			reinitCipherValues();
+		} else if (loadDataResult < 0) {
+			// the result is negative the inverse is the corresponding error message
+			showInfoDialog(this.language.ERROR_DATA_LOADING_FAILES[-loadDataResult]);
+			System.exit(loadDataResult); // return because well an error occurred
 		}
 
 		initWindow();
@@ -1238,15 +1244,29 @@ public class PasswordManagerApp {
 
 		return false;
 	}
-	private boolean loadData(String fileName) {
+
+	/**
+	 * @param fileName the Name of the file that should be loaded
+	 * @return this returns the status, valid statuses are:
+	 *       1: Loading was successful
+	 *       0: The file does not exist, still no error just create a new save
+	 *      -1: The file couldn't be opened
+	 *      -2: The file reading failed
+	 *      -3: The decryption failed
+	 *      -4: Wrong password
+	 *      -5: The save sting could not be loaded this my be caused by data corruption or me
+	 */
+	private int loadData(String fileName) {
 		File file = new File(fileName);
 
 		if (!file.exists()) {
-			return false; // no file => no data
+			return 0; // no file => no data but also no Error
 		}
 
 		try {
 			FileInputStream fileStream = new FileInputStream(file);
+
+			int status = -2;
 
 			//noinspection LoopStatementThatDoesntLoop,ConstantConditions
 			do {
@@ -1291,6 +1311,8 @@ public class PasswordManagerApp {
 				}
 				fileStream.close();
 
+				status = -3;
+
 				//
 				// decrypt
 				//
@@ -1306,7 +1328,7 @@ public class PasswordManagerApp {
 					showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 					break;
 				} catch (BadPaddingException e) {
-					showInfoDialog(this.language.ERROR_WRONG_PASSWORD);
+					status = -4;
 					break;
 				}
 
@@ -1315,19 +1337,22 @@ public class PasswordManagerApp {
 				//
 				ArrayList<DataTab> loadedTabs = loadDataTabGroupFromSaveString(saveString);
 				if (loadedTabs == null) {
+					status = -5;
 					break;
 				}
 				this.dataTabs = loadedTabs;
 
-				return true;
+				return 1;
 			} while (false);
+
 			fileStream.close();
-			return false;
+
+			return status;
 		} catch (IOException e) {
 			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 		}
 
-		return false;
+		return -1;
 	}
 	private boolean createBackup() {
 
