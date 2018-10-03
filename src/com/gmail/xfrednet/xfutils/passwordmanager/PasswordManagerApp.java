@@ -59,7 +59,7 @@ import static javafx.application.Platform.exit;
 
 public class PasswordManagerApp {
 
-	private static final boolean JUMP_ASK = false;
+	private static final boolean JUMP_ASK = true;
 
 	private static final String TITLE                = "xFutils Password Manager";
 	private static final String TIME_STAMP_FORMAT    = "yyyy.MM.dd.HH.mm.ss";
@@ -67,9 +67,10 @@ public class PasswordManagerApp {
 	//
 	// cipher & saving
 	//
-	private static final byte FORMAT_TAB_SEPARATOR  = 0x1D;
-	private static final byte FORMAT_DATA_SEPARATOR = 0x1E;
-	private static final byte FORMAT_UNIT_SEPARATOR = 0x1F;
+	private static final char FORMAT_TAB_SEPARATOR  = 0x1D;
+	private static final char FORMAT_DATA_SEPARATOR = 0x1E;
+	private static final char FORMAT_UNIT_SEPARATOR = 0x1F;
+	private static final char FORMAT_PADDING_START  = 0x03;
 
 	private static final String CRYPT_FILE_EXTENSION = ".XFCRYPT";
 	private static final String SAFE_FILE_NAME       = "save" + CRYPT_FILE_EXTENSION;
@@ -77,13 +78,15 @@ public class PasswordManagerApp {
 	private static final String SETTINGS_FILE_NAME   = "settings.txt";
 	private static final String TXT_EXPORT_FILE_NAME = "Password Manager Export.txt";
 
-	private static final String CIPHER_PWHASH_ALGORITHM  = "PBKDF2WithHmacSHA1";
-	private static final int    CIPHER_PWHASH_SIZE       = 128 / 8;
-	private static final int    CIPHER_PWHASH_ITERATIONS = 200000;
-	private static final String CIPHER_ALGORITHM         = "AES/CBC/PKCS5Padding";
-	private static final int    CIPHER_INIT_VEC_SIZE     = 16;
-	private static final int    CIPHER_SALT_SIZE         = 256 / 8;
-	private static final int    CIPHER_FILE_BUFFER_SIZE  = 1024;
+	private static final String CIPHER_PWHASH_ALGORITHM   = "PBKDF2WithHmacSHA1";
+	private static final int    CIPHER_PWHASH_SIZE        = 128 / 8;
+	private static final int    CIPHER_PWHASH_ITERATIONS  = 200000;
+	private static final String CIPHER_FILE_ALGORITHM     = "AES/CBC/PKCS5Padding";
+	private static final String CIPHER_DATA_ALGORITHM     = "AES/CBC/PKCS5Padding";
+	private static final int    CIPHER_INIT_VEC_SIZE      = 16;
+	private static final int    CIPHER_SALT_SIZE          = 256 / 8;
+	private static final int    CIPHER_FILE_BUFFER_SIZE   = 1024;
+	private static final int CIPHER_CONTENT_BLOCK_SIZE    = 256;
 
 	//
 	// GUI
@@ -220,7 +223,7 @@ public class PasswordManagerApp {
 		// JFrame
 		//
 		this.window = new JFrame(TITLE);
-		//this.window.setIconImage(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("main_icon.png")));
+		this.window.setIconImage(GUI_WINDOW_ICON.getImage());
 		this.window.setMinimumSize(new Dimension(GUI_WINDOW_MIN_SIZE));
 		this.window.setBounds(this.settings.frameX, this.settings.frameY, this.settings.frameWidth, this.settings.frameHeight);
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -660,7 +663,6 @@ public class PasswordManagerApp {
 		// Finish
 		//
 		this.window.add(mainPanel);
-		System.out.println("Making the window visible in 3 2 1 GO!!!");
 		this.window.setVisible(true);
 	}
 	private void initAddTabGUI() {
@@ -824,7 +826,7 @@ public class PasswordManagerApp {
 	}
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	// // Cipher interfacing //
+	// // Cipher utility //
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	private String askForPassword() {
 
@@ -951,7 +953,7 @@ public class PasswordManagerApp {
 			// check new pass
 			String newPass1 = new String(newPassField.getPassword());
 			String newPass2 = new String(againNewPassField.getPassword());
-			byte[] newSalt = CreateRandomArray(CIPHER_SALT_SIZE);
+			byte[] newSalt = createRandomArray(CIPHER_SALT_SIZE);
 			if (newPass1.isEmpty() || newPass2.isEmpty() ||
 				!comparePasswords(newPass1, newPass2, newSalt)) {
 				isInputCorrect = false;
@@ -971,7 +973,7 @@ public class PasswordManagerApp {
 			byte[] oldInitVec = this.cipherInitVector;
 			this.password         = newPass1;
 			this.salt             = newSalt;
-			this.cipherInitVector = CreateRandomArray(CIPHER_INIT_VEC_SIZE);
+			this.cipherInitVector = createRandomArray(CIPHER_INIT_VEC_SIZE);
 			if (!saveData(SAFE_FILE_NAME)) {
 				this.password         = oldPass;
 				this.salt             = oldSalt;
@@ -1014,12 +1016,73 @@ public class PasswordManagerApp {
 		if (testString.contains(FORMAT_UNIT_SEPARATOR + ""))
 			return true;
 
+		if (testString.contains(FORMAT_PADDING_START + ""))
+			return true;
+
 		if (testString.contains("<html>") || testString.contains("</html>"))
 			return true;
 
 		return false;
 	}
 
+	private String createRandomString(int length) {
+		if (length <= 0)
+			return "";
+
+		byte[] stringBytes = new byte[length];
+		SecureRandom rand = new SecureRandom();
+
+		for (int index = 0; index < length; index++) {
+			stringBytes[index] = (byte) (rand.nextInt(127 - 33) + 33);
+		}
+
+		return new String(stringBytes);
+	}
+	private String getPaddedString(String srcString) {
+		if (srcString.isEmpty())
+			return null;
+
+		int baseLength = srcString.length();
+		if (baseLength % CIPHER_CONTENT_BLOCK_SIZE == CIPHER_CONTENT_BLOCK_SIZE - 1)
+			return srcString + FORMAT_PADDING_START;
+
+		/*
+		* Start the construction
+		* */
+		int paddingSize = CIPHER_CONTENT_BLOCK_SIZE - ((baseLength + 1 /* for the \0 */) % CIPHER_CONTENT_BLOCK_SIZE);
+		return srcString + FORMAT_PADDING_START + createRandomString(paddingSize);
+	}
+	private String getUnpaddedString(String srcString) {
+		if (srcString.isEmpty())
+			return null;
+
+		int strEnd = srcString.indexOf(FORMAT_PADDING_START);
+		if (strEnd == -1)
+			return null;
+
+		return srcString.substring(0, strEnd);
+	}
+	private byte[] createRandomArray(int size) {
+		byte[] bytes = new byte[size];
+
+		new SecureRandom().nextBytes(bytes);
+
+		return bytes;
+	}
+	private Cipher createCipher(String algorithm, int cipherMode, byte[] keyBytes, byte[] initVector) {
+		try {
+			Cipher cipher = Cipher.getInstance(algorithm);
+			cipher.init(cipherMode, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(initVector));
+
+			return cipher;
+
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
+				InvalidAlgorithmParameterException e) {
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
+		}
+
+		return null;
+	}
 	private byte[] hashPassword(String password, byte[] salt) {
 
 		PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, CIPHER_PWHASH_ITERATIONS, CIPHER_PWHASH_SIZE * 8);
@@ -1028,27 +1091,6 @@ public class PasswordManagerApp {
 			SecretKeyFactory skf = SecretKeyFactory.getInstance(CIPHER_PWHASH_ALGORITHM);
 			return skf.generateSecret(spec).getEncoded();
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
-		}
-
-		return null;
-	}
-	private static byte[] CreateRandomArray(int size) {
-		byte[] bytes = new byte[size];
-
-		new SecureRandom().nextBytes(bytes);
-
-		return bytes;
-	}
-	private Cipher createCipher(int cipherMode, byte[] keyBytes, byte[] initVector) {
-		try {
-			Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-			cipher.init(cipherMode, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(initVector));
-
-			return cipher;
-
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
-				InvalidAlgorithmParameterException e) {
 			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
 		}
 
@@ -1140,8 +1182,8 @@ public class PasswordManagerApp {
 	}
 
 	private void reinitCipherValues() {
-		this.salt = CreateRandomArray(CIPHER_SALT_SIZE);
-		this.cipherInitVector = CreateRandomArray(CIPHER_INIT_VEC_SIZE);
+		this.salt = createRandomArray(CIPHER_SALT_SIZE);
+		this.cipherInitVector = createRandomArray(CIPHER_INIT_VEC_SIZE);
 	}
 	private boolean saveData(String fileName) {
 		File saveFile = new File(fileName);
@@ -1158,7 +1200,8 @@ public class PasswordManagerApp {
 			return false; // salt or init vector to long
 
 		String saveString = getDataTabGroupSaveString(this.dataTabs);
-		Cipher cipher = createCipher(Cipher.ENCRYPT_MODE, hashPassword(this.password, this.salt), this.cipherInitVector);
+		Cipher cipher = createCipher(CIPHER_DATA_ALGORITHM, Cipher.ENCRYPT_MODE,
+				hashPassword(this.password, this.salt), this.cipherInitVector);
 		if (cipher == null)
 			return false;
 
@@ -1251,7 +1294,8 @@ public class PasswordManagerApp {
 				//
 				// decrypt
 				//
-				Cipher cipher = createCipher(Cipher.DECRYPT_MODE, hashPassword(this.password, this.salt), this.cipherInitVector);
+				Cipher cipher = createCipher(CIPHER_DATA_ALGORITHM,
+						Cipher.DECRYPT_MODE, hashPassword(this.password, this.salt), this.cipherInitVector);
 				if (cipher == null) {
 					break;
 				}
@@ -1577,8 +1621,8 @@ public class PasswordManagerApp {
 		String pass = askForPassword();
 		if (pass == null || pass.isEmpty())
 			return false;
-		byte[] salt = CreateRandomArray(CIPHER_SALT_SIZE);
-		byte[] initVec = CreateRandomArray(CIPHER_INIT_VEC_SIZE);
+		byte[] salt = createRandomArray(CIPHER_SALT_SIZE);
+		byte[] initVec = createRandomArray(CIPHER_INIT_VEC_SIZE);
 		byte[] passHash = hashPassword(pass, salt);
 
 		if (salt.length > Byte.MAX_VALUE || initVec.length > Byte.MAX_VALUE)
@@ -1587,7 +1631,7 @@ public class PasswordManagerApp {
 		//
 		// encrypt
 		//
-		Cipher cipher = createCipher(Cipher.ENCRYPT_MODE, passHash, initVec);
+		Cipher cipher = createCipher(CIPHER_FILE_ALGORITHM, Cipher.ENCRYPT_MODE, passHash, initVec);
 		if (cipher == null)
 			return false;
 
@@ -1680,7 +1724,7 @@ public class PasswordManagerApp {
 
 				// create cipher
 				byte[] passHash = hashPassword(pass, salt);
-				Cipher cipher = createCipher(Cipher.DECRYPT_MODE, passHash, initVec);
+				Cipher cipher = createCipher(CIPHER_FILE_ALGORITHM, Cipher.DECRYPT_MODE, passHash, initVec);
 				if (!cipherFile(cipher, writer, reader)){
 					break;
 				}
@@ -1839,7 +1883,7 @@ public class PasswordManagerApp {
 			StringBuilder sb = new StringBuilder();
 
 			//title
-			sb.append(this.title);
+			sb.append(getPaddedString(this.title));
 
 			for (Data data : this.dataList) {
 				sb.append(FORMAT_DATA_SEPARATOR);
@@ -1855,7 +1899,7 @@ public class PasswordManagerApp {
 			String[] components = saveString.split(FORMAT_DATA_SEPARATOR + "");
 
 			// load title
-			this.title = components[0];
+			this.title = getUnpaddedString(components[0]);
 
 			// load contentList
 			for (int dataNo = 1; dataNo < components.length; dataNo++) {
@@ -2386,7 +2430,7 @@ public class PasswordManagerApp {
 			StringBuilder sb = new StringBuilder();
 
 			// Title
-			sb.append(this.title);
+			sb.append(getPaddedString(this.title));
 
 			// copy Data Index
 			sb.append(FORMAT_UNIT_SEPARATOR);
@@ -2395,7 +2439,7 @@ public class PasswordManagerApp {
 			// Data
 			for (String data : this.contentList) {
 				sb.append(FORMAT_UNIT_SEPARATOR);
-				sb.append(data);
+				sb.append(getPaddedString(data));
 			}
 
 			return sb.toString();
@@ -2411,7 +2455,7 @@ public class PasswordManagerApp {
 				return false; //a save string has at least 3 components
 			}
 
-			this.title = components[0];
+			this.title = getUnpaddedString(components[0]);
 			try {
 				this.copyDataIndex = Integer.parseInt(components[1]);
 			} catch (NumberFormatException e) {
@@ -2419,7 +2463,7 @@ public class PasswordManagerApp {
 			}
 
 			for (int componentNo = 2; componentNo < components.length; componentNo++) {
-				this.contentList.add(components[componentNo]);
+				this.contentList.add(getUnpaddedString(components[componentNo]));
 			}
 
 			return true;
