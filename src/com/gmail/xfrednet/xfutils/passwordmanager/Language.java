@@ -86,6 +86,11 @@ class Language {
 	final String EXTRAS_EXPORT_FAILED_INFO;
 	final String EXTRAS_IMPORT_COMPLETE_INFO;
 	final String EXTRAS_IMPORT_FAILED_INFO;
+	final String EXTRAS_SELECT_PW_FILE;
+	final String MENU_EXTRAS_SAVE_FILE_DIALOG_TITLE;
+	final String MENU_EXTRAS_SAVE_FILE_SELECTED;
+	final String MENU_EXTRAS_NEW_SAVE_FILE_LABEL;
+	final String MENU_EXTRAS_NEW_SAVE_FILE_DIALOG_TITLE;
 
 	final String MENU_EXTRAS_ENCRYPT_FILE_LABEL;
 	final String MENU_EXTRAS_ENCRYPT_FILE_DIALOG;
@@ -205,6 +210,11 @@ class Language {
 			this.EXTRAS_EXPORT_FAILED_INFO       = "Leider ist beim Importieren ein Fehler aufgetreten";
 			this.EXTRAS_IMPORT_COMPLETE_INFO     = "Die Datei wurde erfolgreich importiert";
 			this.EXTRAS_IMPORT_FAILED_INFO       = "Leider konnte die Datei nicht richtig importiert werden";
+			this.EXTRAS_SELECT_PW_FILE           = "Passwortdatei auswählen";
+			this.MENU_EXTRAS_SAVE_FILE_DIALOG_TITLE = "Wähle eine Speicher datei aus";
+			this.MENU_EXTRAS_SAVE_FILE_SELECTED  = "Die Datei wird nach eingabe des Passwortes geladen";
+			this.MENU_EXTRAS_NEW_SAVE_FILE_LABEL = "Neue speicher Datei";
+			this.MENU_EXTRAS_NEW_SAVE_FILE_DIALOG_TITLE = "Wählen Sie den Speicherort aus";
 
 			this.MENU_EXTRAS_ENCRYPT_FILE_LABEL  = "Datei verschlüsseln";
 			this.MENU_EXTRAS_ENCRYPT_FILE_DIALOG = "Wähle eine Datei zum verschlüsseln aus";
@@ -326,11 +336,16 @@ class Language {
 			this.MENU_EXTRAS_ENCRYPT_FILE_LABEL  = "Encrypt file";
 			this.MENU_EXTRAS_ENCRYPT_FILE_DIALOG = "Select a file to encrypt";
 			this.MENU_EXTRAS_ENCRYPT_FAILED      = "Something failed during the encryption";
-			this.MENU_EXTRAS_ENCRYPT_SUCCESSFUL = "The encryption was successful";
+			this.MENU_EXTRAS_ENCRYPT_SUCCESSFUL  = "The encryption was successful";
 			this.MENU_EXTRAS_DECRYPT_FILE_LABEL  = "Decrypt file";
 			this.MENU_EXTRAS_DECRYPT_FILE_DIALOG = "Select a file to decrypt";
 			this.MENU_EXTRAS_DECRYPT_FAILED      = "Something failed during the decryption";
-			this.MENU_EXTRAS_DECRYPT_SUCCESSFUL = "The decryption was successful";
+			this.MENU_EXTRAS_DECRYPT_SUCCESSFUL  = "The decryption was successful";
+			this.EXTRAS_SELECT_PW_FILE           = "Select save file";
+			this.MENU_EXTRAS_SAVE_FILE_DIALOG_TITLE = "Select a data save file";
+			this.MENU_EXTRAS_SAVE_FILE_SELECTED  = "The selected file will be loaded when you enter your password";
+			this.MENU_EXTRAS_NEW_SAVE_FILE_LABEL = "New save file";
+			this.MENU_EXTRAS_NEW_SAVE_FILE_DIALOG_TITLE = "Please select the file location";
 
 			// Info panel
 			this.INFO_PANEL_TITLE_LABEL = "Name: ";

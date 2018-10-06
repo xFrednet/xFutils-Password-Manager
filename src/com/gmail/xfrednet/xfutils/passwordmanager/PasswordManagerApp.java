@@ -33,6 +33,8 @@
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
 
+import javafx.stage.FileChooser;
+
 import java.awt.event.InputEvent;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -73,7 +75,7 @@ public class PasswordManagerApp {
 	private static final char FORMAT_PADDING_START  = 0x03;
 
 	private static final String CRYPT_FILE_EXTENSION = ".XFCRYPT";
-	private static final String SAFE_FILE_NAME       = "save" + CRYPT_FILE_EXTENSION;
+	private static final String DEFAULT_SAVE_FILE_NAME = "save" + CRYPT_FILE_EXTENSION;
 	private static final String BACKUP_FILE_NAME     = "backup\\backup%s.XFCRYPT";
 	private static final String SETTINGS_FILE_NAME   = "settings.txt";
 	private static final String TXT_EXPORT_FILE_NAME = "Password Manager Export.txt";
@@ -105,6 +107,7 @@ public class PasswordManagerApp {
 	private static final int[]     GUI_SETTINGS_BUTTONS_PER_ROW_OPTIONS = new int[]{1, 3, 5};
 	private static final Dimension GUI_WINDOW_MIN_SIZE               = new Dimension(900, 500);
 
+	private static final ImageIcon GUI_EXTRAS_ICON = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("extras_icon.png")));
 	private static final ImageIcon GUI_EDIT_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("edit_icon.png")));
 	private static final ImageIcon GUI_COPY_ICON   = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("copy_icon.png")));
 	private static final ImageIcon GUI_DELETE_ICON = new ImageIcon(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("delete_icon.png")));
@@ -126,6 +129,7 @@ public class PasswordManagerApp {
 	private Settings settings;
 	private final Language language;
 
+	private String saveFilePath;
 	private byte[] salt;
 	private String password;
 	private byte[] cipherInitVector;
@@ -157,6 +161,7 @@ public class PasswordManagerApp {
 	}
 
 	private PasswordManagerApp() {
+		this.saveFilePath = null;
 		this.window = null;
 		this.dataTabs = new ArrayList<DataTab>();
 
@@ -173,7 +178,7 @@ public class PasswordManagerApp {
 		//
 		// get password
 		//
-		this.password = askForPassword();
+		this.password = askForPassword(true);
 		if (this.password == null) {
 			System.out.println("GetDecryptionKey failed or was terminated. The program will also terminate!");
 			return;
@@ -182,10 +187,17 @@ public class PasswordManagerApp {
 		//
 		// Load data
 		//
-		int loadDataResult = loadData(SAFE_FILE_NAME);
+		if (this.saveFilePath == null)
+			saveFilePath = DEFAULT_SAVE_FILE_NAME;
+
+		int loadDataResult = loadData(saveFilePath);
+
+		// A new file will be created
 		if (loadDataResult == 0) {
 			showInfoDialog(this.language.ERROR_DATA_LOADING_FAILES[0]);
 			reinitCipherValues();
+
+		// The loading failed but the files exists
 		} else if (loadDataResult < 0) {
 			// the result is negative the inverse is the corresponding error message
 			showInfoDialog(this.language.ERROR_DATA_LOADING_FAILES[-loadDataResult]);
@@ -270,7 +282,7 @@ public class PasswordManagerApp {
 		// #######################
 		// # Extras menu #
 		// #######################
-		menuBar.add(createExtrasMenu());
+		menuBar.add(createExtrasMenu(true, this.window));
 
 		this.window.setJMenuBar(menuBar);
 	}
@@ -432,7 +444,7 @@ public class PasswordManagerApp {
 				this.dataTabs.get(tabIndex).title = newName;
 				this.guiDataTabs.setTitleAt(tabIndex, newName);
 
-				if (!saveData(SAFE_FILE_NAME)) {
+				if (!saveData(DEFAULT_SAVE_FILE_NAME)) {
 					showInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED);
 				}
 			}
@@ -482,36 +494,76 @@ public class PasswordManagerApp {
 
 		return this.guiTabUtilMenu;
 	}
-	private JMenu createExtrasMenu(){
+	private JMenu createExtrasMenu(boolean isDataLoaded, Component parent){
 		JMenu extrasMenu = new JMenu(this.language.EXTRAS_MENU_NAME);
 
-		JMenuItem exportToTXTMenu = new JMenuItem(this.language.EXTRAS_EXPORT_TO_TXT_NAME);
-		exportToTXTMenu.addActionListener(e -> {
+		if (isDataLoaded) {
+			JMenuItem exportToTXTMenu = new JMenuItem(this.language.EXTRAS_EXPORT_TO_TXT_NAME);
+			exportToTXTMenu.addActionListener(e -> {
 
-			String input = askForPassword();
-			if (comparePasswords(input, this.password, this.salt) && exportToTXT()) {
-				showInfoDialog(this.language.EXTRAS_EXPORT_COMPLETE_INFO);
-			} else {
-				showInfoDialog(this.language.EXTRAS_EXPORT_FAILED_INFO);
-			}
+				String input = askForPassword(false);
+				if (comparePasswords(input, this.password, this.salt) && exportToTXT()) {
+					showInfoDialog(this.language.EXTRAS_EXPORT_COMPLETE_INFO);
+				} else {
+					showInfoDialog(this.language.EXTRAS_EXPORT_FAILED_INFO);
+				}
 
-		});
-		extrasMenu.add(exportToTXTMenu);
-		JMenuItem importFromTextMenu = new JMenuItem(this.language.EXTRAS_IMPORT_FROM_TXT_NAME);
-		importFromTextMenu.addActionListener(e -> {
+			});
+			extrasMenu.add(exportToTXTMenu);
 
-			if (importFromTXT()) {
-				showInfoDialog(this.language.EXTRAS_IMPORT_COMPLETE_INFO);
-			} else {
-				showInfoDialog(this.language.EXTRAS_IMPORT_FAILED_INFO);
-			}
-		});
-		extrasMenu.add(importFromTextMenu);
+			JMenuItem importFromTextMenu = new JMenuItem(this.language.EXTRAS_IMPORT_FROM_TXT_NAME);
+			importFromTextMenu.addActionListener(e -> {
+
+				if (importFromTXT()) {
+					showInfoDialog(this.language.EXTRAS_IMPORT_COMPLETE_INFO);
+				} else {
+					showInfoDialog(this.language.EXTRAS_IMPORT_FAILED_INFO);
+				}
+			});
+			extrasMenu.add(importFromTextMenu);
+
+		} else {
+			JMenuItem createSaveFile = new JMenuItem(this.language.MENU_EXTRAS_NEW_SAVE_FILE_LABEL);
+			createSaveFile.addActionListener(e -> {
+				//
+				// selected file
+				//
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setFileFilter(new FileNameExtensionFilter(this.language.FILE_CHOOSER_XFCRYPT_FILE_DESC, CRYPT_FILE_EXTENSION.substring(1)));
+				fileChooser.setDialogTitle(this.language.MENU_EXTRAS_NEW_SAVE_FILE_DIALOG_TITLE);
+				fileChooser.setSelectedFile(new File(DEFAULT_SAVE_FILE_NAME));
+
+				int fileSelectorRes = fileChooser.showSaveDialog(parent);
+				if (fileSelectorRes == JFileChooser.APPROVE_OPTION) {
+					this.saveFilePath = fileChooser.getSelectedFile().getPath();
+					if (!saveFilePath.endsWith(CRYPT_FILE_EXTENSION))
+						saveFilePath += CRYPT_FILE_EXTENSION;
+				}
+			});
+			extrasMenu.add(createSaveFile);
+
+			JMenuItem selectSaveFile = new JMenuItem(this.language.EXTRAS_SELECT_PW_FILE);
+			selectSaveFile.addActionListener(e -> {
+				//
+				// selected file
+				//
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setFileFilter(new FileNameExtensionFilter(this.language.FILE_CHOOSER_XFCRYPT_FILE_DESC, CRYPT_FILE_EXTENSION.substring(1)));
+				fileChooser.setDialogTitle(this.language.MENU_EXTRAS_SAVE_FILE_DIALOG_TITLE);
+
+				int fileSelectorRes = fileChooser.showOpenDialog(parent);
+				if (fileSelectorRes == JFileChooser.APPROVE_OPTION) {
+					this.saveFilePath = fileChooser.getSelectedFile().getPath();
+					showInfoDialog(this.language.MENU_EXTRAS_SAVE_FILE_SELECTED, parent);
+				}
+			});
+			extrasMenu.add(selectSaveFile);
+		}
 		extrasMenu.add(new JPopupMenu.Separator());
 
 		JMenuItem encryptFileMenu = new JMenuItem(this.language.MENU_EXTRAS_ENCRYPT_FILE_LABEL);
 		encryptFileMenu.addActionListener(e -> {
-			boolean result = encryptFile();
+			boolean result = encryptFile(parent);
 			if (result) {
 				showInfoDialog(this.language.MENU_EXTRAS_ENCRYPT_SUCCESSFUL);
 			} else {
@@ -521,7 +573,7 @@ public class PasswordManagerApp {
 		extrasMenu.add(encryptFileMenu);
 		JMenuItem decryptFileMenu = new JMenuItem(this.language.MENU_EXTRAS_DECRYPT_FILE_LABEL);
 		decryptFileMenu.addActionListener(e -> {
-			boolean result = decryptFile();
+			boolean result = decryptFile(parent);
 
 			if (result) {
 				showInfoDialog(this.language.MENU_EXTRAS_DECRYPT_SUCCESSFUL);
@@ -774,7 +826,7 @@ public class PasswordManagerApp {
 		DataTab tab = new DataTab(name);
 		this.dataTabs.add(index, tab);
 
-		if (!saveData(SAFE_FILE_NAME)) {
+		if (!saveData(this.saveFilePath)) {
 			showInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED);
 			this.dataTabs.remove(index);
 			return null;
@@ -809,7 +861,7 @@ public class PasswordManagerApp {
 		this.guiDataTabs.setTitleAt(newIndex, tab.title);
 		this.guiDataTabs.setSelectedIndex(newIndex);
 
-		if (!saveData(SAFE_FILE_NAME)) {
+		if (!saveData(this.saveFilePath)) {
 			showInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED);
 		}
 	}
@@ -822,7 +874,7 @@ public class PasswordManagerApp {
 		this.dataTabs.remove(index);
 		this.guiDataTabs.remove(index);
 
-		if (!saveData(SAFE_FILE_NAME)) {
+		if (!saveData(this.saveFilePath)) {
 			showInfoDialog(this.language.ERROR_SAVE_TO_FILE_FAILED);
 		}
 
@@ -834,7 +886,7 @@ public class PasswordManagerApp {
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Cipher utility //
 	/* //////////////////////////////////////////////////////////////////////////////// */
-	private String askForPassword() {
+	private String askForPassword(boolean isInitialDialog) {
 
 		if (JUMP_ASK)
 			return "HELLO";
@@ -847,17 +899,34 @@ public class PasswordManagerApp {
 		contentPanel.setLayout(new GridLayout(3, 1, 5, 5));
 		contentPanel.setFocusable(false);
 
+		//
 		// text
+		//
+		JPanel textRow = new JPanel(new BorderLayout());
+
 		JLabel textLabel = new JLabel(this.language.ENTER_PASSWORD_INFO_LABEL);
 		textLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		textLabel.setFocusable(false);
-		contentPanel.add(textLabel);
+		textRow.add(textLabel, BorderLayout.CENTER);
 
+		if (isInitialDialog) {
+			JLabel extrasButton = new JLabel(GUI_EXTRAS_ICON);
+			extrasButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, GUI_DEFAULT_GAP));
+			extrasButton.setComponentPopupMenu(createExtrasMenu(false, pwDialog).getPopupMenu());
+			textRow.add(extrasButton, BorderLayout.LINE_END);
+		}
+
+		contentPanel.add(textRow);
+
+		//
 		// password field
+		//
 		JPasswordField passwordField = new JPasswordField();
 		contentPanel.add(passwordField);
 
+		//
 		// buttons
+		//
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
 
 		JButton cancelButton = new JButton(this.language.ENTER_PASSWORD_CANCEL_BUTTON_LABEL);
@@ -980,7 +1049,7 @@ public class PasswordManagerApp {
 			this.password         = newPass1;
 			this.salt             = newSalt;
 			this.cipherInitVector = createRandomArray(CIPHER_INIT_VEC_SIZE);
-			if (!saveData(SAFE_FILE_NAME)) {
+			if (!saveData(this.saveFilePath)) {
 				this.password         = oldPass;
 				this.salt             = oldSalt;
 				this.cipherInitVector = oldInitVec;
@@ -1445,7 +1514,7 @@ public class PasswordManagerApp {
 						writer.print(content);
 
 						if (contentIndex != data.contentList.size() - 1) {
-							writer.print((char)FORMAT_UNIT_SEPARATOR);
+							writer.print(FORMAT_UNIT_SEPARATOR);
 						}
 						contentIndex++;
 					}
@@ -1574,7 +1643,7 @@ public class PasswordManagerApp {
 
 			input.close();
 
-			if (!saveData(SAFE_FILE_NAME)) {
+			if (!saveData(this.saveFilePath)) {
 				return false;
 			}
 
@@ -1624,15 +1693,14 @@ public class PasswordManagerApp {
 		}
 		return false;
 	}
-	private boolean encryptFile() {
+	private boolean encryptFile(Component parent) {
 
 		//
 		// selected file
 		//
 		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File("E:\\Temp\\Temp"));
 		fileChooser.setDialogTitle(this.language.MENU_EXTRAS_ENCRYPT_FILE_DIALOG);
-		int fileSelectorRes = fileChooser.showOpenDialog(this.window);
+		int fileSelectorRes = fileChooser.showOpenDialog(parent);
 		if (fileSelectorRes != JFileChooser.APPROVE_OPTION)
 			return false;
 
@@ -1643,7 +1711,7 @@ public class PasswordManagerApp {
 		//
 		// get password
 		//
-		String pass = askForPassword();
+		String pass = askForPassword(false);
 		if (pass == null || pass.isEmpty())
 			return false;
 		byte[] salt = createRandomArray(CIPHER_SALT_SIZE);
@@ -1683,22 +1751,21 @@ public class PasswordManagerApp {
 
 			return result;
 		} catch (IOException e) {
-			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, parent, e);
 
 			return false;
 		}
 
 	}
-	private boolean decryptFile() {
+	private boolean decryptFile(Component parent) {
 
 		//
 		// selected file
 		//
 		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File("E:\\Temp\\Temp"));
 		fileChooser.setFileFilter(new FileNameExtensionFilter(this.language.FILE_CHOOSER_XFCRYPT_FILE_DESC, CRYPT_FILE_EXTENSION.substring(1)));
 		fileChooser.setDialogTitle(this.language.MENU_EXTRAS_ENCRYPT_FILE_DIALOG);
-		int fileSelectorRes = fileChooser.showOpenDialog(this.window);
+		int fileSelectorRes = fileChooser.showOpenDialog(parent);
 		if (fileSelectorRes != JFileChooser.APPROVE_OPTION)
 			return false;
 
@@ -1715,7 +1782,7 @@ public class PasswordManagerApp {
 		//
 		// ask for password
 		//
-		String pass = askForPassword();
+		String pass = askForPassword(false);
 		if (pass == null || pass.isEmpty())
 			return false;
 
@@ -1764,7 +1831,7 @@ public class PasswordManagerApp {
 			return result;
 
 		} catch (IOException e) {
-			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, e);
+			showInfoDialog(this.language.ERROR_GENERAL_ERROR_INFO, parent, e);
 		}
 
 		return false;
@@ -1811,7 +1878,7 @@ public class PasswordManagerApp {
 
 			this.dataList.add(data);
 
-			if (!saveData(SAFE_FILE_NAME)) {
+			if (!saveData(PasswordManagerApp.this.saveFilePath)) {
 				showInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED);
 				this.dataList.remove(data);
 				return; // saving failed
@@ -1949,7 +2016,7 @@ public class PasswordManagerApp {
 			}
 			this.dataList.remove(index);
 
-			if (!saveData(SAFE_FILE_NAME)) {
+			if (!saveData(PasswordManagerApp.this.saveFilePath)) {
 				this.dataList.add(index, data); // readd it since it wasn't really killed
 				showInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED);
 			} else {
@@ -2162,7 +2229,7 @@ public class PasswordManagerApp {
 				// Save to file
 				//
 				if (!newlyCreated){
-					if (!saveData(SAFE_FILE_NAME)) {
+					if (!saveData(PasswordManagerApp.this.saveFilePath)) {
 						showInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED);
 						return;
 					}
