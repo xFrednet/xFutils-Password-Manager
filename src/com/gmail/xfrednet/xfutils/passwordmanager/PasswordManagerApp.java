@@ -32,9 +32,6 @@
  ******************************************************************************/
 package com.gmail.xfrednet.xfutils.passwordmanager;
 
-
-import javafx.stage.FileChooser;
-
 import java.awt.event.InputEvent;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -2104,6 +2101,9 @@ public class PasswordManagerApp {
 		/* ********************************************************* */
 		void openChangeDataGUI(boolean newlyCreated) {
 			final int GUI_EDIT_DATA_COMPONENT_INDEX = 3;
+			final int GUI_TITLE_FIELD_INDEX = 2;
+			final int GUI_TAB_SELECTOR_INDEX = 1;
+			final int GUI_INDEX_SELECTOR_INDEX = 3;
 			Language language = PasswordManagerApp.this.language;
 
 			//
@@ -2117,7 +2117,7 @@ public class PasswordManagerApp {
 			//
 			// Panel & Layout
 			//
-			GridLayout mainLayout = new GridLayout(1 + this.contentList.size() + 1, 1);
+			GridLayout mainLayout = new GridLayout(1 + this.contentList.size() + 1 + 1, 1);
 			JPanel mainPanel = new JPanel(mainLayout);
 			ButtonGroup radioGroup = new ButtonGroup();
 
@@ -2125,7 +2125,7 @@ public class PasswordManagerApp {
 			// Add title
 			//
 			JPanel titlePanel = createChangeDataGUITitleRow();
-			JTextPane titleField = (JTextPane) titlePanel.getComponent(2);
+			JTextPane titleField = (JTextPane) titlePanel.getComponent(GUI_TITLE_FIELD_INDEX);
 			mainPanel.add(titlePanel);
 			if (newlyCreated) {
 				((JButton)titlePanel.getComponent(GUI_EDIT_DATA_COMPONENT_INDEX)).doClick();
@@ -2139,6 +2139,14 @@ public class PasswordManagerApp {
 			for (int contentIndex = 0; contentIndex < this.contentList.size(); contentIndex++) {
 				mainPanel.add(createChangeDataGUIDataRow(contentIndex, radioGroup, radioList, dataFields));
 			}
+
+			//
+			// Location row
+			//
+			JPanel locationRow = createChangeDataGUILocationRow();
+			JComboBox<String> tabSelector = (JComboBox<String>)locationRow.getComponent(GUI_TAB_SELECTOR_INDEX);
+			JSpinner indexSelector = (JSpinner)locationRow.getComponent(GUI_INDEX_SELECTOR_INDEX);
+			mainPanel.add(locationRow);
 
 			//
 			// action button row
@@ -2221,6 +2229,8 @@ public class PasswordManagerApp {
 
 					dataIndex++;
 				}
+				// Location
+				changeLocation(tabSelector.getSelectedIndex(), (int)indexSelector.getValue());
 
 				if (this.guiButton != null)
 					this.guiButton.setText("<html>" + this.title + "</html>");
@@ -2228,7 +2238,7 @@ public class PasswordManagerApp {
 				//
 				// Save to file
 				//
-				if (!newlyCreated){
+				if (!newlyCreated){ // Don't save because the data isn't added to the tab yet
 					if (!saveData(PasswordManagerApp.this.saveFilePath)) {
 						showInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED);
 						return;
@@ -2511,6 +2521,76 @@ public class PasswordManagerApp {
 			titlePanel.add(deleteIconButton, deleteIconConstrains);
 
 			return titlePanel;
+		}
+		private JPanel createChangeDataGUILocationRow() {
+			JPanel locationRow = new JPanel(new GridLayout(1, 4, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP));
+			int radioButtonWidth = GUI_ICON_BUTTON_DIMENSIONS.width + GUI_DEFAULT_GAP;
+			locationRow.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(GUI_BORDER_COLOR, 1),
+					BorderFactory.createEmptyBorder(GUI_DEFAULT_GAP, GUI_DEFAULT_GAP + radioButtonWidth, GUI_DEFAULT_GAP, GUI_DEFAULT_GAP)));
+
+			int inParentIndex = this.parent.dataList.indexOf(this);
+			JSpinner indexSpinner = new JSpinner(new SpinnerNumberModel((inParentIndex >= 0) ? inParentIndex : 0 , 0, this.parent.dataList.size(), 1));
+			//
+			// select Tab
+			//
+			locationRow.add(new JLabel(PasswordManagerApp.this.language.CHANGE_DATA_TAB_SELECTOR_LABEL));
+
+			JComboBox<String> tabSelector = new JComboBox<>();
+			int index = 0;
+			for (DataTab tab : PasswordManagerApp.this.dataTabs)  {
+				tabSelector.addItem(index + ". " + tab.title);
+				index++;
+			}
+			// This dialog is shown when the change dialog is triggered, this means
+			// that the selected tab is also the parent tab
+			tabSelector.setSelectedIndex(PasswordManagerApp.this.guiDataTabs.getSelectedIndex());
+			tabSelector.addItemListener(e -> {
+				DataTab tab = PasswordManagerApp.this.dataTabs.get(tabSelector.getSelectedIndex());
+
+				int value = ((tab.equals(this.parent)) ? inParentIndex : 0);
+				indexSpinner.setModel(new SpinnerNumberModel(value, 0, tab.dataList.size(), 1));
+			});
+			locationRow.add(tabSelector);
+
+			//
+			// select Index
+			//
+			locationRow.add(new JLabel(PasswordManagerApp.this.language.CHANGE_DATA_INDEX_SELECTOR_LABEL));
+			locationRow.add(indexSpinner);
+
+			//
+			// return
+			//
+			return locationRow;
+		}
+
+		/*
+		* Note, this method does not save the change to file.
+		* */
+		void changeLocation(int newParentIndex, int newInParentIndex) {
+			int currentParentIndex = PasswordManagerApp.this.dataTabs.indexOf(this.parent);
+			if (newParentIndex != currentParentIndex) {
+				this.parent.dataList.remove(this);
+				this.parent.updateGUI();
+
+				this.parent = PasswordManagerApp.this.dataTabs.get(newParentIndex);
+				this.parent.dataList.add(newInParentIndex, this);
+				this.parent.updateGUI();
+
+				return;
+			}
+
+			int currentInParentIndex = this.parent.dataList.indexOf(this);
+			if (newInParentIndex != currentInParentIndex) {
+
+				if (newInParentIndex > currentInParentIndex)
+					newInParentIndex--; // because this data is removed so all following indiecies subtract by one
+
+				this.parent.dataList.remove(currentInParentIndex);
+				this.parent.dataList.add(newInParentIndex, this);
+				this.parent.updateGUI();
+			}
 		}
 
 		/* ********************************************************* */

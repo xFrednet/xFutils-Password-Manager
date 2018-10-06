@@ -130,6 +130,8 @@ class Language {
 	final String CHANGE_DATA_COPY_BUTTON_TOOLTIP;
 	final String CHANGE_DATA_REMOVE_BUTTON_TOOLTIP;
 	final String CHANGE_DATA_UNDO_BUTTON_TOOLTIP;
+	final String CHANGE_DATA_TAB_SELECTOR_LABEL;
+	final String CHANGE_DATA_INDEX_SELECTOR_LABEL;
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	// // Change password panel //
@@ -251,6 +253,8 @@ class Language {
 			this.CHANGE_DATA_COPY_BUTTON_TOOLTIP             = "Kopiert die Info in die Zwischenablage";
 			this.CHANGE_DATA_REMOVE_BUTTON_TOOLTIP           = "Drücken Sie, um diese Info zu löschen";
 			this.CHANGE_DATA_UNDO_BUTTON_TOOLTIP             = "Drücken Sie, um die Änderung rückgängig zu machen";
+			this.CHANGE_DATA_TAB_SELECTOR_LABEL              = "Eltern Tab:";
+			this.CHANGE_DATA_INDEX_SELECTOR_LABEL            = "Index:";
 
 			// Change password panel
 			this.CHANGE_PASS_OLD_PASS_LABEL       = "Altes Passwort:";
@@ -373,6 +377,8 @@ class Language {
 			this.CHANGE_DATA_COPY_BUTTON_TOOLTIP             = "Copies the data to the clipboard";
 			this.CHANGE_DATA_REMOVE_BUTTON_TOOLTIP           = "Press to remove this data";
 			this.CHANGE_DATA_UNDO_BUTTON_TOOLTIP             = "Press to undo the change";
+			this.CHANGE_DATA_TAB_SELECTOR_LABEL              = "Parent tab:";
+			this.CHANGE_DATA_INDEX_SELECTOR_LABEL            = "Index:";
 
 			// Change password panel
 			this.CHANGE_PASS_OLD_PASS_LABEL       = "Old password:";
