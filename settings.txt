@@ -1,7 +1,7 @@
-frameX=560
+frameX=510
 frameY=240
 frameWidth=900
 frameHeight=600
 buttonsPerRow=3
-lastBackup=1538558910767
+lastBackup=0
 languageID=0

@@ -949,8 +949,11 @@ public class PasswordManagerApp {
 		pwDialog.pack();
 		pwDialog.setSize(GUI_ENTER_PASSWORD_GUI_WIDTH, pwDialog.getHeight());
 		pwDialog.setResizable(false);
-		pwDialog.setLocationRelativeTo(null);
+		pwDialog.setLocation(
+				this.settings.frameX + this.settings.frameWidth / 2 - pwDialog.getWidth() / 2,
+				this.settings.frameY + this.settings.frameHeight / 2 - pwDialog.getHeight() / 2);
 		pwDialog.setTitle(TITLE);
+		pwDialog.setAlwaysOnTop(true);
 		//focus
 		pwDialog.setModal(true);
 		pwDialog.setAutoRequestFocus(true);
@@ -1222,8 +1225,8 @@ public class PasswordManagerApp {
 
 		testField.setContentType("text/html"); // let the text pane know that I want HTML support
 		testField.setEditable(false);          // remove the edit option
-		testField.setBackground(null);         // Remove cosmetics
-		testField.setBorder(null);             // Remove cosmetics
+		testField.setBackground(null);         // remove cosmetics
+		testField.setBorder(null);             // remove cosmetics
 
 		return testField;
 	}
