@@ -88,25 +88,25 @@
     <session id="-1634900122">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="37" />
+          <entry key="project.closed" value="40" />
           <entry key="project.open.time.10" value="7" />
           <entry key="project.open.time.11" value="7" />
           <entry key="project.open.time.12" value="3" />
           <entry key="project.open.time.13" value="2" />
           <entry key="project.open.time.7" value="5" />
-          <entry key="project.open.time.8" value="11" />
-          <entry key="project.open.time.9" value="7" />
-          <entry key="project.opened" value="42" />
+          <entry key="project.open.time.8" value="13" />
+          <entry key="project.open.time.9" value="9" />
+          <entry key="project.opened" value="46" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="65476" />
+          <entry key="java" value="65819" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="65476" />
+          <entry key="JAVA" value="65819" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -132,10 +132,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="566">
-              <caret line="1226" column="51" selection-start-line="1226" selection-start-column="51" selection-end-line="1226" selection-end-column="51" />
+            <state>
+              <caret line="159" lean-forward="true" selection-start-line="159" selection-end-line="159" />
               <folding>
-                <element signature="e#64327#85481#0" expanded="true" />
+                <element signature="e#12331#12428#0" expanded="true" />
+                <element signature="e#19212#19895#0" expanded="true" />
+                <element signature="e#20052#20640#0" expanded="true" />
+                <element signature="e#36353#37792#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -246,6 +249,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -277,8 +281,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
-      <pane id="Scope" />
       <pane id="PackagesPane">
         <subPane>
           <expand>
@@ -295,12 +297,17 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="GenerateAntBuildDialog.backupFiles" value="true" />
+    <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
+    <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
+    <property name="GenerateAntBuildDialog.outputFileNameProperty" value="xfutils-password-manager" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539196206732" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539509406927" />
     <property name="last_opened_file_path" value="E:/Temp/Temp/New Text Document.txt.XFCRYPT" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -401,18 +408,22 @@
       <workItem from="1538811081046" duration="13865000" />
       <workItem from="1538914170524" duration="595000" />
       <workItem from="1539021994505" duration="596000" />
-      <workItem from="1539195367708" duration="639000" />
+      <workItem from="1539195367708" duration="1433000" />
+      <workItem from="1539361985294" duration="596000" />
+      <workItem from="1539374293764" duration="598000" />
+      <workItem from="1539417356196" duration="1197000" />
+      <workItem from="1539507902832" duration="1389000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="394927000" />
+    <option name="totallyTimeSpent" value="399501000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="22" width="1936" height="1066" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.45604396" visible="true" weight="0.13432837" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.45604396" visible="true" weight="0.13965885" />
       <window_info id="Image Layers" order="1" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
@@ -421,7 +432,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.14945056" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3010989" />
-      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.2010989" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.2010989" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -439,7 +450,7 @@
       <window_info anchor="right" id="Palette&#9;" order="6" />
       <window_info anchor="right" auto_hide="true" id="Maven Projects" order="7" type="SLIDING" weight="0.32995737" />
       <window_info anchor="right" id="Ant Build" order="8" weight="0.25" />
-      <window_info active="true" anchor="right" id="Structure" order="9" sideWeight="0.54395604" visible="true" weight="0.18336888" />
+      <window_info anchor="right" id="Structure" order="9" sideWeight="0.54395604" visible="true" weight="0.18336888" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -458,31 +469,31 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java</url>
-          <line>1117</line>
+          <line>1128</line>
           <properties />
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java</url>
-          <line>1131</line>
+          <line>1142</line>
           <properties />
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java</url>
-          <line>1135</line>
+          <line>1146</line>
           <properties />
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java</url>
-          <line>1470</line>
+          <line>1487</line>
           <properties />
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java</url>
-          <line>2000</line>
+          <line>2019</line>
           <properties />
           <option name="timeStamp" value="16" />
         </line-breakpoint>
@@ -722,10 +733,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1284">
           <caret line="167" column="11" selection-start-line="167" selection-start-column="11" selection-end-line="167" selection-end-column="11" />
-          <folding>
-            <element signature="e#4920#4921#0" expanded="true" />
-            <element signature="e#4944#4945#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -757,6 +764,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_144/src.zip!/javax/swing/JOptionPane.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2618">
+          <caret line="852" column="54" selection-start-line="852" selection-start-column="54" selection-end-line="852" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/Settings.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1870">
@@ -777,19 +791,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_144/src.zip!/javax/swing/JOptionPane.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2618">
-          <caret line="852" column="54" selection-start-line="852" selection-start-column="54" selection-end-line="852" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/gmail/xfrednet/xfutils/passwordmanager/PasswordManagerApp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="566">
-          <caret line="1226" column="51" selection-start-line="1226" selection-start-column="51" selection-end-line="1226" selection-end-column="51" />
+        <state>
+          <caret line="159" lean-forward="true" selection-start-line="159" selection-end-line="159" />
           <folding>
-            <element signature="e#64327#85481#0" expanded="true" />
+            <element signature="e#12331#12428#0" expanded="true" />
+            <element signature="e#19212#19895#0" expanded="true" />
+            <element signature="e#20052#20640#0" expanded="true" />
+            <element signature="e#36353#37792#0" expanded="true" />
           </folding>
         </state>
       </provider>

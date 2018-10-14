@@ -126,6 +126,7 @@ public class PasswordManagerApp {
 	private Settings settings;
 	private final Language language;
 
+	private boolean backupsEnabled; // backups are only made on the main save file
 	private String saveFilePath;
 	private byte[] salt;
 	private String password;
@@ -158,9 +159,10 @@ public class PasswordManagerApp {
 	}
 
 	private PasswordManagerApp() {
-		this.saveFilePath = null;
-		this.window = null;
-		this.dataTabs = new ArrayList<DataTab>();
+		this.saveFilePath   = null;
+		this.window         = null;
+		this.dataTabs       = new ArrayList<DataTab>();
+		this.backupsEnabled = true;
 
 		//
 		// load settings
@@ -211,10 +213,12 @@ public class PasswordManagerApp {
 		//
 		// make backup if last backup was last month
 		//
-		Date thirtyDaysAgo = Date.from(ZonedDateTime.now().plusDays(-30).toInstant());
-		Date lastBackup = new Date(this.settings.lastBackup);
-		if (thirtyDaysAgo.after(lastBackup)) {
-			createBackup();
+		if (this.backupsEnabled) {
+			Date thirtyDaysAgo = Date.from(ZonedDateTime.now().plusDays(-30).toInstant());
+			Date lastBackup = new Date(this.settings.lastBackup);
+			if (thirtyDaysAgo.after(lastBackup)) {
+				createBackup();
+			}
 		}
 	}
 
@@ -301,6 +305,7 @@ public class PasswordManagerApp {
 				showInfoDialog(this.language.INFO_SAVE_BACKUP_OKAY);
 			}
 		});
+		backupItem.setEnabled(this.backupsEnabled);
 		fileMenu.add(backupItem);
 		fileMenu.add(new JPopupMenu.Separator());
 
@@ -536,6 +541,8 @@ public class PasswordManagerApp {
 					if (!saveFilePath.endsWith(CRYPT_FILE_EXTENSION))
 						saveFilePath += CRYPT_FILE_EXTENSION;
 				}
+
+				this.backupsEnabled = false;
 			});
 			extrasMenu.add(createSaveFile);
 
@@ -553,6 +560,8 @@ public class PasswordManagerApp {
 					this.saveFilePath = fileChooser.getSelectedFile().getPath();
 					showInfoDialog(this.language.MENU_EXTRAS_SAVE_FILE_SELECTED, parent);
 				}
+
+				this.backupsEnabled = false;
 			});
 			extrasMenu.add(selectSaveFile);
 		}
@@ -1041,7 +1050,9 @@ public class PasswordManagerApp {
 			}
 
 			// just to be save
-			createBackup();
+			if (this.backupsEnabled) {
+				createBackup();
+			}
 
 			// save data with new password or reverse changes if something failed
 			byte[] oldSalt    = this.salt;
@@ -1425,6 +1436,12 @@ public class PasswordManagerApp {
 	}
 	private boolean createBackup() {
 
+		if (!this.backupsEnabled)
+			return false;
+
+		if (this.dataTabs.size() == 0)
+			return true;
+
 		String fileName = String.format(BACKUP_FILE_NAME, GetTimeStamp());
 		if (saveData(fileName)) {
 			System.out.println("Made a backup, backup name: " + fileName);
@@ -1551,7 +1568,9 @@ public class PasswordManagerApp {
 		// #################
 		// # Create Backup #
 		// #################
-		createBackup();
+		if (this.backupsEnabled) {
+			createBackup();
+		}
 
 		// #############
 		// # Read file #
