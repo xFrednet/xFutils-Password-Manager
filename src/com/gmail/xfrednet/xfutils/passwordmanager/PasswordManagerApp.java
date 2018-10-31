@@ -1895,8 +1895,6 @@ public class PasswordManagerApp {
 				return; // the data is invalid
 			}
 
-			this.dataList.add(data);
-
 			if (!saveData(PasswordManagerApp.this.saveFilePath)) {
 				showInfoDialog(PasswordManagerApp.this.language.ERROR_SAVE_TO_FILE_FAILED);
 				this.dataList.remove(data);
@@ -1968,6 +1966,9 @@ public class PasswordManagerApp {
 			this.guiPanel.removeAll();
 			int iterations = 0;
 			for (Data data : this.dataList) {
+
+				if (data.guiButton == null)
+					continue;
 
 				this.guiPanel.add(data.guiButton, placements[iterations % placements.length]);
 
@@ -2252,7 +2253,7 @@ public class PasswordManagerApp {
 					dataIndex++;
 				}
 				// Location
-				changeLocation(tabSelector.getSelectedIndex(), (int)indexSelector.getValue());
+				changeLocation(tabSelector.getSelectedIndex(), (int)indexSelector.getValue(), !newlyCreated);
 
 				if (this.guiButton != null)
 					this.guiButton.setText("<html>" + this.title + "</html>");
@@ -2590,11 +2591,14 @@ public class PasswordManagerApp {
 		/*
 		* Note, this method does not save the change to file.
 		* */
-		void changeLocation(int newParentIndex, int newInParentIndex) {
+		void changeLocation(int newParentIndex, int newInParentIndex, boolean removeFromParent) {
 			int currentParentIndex = PasswordManagerApp.this.dataTabs.indexOf(this.parent);
+
 			if (newParentIndex != currentParentIndex) {
-				this.parent.dataList.remove(this);
-				this.parent.updateGUI();
+				if (removeFromParent) {
+					this.parent.dataList.remove(this);
+					this.parent.updateGUI();
+				}
 
 				this.parent = PasswordManagerApp.this.dataTabs.get(newParentIndex);
 				this.parent.dataList.add(newInParentIndex, this);
@@ -2605,14 +2609,18 @@ public class PasswordManagerApp {
 
 			int currentInParentIndex = this.parent.dataList.indexOf(this);
 			if (newInParentIndex != currentInParentIndex) {
-
-				if (newInParentIndex > currentInParentIndex)
+				if (newInParentIndex > currentInParentIndex && currentInParentIndex != -1)
 					newInParentIndex--; // because this data is removed so all following indiecies subtract by one
 
-				this.parent.dataList.remove(currentInParentIndex);
+				if (removeFromParent) {
+					this.parent.dataList.remove(currentInParentIndex);
+				}
 				this.parent.dataList.add(newInParentIndex, this);
 				this.parent.updateGUI();
 			}
+		}
+		void changeLocation(int newParentIndex, int newInParentIndex) {
+			changeLocation(newParentIndex, newInParentIndex, true);
 		}
 
 		/* ********************************************************* */
