@@ -154,11 +154,11 @@ public class PasswordManagerApp {
 	private JTabbedPane guiDataTabs;
 	private JSpinner guiNewTabIndexSelector;
 
-	public static void main(String[] args){
-		new PasswordManagerApp();
+	public static void main(String[] args) {
+		new PasswordManagerApp(args);
 	}
 
-	private PasswordManagerApp() {
+	private PasswordManagerApp(String[] args) {
 		this.saveFilePath   = null;
 		this.window         = null;
 		this.dataTabs       = new ArrayList<DataTab>();
@@ -174,6 +174,8 @@ public class PasswordManagerApp {
 
 		this.language = new Language(this.settings.languageID);
 
+		processArgs(args);
+		
 		//
 		// get password
 		//
@@ -222,6 +224,34 @@ public class PasswordManagerApp {
 		}
 	}
 
+	private void processArgs(String[] args) {
+		
+		for (int argIndex = 0; argIndex < args.length; argIndex++) {
+			String arg = args[argIndex];
+			
+			switch (arg) {
+			case "-file":
+				if ((argIndex + 1) < args.length) {
+					File saveFile = new File(args[argIndex + 1]);
+					argIndex++;
+					
+					this.saveFilePath = saveFile.getPath();
+					this.backupsEnabled = false;
+				} else {
+					System.out.println("The argument -file expected a String.");
+				}
+
+				break;
+			default:
+				System.out.println("Unknown argument!!!");
+			case "-help":
+				System.out.println("Help:");
+				System.out.println("-file {file name}: Sets the file that should be loaded.");
+				System.out.println("-help:             Displayes this message.");
+				break;
+			}
+		}
+	}
 	private boolean initSettings() {
 		this.settings = Settings.LoadSettings(SETTINGS_FILE_NAME);
 		if (this.settings == null) {
