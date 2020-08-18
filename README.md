@@ -1,29 +1,7 @@
-# xFutils-Password-Manager
-A simple password manager.
+# DISCONTINUED
+This Project is discontinued. The architecture and structure is less than optimal and I sadly lack the time and interest to fix this. If somebody would like to create something similar it would be highly recommended starting from scratch because this is mostly hacked together. 
 
-## LICENSE
- Copyright (C) 2018, xFrednet <xFrednet@gmail.com>                           
+This Repository will be archived as a testament of my former programming skills. Please don't take this as an example of my code!
 
- This software is provided 'as-is', without any express or implied warranty. 
- In no event will the authors be held liable for any damages arising from    
- the use of this software.                                                   
-
- Permission is hereby granted, free of charge, to anyone to use this         
- software for any purpose, including the rights to use, copy, modify,        
- merge, publish, distribute, sublicense, and/or sell copies of this          
- software, subject to the following conditions:                              
-
-   1.  The origin of this software must not be misrepresented; you           
-       must not claim that you wrote the original software. If you           
-       use this software in a product, an acknowledgment in the              
-       product documentation would be greatly appreciated but is not         
-       required                                                              
-
-   2.  Altered source versions should be plainly marked as such, and         
-       must not be misrepresented as being the original software.            
-
-   3.  This code should not be used for any military or malicious            
-       purposes.                                                             
-
-   4.  This notice may not be removed or altered from any source             
-       distribution.                                                         
+## xFutils-Password-Manager
+A simple password manager.                                                     
